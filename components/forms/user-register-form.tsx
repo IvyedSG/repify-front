@@ -53,7 +53,7 @@ export default function UserRegisterForm() {
 
       if (response.ok) {
         // Handle successful registration
-        router.push('/auth/signin');
+        router.push('/');
       } else {
         // Handle registration error
         console.error('Registration failed');

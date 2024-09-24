@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { CalendarDateRangePicker } from '@/components/date-range-picker'
 import PageContainer from '@/components/layout/page-container'
 import { Button } from '@/components/ui/button'
@@ -10,10 +11,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
-import { CalendarIcon, Users, Clock, Briefcase, GraduationCap, User, FileText, Target, PieChart, Send, Plus } from 'lucide-react'
+import { CalendarIcon, Users, Clock, Briefcase, GraduationCap, Plus } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -23,7 +23,6 @@ import {
   DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 const careers = [
   "Administración y Negocios Internacionales",
@@ -63,6 +62,7 @@ const colorSchemes: ColorScheme[] = [
 ]
 
 interface Project {
+  id: string;
   title: string;
   organization: string;
   career: string;
@@ -79,14 +79,17 @@ interface Project {
   applicationCount: number;
   colorScheme: ColorScheme;
   image: string;
+  location: string;
+  website: string;
 }
 
 export default function ProjectsPage() {
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [isFlexible, setIsFlexible] = useState(false)
+  const router = useRouter()
 
   const projects: Project[] = [
     {
+      id: "1",
       title: "AI-Powered Study Assistant",
       organization: "TechEd Solutions",
       career: "Ciencias de la Comunicación",
@@ -102,9 +105,12 @@ export default function ProjectsPage() {
       missingProfiles: ["Diseñador UX/UI", "Desarrollador de IA"],
       applicationCount: 12,
       colorScheme: colorSchemes[0],
-      image: "/placeholder.svg?height=100&width=200"
+      image: "/placeholder.svg?height=100&width=200",
+      location: "Lima, Perú",
+      website: "https://techedsolutions.com"
     },
     {
+      id: "2",
       title: "Campus Event Planner App",
       organization: "UniConnect",
       career: "Administración y Marketing",
@@ -120,9 +126,12 @@ export default function ProjectsPage() {
       missingProfiles: ["Desarrollador móvil", "Diseñador gráfico"],
       applicationCount: 8,
       colorScheme: colorSchemes[1],
-      image: "/placeholder.svg?height=100&width=200"
+      image: "/placeholder.svg?height=100&width=200",
+      location: "Lima, Perú",
+      website: "https://uniconnect.edu"
     },
     {
+      id: "3",
       title: "Blockchain-based Voting System",
       organization: "CivicTech Innovations",
       career: "Derecho",
@@ -138,9 +147,15 @@ export default function ProjectsPage() {
       missingProfiles: ["Desarrollador blockchain", "Experto en seguridad informática", "Estudiantes de derecho"],
       applicationCount: 20,
       colorScheme: colorSchemes[2],
-      image: "/placeholder.svg?height=100&width=200"
+      image: "/placeholder.svg?height=100&width=200",
+      location: "Lima, Perú",
+      website: "https://civictechinnovations.org"
     }
   ]
+
+  const handleViewDetails = (project: Project) => {
+    router.push(`/projects/${project.id}`)
+  }
 
   return (
     <PageContainer scrollable={true}>
@@ -323,79 +338,9 @@ export default function ProjectsPage() {
                 </div>
                 <Progress value={project.progress} className="mb-2" />
                 <p className="text-sm text-right text-muted-foreground">{project.progress}% Completado</p>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button className="w-full mt-4" variant="outline" onClick={() => setSelectedProject(project)}>
-                      Ver Detalles
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[550px]">
-                    <DialogHeader>
-                      <DialogTitle className="text-2xl font-bold">{selectedProject?.title}</DialogTitle>
-                      <DialogDescription className="text-lg text-muted-foreground">
-                        {selectedProject?.organization}
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-6 py-4">
-                      <div className="flex items-center gap-4">
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage src="/placeholder-avatar.jpg" alt={selectedProject?.leader} />
-                          <AvatarFallback>{selectedProject?.leader.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-semibold">{selectedProject?.leader}</p>
-                          <p className="text-sm text-muted-foreground">Líder del Proyecto</p>
-                        </div>
-                      </div>
-                      <Separator />
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <p className="font-semibold flex items-center"><Briefcase className="mr-2 h-4 w-4" /> Carrera</p>
-                          <p className="text-muted-foreground">{selectedProject?.career}</p>
-                        </div>
-                        <div>
-                          <p className="font-semibold flex items-center"><GraduationCap className="mr-2 h-4 w-4" /> Universidad</p>
-                          <p className="text-muted-foreground">{selectedProject?.university}</p>
-                        </div>
-                      </div>
-                      <Separator />
-                      <div>
-                        <p className="font-semibold flex items-center mb-2"><FileText className="mr-2 h-4 w-4" /> Descripción</p>
-                        <p className="text-muted-foreground">{selectedProject?.description}</p>
-                      </div>
-                      <Separator />
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <p className="font-semibold flex items-center"><Users className="mr-2 h-4 w-4" /> Miembros</p>
-                          <p className="text-muted-foreground">{selectedProject?.members}</p>
-                        </div>
-                        <div>
-                          <p className="font-semibold flex items-center"><Target className="mr-2 h-4 w-4" /> Perfiles faltantes</p>
-                          <p className="text-muted-foreground">{selectedProject?.missingProfiles.join(", ")}</p>
-                        </div>
-                      </div>
-                      <Separator />
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <p className="font-semibold flex items-center"><PieChart className="mr-2 h-4 w-4" /> Progreso</p>
-                          <Progress value={selectedProject?.progress} className="mt-2" />
-                          <p className="text-sm text-right text-muted-foreground mt-1">{selectedProject?.progress}% Completado</p>
-                        </div>
-                        <div>
-                          <p className="font-semibold flex items-center"><Send className="mr-2 h-4 w-4" /> Aplicaciones</p>
-                          <p className="text-muted-foreground">{selectedProject?.applicationCount}</p>
-                        </div>
-                      </div>
-                      <div>
-                        <p className="font-semibold flex items-center"><Clock className="mr-2 h-4 w-4" /> Tipo de proyecto</p>
-                        <p className="text-muted-foreground">{selectedProject?.isFlexible ? 'Flexible' : 'Cronograma'}</p>
-                      </div>
-                    </div>
-                    <Button className="w-full">
-                      Aplicar al Proyecto
-                    </Button>
-                  </DialogContent>
-                </Dialog>
+                <Button className="w-full mt-4" variant="outline" onClick={() => handleViewDetails(project)}>
+                  Ver Detalles
+                </Button>
               </CardContent>
             </Card>
           ))}

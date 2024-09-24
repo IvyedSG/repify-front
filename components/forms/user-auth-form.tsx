@@ -48,7 +48,7 @@ export default function UserAuthForm() {
 
       if (response.ok) {
         // Handle successful login
-        router.push('/dashboard');
+        router.push('/projects');
       } else {
         // Handle login error
         console.error('Login failed');
