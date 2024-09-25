@@ -58,7 +58,7 @@ export default function ProjectDetails() {
 
   return (
     <ScrollArea className="h-screen w-full">
-      <div className="max-w-full mx-auto p-0 space-y-6">
+      <div className="max-w-full mx-auto p-6 space-y-6">
         
         <div className="relative h-48 sm:h-56 md:h-64 rounded-xl overflow-hidden">
           <Image
