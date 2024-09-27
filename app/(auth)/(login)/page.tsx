@@ -18,6 +18,14 @@ export default function LoginPage() {
         </p>
       </div>
       <UserAuthForm />
+      <div className="text-center text-sm">
+        <Link
+          href="/reset-password"
+          className="text-muted-foreground underline underline-offset-4 hover:text-primary"
+        >
+          ¿Olvidaste tu contraseña?
+        </Link>
+      </div>
       <p className="text-center text-sm text-muted-foreground">
         ¿No tienes una cuenta?{' '}
         <Link

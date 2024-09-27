@@ -137,7 +137,7 @@ export const navItems: NavItem[] = [
   },
   {
     title: 'Mi Perfil',
-    href: '/projects/records',
+    href: '/projects/profiles',
     icon: 'perfil',
     label: 'Mi Perfil'
   },
