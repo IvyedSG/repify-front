@@ -1,17 +1,25 @@
-// Protecting routes with next-auth
-// https://next-auth.js.org/configuration/nextjs#middleware
-// https://nextjs.org/docs/app/building-your-application/routing/middleware
+import { NextResponse } from 'next/server'
+import { getToken } from 'next-auth/jwt'
+import type { NextRequest } from 'next/server'
 
-import NextAuth from 'next-auth';
-import authConfig from './auth.config';
+export async function middleware(req: NextRequest) {
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
 
-const { auth } = NextAuth(authConfig);
+  const { pathname } = req.nextUrl
+  const protectedRoutes = ['/projects']
 
-export default auth((req) => {
-  if (!req.auth) {
-    const url = req.url.replace(req.nextUrl.pathname, '/');
-    return Response.redirect(url);
+  if (!token && protectedRoutes.some(route => pathname.startsWith(route))) {
+    return NextResponse.redirect(new URL('/', req.url))
   }
-});
 
-export const config = { matcher: ['/dashboard/:path*'] };
+  if (token && token.error === 'RefreshAccessTokenError') {
+    // If there's a token error, redirect to login
+    return NextResponse.redirect(new URL('/', req.url))
+  }
+
+  return NextResponse.next()
+}
+
+export const config = {
+  matcher: ['/projects/:path*'],
+}
