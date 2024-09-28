@@ -17,6 +17,8 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import toast, { Toaster } from 'react-hot-toast';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, ArrowRight, Loader2, Mail, Lock, School, BookOpen, User, FileText, Award, Image } from 'lucide-react';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Ingresa un correo electrónico válido' }),
@@ -70,214 +72,297 @@ export default function UserRegisterForm() {
       });
 
       if (response.ok) {
-        toast.success('Registro exitoso. Redirigiendo al inicio de sesión...');
+        toast.success('¡Bienvenido a bordo! Preparando tu espacio...');
         setTimeout(() => router.push('/'), 2000);
       } else {
         const errorData = await response.json();
-        toast.error(`Error en el registro: ${errorData.message || 'Intenta nuevamente'}`);
+        toast.error(`Ups, algo salió mal: ${errorData.message || 'Intenta nuevamente'}`);
       }
     } catch (error) {
       console.error('Error durante el registro:', error);
-      toast.error('Error inesperado. Por favor, intenta nuevamente.');
+      toast.error('Error inesperado. ¿Podrías intentarlo de nuevo?');
     } finally {
       setLoading(false);
     }
   };
 
   const nextStep = async () => {
-    const fields = ['email', 'password', 'confirmPassword'];
+    const fields = step === 1 ? ['email', 'password', 'confirmPassword'] :
+                   step === 2 ? ['first_name', 'last_name'] :
+                   step === 3 ? ['university', 'career', 'cycle'] :
+                   ['biography', 'achievements'];
+  
     const isValid = await form.trigger(fields);
-    if (isValid) {
+    if (isValid && step < 4) {
       setStep(step + 1);
     }
   };
 
   const prevStep = () => setStep(step - 1);
 
+  const renderStep = (currentStep: number) => {
+    const stepComponents = [
+      // Step 1: Cuenta
+      <>
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center mb-4 mt-4">
+                <Mail className="mr-2 h-4 w-4" />
+                Tu correo electrónico
+              </FormLabel>
+              <FormControl>
+                <Input type="email" placeholder="estudiante@universidad.edu" disabled={loading} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center mb-4 mt-4">
+                <Lock className="mr-2 h-4 w-4" />
+                Crea una contraseña segura
+              </FormLabel>
+              <FormControl>
+                <Input type="password" placeholder="Mínimo 8 caracteres" disabled={loading} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="confirmPassword"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center mb-4 mt-4">
+                <Lock className="mr-2 h-4 w-4" />
+                Confirma tu contraseña
+              </FormLabel>
+              <FormControl>
+                <Input type="password" placeholder="Repite tu contraseña" disabled={loading} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </>,
+      // Step 2: Información Personal
+      <>
+        <FormField
+          control={form.control}
+          name="first_name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center mb-4 mt-4">
+                <User className="mr-2 h-4 w-4" />
+                Nombre
+              </FormLabel>
+              <FormControl>
+                <Input placeholder="Tu nombre" disabled={loading} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="last_name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center mb-4 mt-4">
+                <User className="mr-2 h-4 w-4" />
+                Apellido
+              </FormLabel>
+              <FormControl>
+                <Input placeholder="Tu apellido" disabled={loading} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="photo"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center mb-4 mt-4">
+                <Image className="mr-2 h-4 w-4" />
+                URL de tu foto de perfil (opcional)
+              </FormLabel>
+              <FormControl>
+                <Input placeholder="https://ejemplo.com/tu-foto.jpg" disabled={loading} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </>,
+      // Step 3: Información Académica
+      <>
+        <FormField
+          control={form.control}
+          name="university"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center mb-4 mt-4">
+                <School className="mr-2 h-4 w-4" />
+                Universidad
+              </FormLabel>
+              <FormControl>
+                <Input placeholder="Nombre de tu universidad" disabled={loading} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="career"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center mb-4 mt-4">
+                <BookOpen className="mr-2 h-4 w-4" />
+                Carrera
+              </FormLabel>
+              <FormControl>
+                <Input placeholder="Tu carrera universitaria" disabled={loading} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="cycle"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center mb-4 mt-4">
+                <BookOpen className="mr-2 h-4 w-4" />
+                Ciclo actual
+              </FormLabel>
+              <FormControl>
+                <Input placeholder="Ej: 5to ciclo" disabled={loading} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </>,
+      // Step 4: Perfil
+      <>
+        <FormField
+          control={form.control}
+          name="biography"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center mb-4 mt-4">
+                <FileText className="mr-2 h-4 w-4" />
+                Cuéntanos sobre ti
+              </FormLabel>
+              <FormControl>
+                <Textarea 
+                  placeholder="Comparte tus intereses, pasiones o lo que te hace único..." 
+                  disabled={loading} 
+                  {...field} 
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="achievements"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center mb-4 mt-4">
+                <Award className="mr-2 h-4 w-4" />
+                Tus logros
+              </FormLabel>
+              <FormControl>
+                <Textarea 
+                  placeholder="Comparte tus logros académicos, proyectos destacados o reconocimientos..." 
+                  disabled={loading} 
+                  {...field} 
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </>
+    ];
+
+    return stepComponents[currentStep - 1];
+  };
+
+  const stepTitles = [
+    "Crea tu cuenta",
+    "Cuéntanos sobre ti",
+    "Tu información académica",
+    "Perfil del estudiante"
+  ];
+
   return (
     <>
       <Toaster />
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-4">
-          {step === 1 && (
-            <>
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Correo electrónico</FormLabel>
-                    <FormControl>
-                      <Input type="email" placeholder="tu@email.com" disabled={loading} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Contraseña</FormLabel>
-                    <FormControl>
-                      <Input type="password" placeholder="********" disabled={loading} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirmar Contraseña</FormLabel>
-                    <FormControl>
-                      <Input type="password" placeholder="********" disabled={loading} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="button" onClick={nextStep} disabled={loading}>Siguiente</Button>
-            </>
-          )}
-
-          {step === 2 && (
-            <>
-              <FormField
-                control={form.control}
-                name="university"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Universidad</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Tu universidad" disabled={loading} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="career"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Carrera</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Tu carrera" disabled={loading} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="cycle"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Ciclo</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Tu ciclo actual" disabled={loading} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="flex justify-between">
-                <Button type="button" onClick={prevStep} disabled={loading}>Anterior</Button>
-                <Button type="button" onClick={nextStep} disabled={loading}>Siguiente</Button>
-              </div>
-            </>
-          )}
-
-          {step === 3 && (
-            <>
-              <FormField
-                control={form.control}
-                name="first_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nombre</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Tu nombre" disabled={loading} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="last_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Apellido</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Tu apellido" disabled={loading} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="flex justify-between">
-                <Button type="button" onClick={prevStep} disabled={loading}>Anterior</Button>
-                <Button type="button" onClick={nextStep} disabled={loading}>Siguiente</Button>
-              </div>
-            </>
-          )}
-
-          {step === 4 && (
-            <>
-              <FormField
-                control={form.control}
-                name="biography"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Biografía</FormLabel>
-                    <FormControl>
-                      <Textarea placeholder="Cuéntanos sobre ti..." disabled={loading} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="achievements"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Logros</FormLabel>
-                    <FormControl>
-                      <Textarea placeholder="Tus logros académicos o personales..." disabled={loading} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="photo"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>URL de la foto (opcional)</FormLabel>
-                    <FormControl>
-                      <Input placeholder="https://ejemplo.com/tu-foto.jpg" disabled={loading} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="flex justify-between">
-                <Button type="button" onClick={prevStep} disabled={loading}>Anterior</Button>
-                <Button type="submit" disabled={loading}>
-                  {loading ? 'Registrando...' : 'Registrar'}
+      <div className="w-full space-y-6">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="text-center mb-6">
+              <h2 className="text-xl font-semibold">{stepTitles[step - 1]}</h2>
+              <p className="text-sm text-muted-foreground mt-1">Paso {step} de 4</p>
+            </div>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={step}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                {renderStep(step)}
+              </motion.div>
+            </AnimatePresence>
+            <div className="flex justify-between mt-6">
+              {step > 1 && (
+                <Button type="button" onClick={prevStep} disabled={loading} variant="outline">
+                  <ArrowLeft className="mr-2 h-4 w-4" /> Anterior
                 </Button>
-              </div>
-            </>
-          )}
-        </form>
-      </Form>
+              )}
+              {step < 4 && (
+                <Button 
+                  type="button" 
+                  onClick={nextStep} 
+                  disabled={loading} 
+                  className={step > 1 ? '' : 'ml-auto'}
+                >
+                  Siguiente <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              )}
+            </div>
+            {step === 4 && (
+              <Button type="submit" disabled={loading} className="w-full mt-4">
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creando tu perfil...
+                  </>
+                ) : (
+                  '¡Unirme a la comunidad!'
+                )}
+              </Button>
+            )}
+          </form>
+        </Form>
+      </div>
     </>
   );
 }

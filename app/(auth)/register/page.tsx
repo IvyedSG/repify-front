@@ -11,7 +11,7 @@ export default function RegisterPage() {
     <div className="mx-auto w-full max-w-md space-y-6">
       <div className="space-y-2 text-center">
         <h1 className="text-3xl font-semibold tracking-tight">
-          Crea una cuenta
+          Regístrate
         </h1>
         <p className="text-sm text-muted-foreground">
           ¡Cada vez más cerca de unirte a nuestra comunidad!
