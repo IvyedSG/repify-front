@@ -27,6 +27,10 @@ const authConfig: NextAuthConfig = {
           const data = await res.json()
 
           if (res.ok && data) {
+            // Store access token in local storage
+            if (typeof window !== 'undefined') {
+              localStorage.setItem('accessToken', data.access)
+            }
             return {
               id: data.email,
               email: data.email,
@@ -66,6 +70,11 @@ const authConfig: NextAuthConfig = {
 
           if (!response.ok) throw refreshedTokens
 
+          // Update access token in local storage
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('accessToken', refreshedTokens.access)
+          }
+
           return {
             ...token,
             accessToken: refreshedTokens.access,
@@ -88,6 +97,10 @@ const authConfig: NextAuthConfig = {
   },
   events: {
     async signOut({ token }) {
+      // Remove access token from local storage on sign out
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('accessToken')
+      }
       // Optionally, you can add logic here to invalidate the refresh token on the server
     }
   }

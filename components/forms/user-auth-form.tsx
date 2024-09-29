@@ -33,7 +33,7 @@ export default function UserAuthForm() {
       router.push('/projects')
     }
   }, [status, router])
-z
+
   const onSubmit = async (data: UserFormValue) => {
     setLoading(true)
     try {

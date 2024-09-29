@@ -5,22 +5,58 @@ import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { toast, Toaster } from 'react-hot-toast'
 
 export default function ResetPasswordPage() {
   const [step, setStep] = useState(1)
   const [email, setEmail] = useState("")
   const [code, setCode] = useState(["", "", "", "", "", ""])
+  const [newPassword, setNewPassword] = useState("")
 
-  const handleEmailSubmit = (e: React.FormEvent) => {
+  const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Here you would typically send a request to your backend to send the reset code
-    setStep(2)
+    try {
+      const response = await fetch('https://repo-s7h0.onrender.com/usuario/login/request-password-reset/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      })
+      if (response.ok) {
+        toast.success('Código de verificación enviado')
+        setStep(2)
+      } else {
+        throw new Error('Error al enviar el código')
+      }
+    } catch (error) {
+      toast.error('Error al enviar el código de verificación')
+    }
   }
 
-  const handleCodeSubmit = (e: React.FormEvent) => {
+  const handleCodeSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Here you would typically verify the code with your backend
-    console.log("Submitted code:", code.join(""))
+    try {
+      const response = await fetch('https://repo-s7h0.onrender.com/usuario/login/reset_password/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          reset_code: parseInt(code.join("")),
+          new_password: newPassword,
+        }),
+      })
+      if (response.ok) {
+        toast.success('Contraseña restablecida con éxito')
+        // Aquí puedes redirigir al usuario a la página de inicio de sesión
+      } else {
+        throw new Error('Error al restablecer la contraseña')
+      }
+    } catch (error) {
+      toast.error('Error al restablecer la contraseña')
+    }
   }
 
   const handleCodeChange = (index: number, value: string) => {
@@ -37,6 +73,7 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="mx-auto w-full max-w-sm space-y-6">
+      <Toaster position="top-center" reverseOrder={false} />
       <div className="space-y-2 text-center">
         <h1 className="text-3xl font-semibold tracking-tight">
           Restablecer Contraseña
@@ -81,7 +118,17 @@ export default function ResetPasswordPage() {
               ))}
             </div>
           </div>
-          <Button type="submit" className="w-full">Verificar Código</Button>
+          <div className="space-y-2">
+            <Label htmlFor="new-password">Nueva Contraseña</Label>
+            <Input
+              id="new-password"
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              required
+            />
+          </div>
+          <Button type="submit" className="w-full">Restablecer Contraseña</Button>
         </form>
       )}
 
