@@ -27,10 +27,6 @@ const authConfig: NextAuthConfig = {
           const data = await res.json()
 
           if (res.ok && data) {
-            // Store access token in local storage
-            if (typeof window !== 'undefined') {
-              localStorage.setItem('accessToken', data.access)
-            }
             return {
               id: data.email,
               email: data.email,
@@ -54,39 +50,22 @@ const authConfig: NextAuthConfig = {
       if (user && account) {
         token.accessToken = user.accessToken
         token.refreshToken = user.refreshToken
-        token.expiresAt = Date.now() + 10 * 60 * 1000 // 10 minutes
+        token.accessTokenExpires = Date.now() + 10 * 60 * 1000 // 10 minutos
+        token.refreshTokenExpires = Date.now() + 24 * 60 * 60 * 1000 // 1 día
       }
 
-      // If the token has expired, try to refresh it
-      if (Date.now() > (token.expiresAt as number)) {
-        try {
-          const response = await fetch('https://repo-s7h0.onrender.com/token/refresh/', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ refresh: token.refreshToken }),
-          })
-
-          const refreshedTokens = await response.json()
-
-          if (!response.ok) throw refreshedTokens
-
-          // Update access token in local storage
-          if (typeof window !== 'undefined') {
-            localStorage.setItem('accessToken', refreshedTokens.access)
-          }
-
-          return {
-            ...token,
-            accessToken: refreshedTokens.access,
-            expiresAt: Date.now() + 10 * 60 * 1000, // 10 minutes
-          }
-        } catch (error) {
-          console.error('Error refreshing access token', error)
-          return { ...token, error: 'RefreshAccessTokenError' }
-        }
+      // Si el token de acceso aún no ha expirado, devolverlo
+      if (Date.now() < (token.accessTokenExpires as number)) {
+        return token
       }
 
-      return token
+      // Si el refresh token ha expirado, forzar el inicio de sesión
+      if (Date.now() > (token.refreshTokenExpires as number)) {
+        return { ...token, error: 'RefreshTokenExpired' }
+      }
+
+      // De lo contrario, intentar actualizar el token
+      return refreshAccessToken(token)
     },
     async session({ session, token }) {
       session.user.accessToken = token.accessToken as string
@@ -97,11 +76,34 @@ const authConfig: NextAuthConfig = {
   },
   events: {
     async signOut({ token }) {
-      // Remove access token from local storage on sign out
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('accessToken')
-      }
-      // Optionally, you can add logic here to invalidate the refresh token on the server
+      // Opcionalmente, se puede añadir lógica para invalidar el refresh token en el servidor
+    }
+  }
+}
+
+async function refreshAccessToken(token: any) {
+  try {
+    const response = await fetch('https://repo-s7h0.onrender.com/token/refresh/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh: token.refreshToken }),
+    })
+
+    const refreshedTokens = await response.json()
+
+    if (!response.ok) throw refreshedTokens
+
+    return {
+      ...token,
+      accessToken: refreshedTokens.access,
+      accessTokenExpires: Date.now() + 10 * 60 * 1000, // 10 minutos
+      refreshToken: refreshedTokens.refresh ?? token.refreshToken,
+    }
+  } catch (error) {
+    console.error('Error refreshing access token', error)
+    return {
+      ...token,
+      error: 'RefreshAccessTokenError',
     }
   }
 }

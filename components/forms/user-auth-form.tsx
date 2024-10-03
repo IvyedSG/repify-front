@@ -30,6 +30,7 @@ export default function UserAuthForm() {
 
   useEffect(() => {
     if (status === 'authenticated') {
+      console.log('Session authenticated, redirecting to /projects')
       router.push('/projects')
     }
   }, [status, router])
@@ -37,6 +38,7 @@ export default function UserAuthForm() {
   const onSubmit = async (data: UserFormValue) => {
     setLoading(true)
     try {
+      console.log('Attempting to sign in')
       const result = await signIn('credentials', {
         redirect: false,
         email: data.email,
@@ -44,18 +46,18 @@ export default function UserAuthForm() {
       })
 
       if (result?.error) {
+        console.error('Sign in error:', result.error)
         toast.error('Correo electrónico o contraseña inválidos', {
           duration: 3000,
           position: 'top-right',
         })
       } else if (result?.ok) {
+        console.log('Sign in successful')
         toast.success('Inicio de sesión exitoso. Redirigiendo...', {
           duration: 3000,
           position: 'top-right',
         })
-        setTimeout(() => {
-          router.push('/projects')
-        }, 1000)
+        router.push('/projects')
       }
     } catch (error) {
       console.error('Error during login:', error)
@@ -69,6 +71,7 @@ export default function UserAuthForm() {
   }
 
   if (status === 'loading') {
+    console.log('Session status: loading')
     return <div>Cargando...</div>
   }
 

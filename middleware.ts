@@ -5,6 +5,8 @@ import type { NextRequest } from 'next/server'
 export async function middleware(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
 
+  console.log('Token obtained from middleware:', token)
+
   const { pathname } = req.nextUrl
   const protectedRoutes = ['/projects']
 
@@ -12,8 +14,8 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL('/', req.url))
   }
 
-  if (token && token.error === 'RefreshAccessTokenError') {
-    // If there's a token error, redirect to login
+  if (token && token.error === 'RefreshTokenExpired') {
+    // If the refresh token has expired, redirect to login
     return NextResponse.redirect(new URL('/', req.url))
   }
 
