@@ -1,5 +1,6 @@
 import { NextAuthConfig } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
+import { signOut } from 'next-auth/react';
 
 const authConfig: NextAuthConfig = {
   providers: [
@@ -15,7 +16,7 @@ const authConfig: NextAuthConfig = {
         }
 
         try {
-          const res = await fetch('https://repo-s7h0.onrender.com/usuario/login/Login/', {
+          const res = await fetch('http://127.0.0.1:8000/usuario/login/Login/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -28,7 +29,7 @@ const authConfig: NextAuthConfig = {
 
           if (res.ok && data) {
             return {
-              id: data.email,
+              id: data.id,
               email: data.email,
               accessToken: data.access,
               refreshToken: data.refresh
@@ -47,43 +48,51 @@ const authConfig: NextAuthConfig = {
   },
   callbacks: {
     async jwt({ token, user, account }) {
+      // Primera vez que el usuario inicia sesión
       if (user && account) {
-        token.accessToken = user.accessToken
-        token.refreshToken = user.refreshToken
-        token.accessTokenExpires = Date.now() + 10 * 60 * 1000 // 10 minutos
-        token.refreshTokenExpires = Date.now() + 24 * 60 * 60 * 1000 // 1 día
+        token.id = user.id; // Guardamos el id del usuario en el token
+        token.email = user.email; // Guardamos el email del usuario en el token
+        token.accessToken = user.accessToken;
+        token.refreshToken = user.refreshToken;
+        token.accessTokenExpires = Date.now() + 10 * 60 * 1000; // 10 minutos
+        token.refreshTokenExpires = Date.now() + 24 * 60 * 60 * 1000; // 1 día
       }
-
-      // Si el token de acceso aún no ha expirado, devolverlo
+  
+      // En las próximas solicitudes, ya no tendrás acceso al `user`, pero sí al `token`
+      // Aquí validamos si el token sigue siendo válido
       if (Date.now() < (token.accessTokenExpires as number)) {
-        return token
+        return token;
       }
-
+  
       // Si el refresh token ha expirado, forzar el inicio de sesión
       if (Date.now() > (token.refreshTokenExpires as number)) {
-        return { ...token, error: 'RefreshTokenExpired' }
+        return { ...token, error: 'RefreshTokenExpired' };
       }
-
-      // De lo contrario, intentar actualizar el token
-      return refreshAccessToken(token)
+  
+      // Si el token ha expirado, intenta actualizarlo
+      return refreshAccessToken(token);
     },
+  
     async session({ session, token }) {
-      session.user.accessToken = token.accessToken as string
-      session.user.refreshToken = token.refreshToken as string
-      session.error = token.error as string | undefined
-      return session
+      // Pasamos el id y email del token al objeto `user` de la sesión
+      session.user.id = token.id as string; // Ahora el id viene del token
+      session.user.email = token.email as string; // El email también del token
+      session.user.accessToken = token.accessToken as string;
+      session.user.refreshToken = token.refreshToken as string;
+      session.error = token.error as string | undefined;
+      return session;
     }
   },
   events: {
     async signOut({ token }) {
-      // Opcionalmente, se puede añadir lógica para invalidar el refresh token en el servidor
+      signOut({ callbackUrl: '/' });
     }
   }
 }
 
 async function refreshAccessToken(token: any) {
   try {
-    const response = await fetch('https://repo-s7h0.onrender.com/token/refresh/', {
+    const response = await fetch('http://127.0.0.1:8000/token/refresh/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refresh: token.refreshToken }),

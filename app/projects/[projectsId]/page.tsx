@@ -1,202 +1,220 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
-import { CalendarIcon, Users, Clock, Briefcase, GraduationCap, User, FileText, Target, PieChart, Send, ArrowLeft, MapPin, Link2, Share2 } from 'lucide-react'
+import { CalendarIcon, Users, Clock, Briefcase, Target, FileText, Share2, Loader2 } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { useSession } from 'next-auth/react'
+import { toast } from '@/components/ui/use-toast'
 
 interface Project {
-  id: string;
-  title: string;
-  organization: string;
-  career: string;
-  university: string;
-  startDate: string;
-  endDate: string;
-  members: number;
-  progress: number;
-  isFlexible: boolean;
-  publishedAgo: string;
-  leader: string;
+  id: number;
+  name: string;
   description: string;
-  missingProfiles: string[];
-  applicationCount: number;
-  image?: string;
-  location: string;
-  website: string;
+  start_date: string;
+  end_date: string;
+  status: string;
+  project_type: string;
+  priority: string;
+  responsible: number | null;
+  detailed_description: string;
+  expected_benefits: string;
+  necessary_requirements: string;
+  progress: number;
+  accepting_applications: boolean | null;
+  creator_name: string | null;
+  collaboration_count: number;
+  collaborators: any[];
 }
 
 export default function ProjectDetails() {
   const router = useRouter()
+  const { data: session } = useSession()
+  const [project, setProject] = useState<Project | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  const project: Project = {
-    id: '1',
-    title: 'Proyecto de Ejemplo',
-    organization: 'Organización Ejemplo',
-    career: 'Ingeniería de Software',
-    university: 'Universidad Nacional',
-    startDate: '01/01/2023',
-    endDate: '31/12/2023',
-    members: 5,
-    progress: 75,
-    isFlexible: true,
-    publishedAgo: 'Hace 2 semanas',
-    leader: 'Juan Pérez',
-    description: 'Este es un proyecto de ejemplo para mostrar detalles en la plataforma. Se trata de una aplicación innovadora que utiliza inteligencia artificial para mejorar la eficiencia energética en hogares inteligentes.',
-    missingProfiles: ['Desarrollador Frontend', 'Diseñador UX/UI'],
-    applicationCount: 10,
-    image: '/placeholder.svg',
-    location: 'Remoto',
-    website: 'https://ejemplo.com'
-  };
+  useEffect(() => {
+    const fetchProjectDetails = async () => {
+      const projectId = window.location.pathname.split('/').pop()
+      if (!projectId) return
+
+      try {
+        const response = await fetch('http://127.0.0.1:8000/usuario/projects/view_project_id/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session?.user.accessToken}`
+          },
+          body: JSON.stringify({ id: parseInt(projectId) })
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          setProject(data)
+        } else {
+          console.error('Failed to fetch project details')
+        }
+      } catch (error) {
+        console.error('Error fetching project details:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (session) {
+      fetchProjectDetails()
+    }
+  }, [session])
+
+  const handleApply = async () => {
+    toast({
+      title: "Aplicación enviada",
+      description: "Tu solicitud ha sido enviada exitosamente.",
+    })
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    )
+  }
+
+  if (!project) {
+    return <div className="text-center text-2xl font-bold mt-8">Project not found</div>
+  }
 
   return (
-    <ScrollArea className="h-screen w-full">
-      <div className="max-w-full mx-auto p-6 space-y-6">
-        
+    <ScrollArea className="h-[calc(100vh-4rem)] w-full">
+      <div className="max-w-7xl mx-auto p-4 space-y-6">
         <div className="relative h-48 sm:h-56 md:h-64 rounded-xl overflow-hidden">
           <Image
-            src={project.image || '/placeholder.svg'}
-            alt={project.title}
+            src="/placeholder.svg"
+            alt={project.name}
             layout="fill"
             objectFit="cover"
           />
           <div className="absolute inset-0 bg-black bg-opacity-50 flex items-end">
-            <div className="p-4">
-              <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">{project.title}</h1>
-              <p className="text-lg sm:text-xl text-white">{project.organization}</p>
+            <div className="p-4 w-full">
+              <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">{project.name}</h1>
+              <p className="text-lg sm:text-xl text-white">{project.creator_name || 'No creator specified'}</p>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          <Card>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card className="md:col-span-2">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Carrera</CardTitle>
+              <div className="flex justify-between items-start">
+                <CardTitle className="text-xl font-bold">Detalles del Proyecto</CardTitle>
+                <Badge variant="secondary" className="text-sm">
+                  {project.status}
+                </Badge>
+              </div>
             </CardHeader>
             <CardContent>
-              <CardDescription className="text-lg sm:text-xl font-bold flex items-center">
-                <Briefcase className="mr-2 h-5 w-5" />
-                {project.career}
-              </CardDescription>
+              <p className="text-sm mb-4">{project.description}</p>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex items-center">
+                  <Briefcase className="mr-2 h-4 w-4" />
+                  <span className="text-sm">{project.project_type}</span>
+                </div>
+                <div className="flex items-center">
+                  <Target className="mr-2 h-4 w-4" />
+                  <span className="text-sm">{project.priority} Prioridad</span>
+                </div>
+                <div className="flex items-center">
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  <span className="text-sm">
+                    {new Date(project.start_date).toLocaleDateString()} - {new Date(project.end_date).toLocaleDateString()}
+                  </span>
+                </div>
+                <div className="flex items-center">
+                  <Users className="mr-2 h-4 w-4" />
+                  <span className="text-sm">{project.collaboration_count} Miembros</span>
+                </div>
+              </div>
             </CardContent>
           </Card>
+          
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Universidad</CardTitle>
+            <CardHeader>
+              <CardTitle className="text-lg">Progreso del Proyecto</CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription className="text-lg sm:text-xl font-bold flex items-center">
-                <GraduationCap className="mr-2 h-5 w-5" />
-                {project.university}
-              </CardDescription>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Tipo de proyecto</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription className="text-lg sm:text-xl font-bold flex items-center">
-                <Clock className="mr-2 h-5 w-5" />
-                {project.isFlexible ? 'Flexible' : 'Cronograma'}
-              </CardDescription>
+              <div className="space-y-2">
+                <Progress value={project.progress} className="w-full" />
+                <p className="text-sm text-right">{project.progress}% Completado</p>
+              </div>
             </CardContent>
           </Card>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Descripción del proyecto</CardTitle>
+            <CardTitle className="text-lg">Descripción Detallada</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm sm:text-base">{project.description}</p>
+            <p className="text-sm">{project.detailed_description}</p>
           </CardContent>
         </Card>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card>
             <CardHeader>
-              <CardTitle>Detalles del proyecto</CardTitle>
+              <CardTitle className="text-lg">Requisitos Necesarios</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center">
-                <Users className="mr-2 h-4 w-4" />
-                <span className="font-medium mr-2">Miembros:</span> {project.members}
-              </div>
-              <div className="flex items-center">
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                <span className="font-medium mr-2">Fechas:</span> {project.startDate} - {project.endDate}
-              </div>
-              <div className="flex items-center">
-                <MapPin className="mr-2 h-4 w-4" />
-                <span className="font-medium mr-2">Ubicación:</span> {project.location}
-              </div>
-              <div className="flex items-center">
-                <Link2 className="mr-2 h-4 w-4" />
-                <span className="font-medium mr-2">Sitio web:</span>
-                <a href={project.website} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-                  {project.website}
-                </a>
-              </div>
+            <CardContent>
+              <p className="text-sm">{project.necessary_requirements}</p>
             </CardContent>
           </Card>
+
           <Card>
             <CardHeader>
-              <CardTitle>Progreso y aplicaciones</CardTitle>
+              <CardTitle className="text-lg">Beneficios Esperados</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="font-medium">Progreso del proyecto</span>
-                  <span>{project.progress}%</span>
-                </div>
-                <Progress value={project.progress} className="w-full" />
-              </div>
-              <div className="flex items-center">
-                <Send className="mr-2 h-4 w-4" />
-                <span className="font-medium mr-2">Aplicaciones recibidas:</span> {project.applicationCount}
-              </div>
-              <div>
-                <span className="font-medium mb-2 block">Perfiles faltantes:</span>
-                <div className="flex flex-wrap gap-2">
-                  {project.missingProfiles.map((profile, index) => (
-                    <Badge key={index} variant="secondary">
-                      {profile}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
+            <CardContent>
+              <p className="text-sm">{project.expected_benefits}</p>
             </CardContent>
           </Card>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Líder del proyecto</CardTitle>
+            <CardTitle className="text-lg">Líder del Proyecto</CardTitle>
           </CardHeader>
           <CardContent className="flex items-center gap-4">
             <Avatar className="h-16 w-16">
-              <AvatarImage src="/placeholder-avatar.jpg" alt={project.leader} />
-              <AvatarFallback>{project.leader.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+              <AvatarImage src="/placeholder-avatar.jpg" alt={project.creator_name || ''} />
+              <AvatarFallback>{project.creator_name?.split(' ').map(n => n[0]).join('') || 'N/A'}</AvatarFallback>
             </Avatar>
             <div>
-              <p className="text-xl font-semibold">{project.leader}</p>
-              <p className="text-muted-foreground">Líder del Proyecto</p>
+              <p className="font-semibold">{project.creator_name || 'No especificado'}</p>
+              <p className="text-sm text-muted-foreground">Líder del Proyecto</p>
             </div>
           </CardContent>
         </Card>
 
-        <div className="flex justify-between items-center">
-          <Button size="lg">
-            Aplicar al Proyecto
-          </Button>
+        <Card>
+          <CardContent className="pt-6">
+            <Button 
+              onClick={handleApply} 
+              disabled={!project.accepting_applications}
+              className="w-full text-lg py-6"
+            >
+              {project.accepting_applications ? 'Aplicar al Proyecto' : 'No se aceptan aplicaciones'}
+            </Button>
+          </CardContent>
+        </Card>
+
+        <div className="flex justify-end items-center mt-6">
           <Button variant="outline" size="icon">
             <Share2 className="h-4 w-4" />
           </Button>
