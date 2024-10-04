@@ -3,15 +3,26 @@
 
 # Next.js build output
 /.next
+/out
+/.cache
 
-# pnpm lock file
-pnpm-lock.yaml
+# Next.js static files output
+/public/static/
+
+# Pnpm lock file (do not ignore, keep it in version control)
+!pnpm-lock.yaml
 
 # Local environment variables
 .env.local
-.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# Logs
+# Ignore generic .env files, but allow .env.example
+.env
+!.env.example
+
+# Log files
 logs
 *.log
 npm-debug.log*
@@ -19,25 +30,38 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Docker
-docker-compose.yml
-Dockerfile
-
-# Static assets cache
-/.cache
-*.cache
-
 # OS generated files
 .DS_Store
 Thumbs.db
 
-# Miscellaneous
-.idea
-.vscode
+# IDE specific files
+.idea/
+.vscode/
 *.sublime-project
 *.sublime-workspace
 
-# Testing
+# Docker files
+docker-compose.yml
+Dockerfile
+
+# Optional npm cache directory
+.npm/
+
+# Optional eslint cache
+.eslintcache
+
+# Testing output
 /coverage
 *.test.js
 *.spec.js
+
+# Ignore generated TypeScript declaration files
+*.d.ts
+
+# Ignore build outputs
+/dist
+/build
+
+# Prettier/ESLint configuration overrides (if needed)
+!.eslintrc*
+!.prettierrc*
