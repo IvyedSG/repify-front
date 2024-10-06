@@ -4,13 +4,13 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const reasons = [
-  "el caos es divertido 💥",
-  "cero presión 💨",
-  "no hay deadlines absurdos 🕒",
-  "el equipo fluye mejor ✨",
-  "son mi zona de confort 😎",
-  "no hay reglas 🤘",
-  "la libertad manda 🚀"
+  "aprendemos haciendo lo que nos apasiona 💡",
+  "cada reto nos impulsa a ser mejores 🚀",
+  "todos aportamos algo único 🎯",
+  "creamos en equipo, crecemos en equipo 🤝",
+  "el aprendizaje nunca se detiene 🔥",
+  "las ideas fluyen sin barreras 🌊",
+  "juntos podemos con todo! 🌟"
 ]
 
 export default function DynamicContent() {
@@ -41,7 +41,7 @@ export default function DynamicContent() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentReason((prev) => (prev + 1) % reasons.length)
-    }, 3000)
+    },6000)
     return () => clearInterval(interval)
   }, [])
 
@@ -137,7 +137,7 @@ export default function DynamicContent() {
       </div>
 
       <div className="text-center mt-4">
-        <h2 className="text-3xl font-bold mb-2">Amamos los proyectos casuales porque</h2>
+        <h2 className="text-3xl font-bold mb-2">¡Aquí los proyectos son épicos porque...</h2>
         <AnimatePresence mode="wait">
           <motion.div
             key={currentReason}

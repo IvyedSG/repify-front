@@ -2,6 +2,7 @@ import React from 'react'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
+import { convertToUniversitySiglas } from '@/lib/universityConverter'
 
 interface ProjectAdditionalInfoProps {
   newProject: {
@@ -12,9 +13,19 @@ interface ProjectAdditionalInfoProps {
     type_aplyuni: string;
   };
   handleInputChange: (name: string, value: any) => void;
+  userUniversity: string | undefined;
 }
 
-export function ProjectAdditionalInfo({ newProject, handleInputChange }: ProjectAdditionalInfoProps) {
+export function ProjectAdditionalInfo({ newProject, handleInputChange, userUniversity }: ProjectAdditionalInfoProps) {
+  const handleTypeAplyUniChange = (checked: boolean) => {
+    if (checked && userUniversity) {
+      const universitySiglas = convertToUniversitySiglas(userUniversity);
+      handleInputChange('type_aplyuni', universitySiglas);
+    } else {
+      handleInputChange('type_aplyuni', 'LIBRE');
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div>
@@ -68,7 +79,7 @@ export function ProjectAdditionalInfo({ newProject, handleInputChange }: Project
         <Switch
           id="type_aplyuni"
           checked={newProject.type_aplyuni !== 'LIBRE'}
-          onCheckedChange={(checked) => handleInputChange('type_aplyuni', checked ? 'UNIVERSITY' : 'LIBRE')}
+          onCheckedChange={handleTypeAplyUniChange}
         />
         <Label htmlFor="type_aplyuni">Solo solicitudes de mi universidad</Label>
       </div>

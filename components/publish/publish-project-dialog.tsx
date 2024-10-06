@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Loader2 } from 'lucide-react'
@@ -9,6 +10,7 @@ import { toast } from '@/components/ui/use-toast'
 import { ProjectBasicInfo } from './project-basic-info'
 import { ProjectDetails } from './project-details'
 import { ProjectAdditionalInfo } from './project-additional-info'
+import { convertToUniversitySiglas } from '@/lib/universityConverter'
 
 interface PublishProjectDialogProps {
   setIsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>
@@ -16,6 +18,7 @@ interface PublishProjectDialogProps {
 
 export function PublishProjectDialog({ setIsDialogOpen }: PublishProjectDialogProps) {
   const { data: session } = useSession()
+  const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState(1)
   const [newProject, setNewProject] = useState({
@@ -42,11 +45,18 @@ export function PublishProjectDialog({ setIsDialogOpen }: PublishProjectDialogPr
     setIsLoading(true)
     
     const projectData = {
-      ...newProject,
-      project_type: newProject.project_type.join(', '),
-      responsible: session?.user.id,
+      name: newProject.name,
+      description: newProject.description,
+      end_date: newProject.end_date,
+      status: newProject.status,
+      project_type: newProject.project_type,
+      priority: newProject.priority,
+      detailed_description: newProject.detailed_description,
+      expected_benefits: newProject.expected_benefits,
+      necessary_requirements: newProject.necessary_requirements,
       progress: parseInt(newProject.progress.toString(), 10),
-      type_aplyuni: newProject.type_aplyuni === 'LIBRE' ? 'LIBRE' : session?.user.university
+      accepting_applications: newProject.accepting_applications,
+      type_aplyuni: newProject.type_aplyuni === 'LIBRE' ? 'LIBRE' : convertToUniversitySiglas(session?.user.university || '')
     }
   
     console.log('Data being sent:', projectData)
@@ -67,14 +77,19 @@ export function PublishProjectDialog({ setIsDialogOpen }: PublishProjectDialogPr
           description: "Tu proyecto ha sido publicado exitosamente.",
         })
         setIsDialogOpen(false)
+        
+        // Refresh the current route
+        router.refresh()
+
       } else {
-        throw new Error('Failed to create project')
+        const errorData = await response.json()
+        throw new Error(errorData.detail || 'Failed to create project')
       }
     } catch (error) {
       console.error('Error creating project:', error)
       toast({
         title: "Error",
-        description: "Hubo un problema al crear el proyecto. Por favor, intenta de nuevo.",
+        description: error instanceof Error ? error.message : "Hubo un problema al crear el proyecto. Por favor, intenta de nuevo.",
         variant: "destructive",
       })
     } finally {
@@ -112,6 +127,7 @@ export function PublishProjectDialog({ setIsDialogOpen }: PublishProjectDialogPr
           <ProjectAdditionalInfo 
             newProject={newProject} 
             handleInputChange={handleInputChange} 
+            userUniversity={session?.user.university}
           />
         )}
 

@@ -3,13 +3,13 @@
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { useToast } from "@/components/ui/use-toast"
 import { zodResolver } from '@hookform/resolvers/zod'
 import { signIn, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
-import toast, { Toaster } from 'react-hot-toast'
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Ingresa un correo electrónico válido' }),
@@ -22,6 +22,7 @@ export default function UserAuthForm() {
   const router = useRouter()
   const { data: session, status } = useSession()
   const [loading, setLoading] = useState(false)
+  const { toast } = useToast()
 
   const form = useForm<UserFormValue>({
     resolver: zodResolver(formSchema),
@@ -47,23 +48,25 @@ export default function UserAuthForm() {
 
       if (result?.error) {
         console.error('Sign in error:', result.error)
-        toast.error('Correo electrónico o contraseña inválidos', {
-          duration: 3000,
-          position: 'top-right',
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Correo electrónico o contraseña inválidos",
         })
       } else if (result?.ok) {
         console.log('Sign in successful')
-        toast.success('Inicio de sesión exitoso. Redirigiendo...', {
-          duration: 3000,
-          position: 'top-right',
+        toast({
+          title: "Éxito",
+          description: "Inicio de sesión exitoso. Redirigiendo...",
         })
         router.push('/projects')
       }
     } catch (error) {
       console.error('Error during login:', error)
-      toast.error('Ocurrió un error inesperado', {
-        duration: 3000,
-        position: 'top-right',
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Ocurrió un error inesperado",
       })
     } finally {
       setLoading(false)
@@ -76,41 +79,38 @@ export default function UserAuthForm() {
   }
 
   return (
-    <>
-      <Toaster />
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-4">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Correo electrónico</FormLabel>
-                <FormControl>
-                  <Input type="email" placeholder="junior@help.me" disabled={loading} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Contraseña</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="***********" disabled={loading} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button disabled={loading} className="w-full" type="submit">
-            {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
-          </Button>
-        </form>
-      </Form>
-    </>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-4">
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Correo electrónico</FormLabel>
+              <FormControl>
+                <Input type="email" placeholder="junior@help.me" disabled={loading} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Contraseña</FormLabel>
+              <FormControl>
+                <Input type="password" placeholder="***********" disabled={loading} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button disabled={loading} className="w-full" type="submit">
+          {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+        </Button>
+      </form>
+    </Form>
   )
 }

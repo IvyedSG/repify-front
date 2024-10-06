@@ -18,8 +18,8 @@ export default function DashboardLayout({
       <Sidebar />
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header />
-        <ScrollArea className="flex-1">
-          <main className="flex-1 p-6">
+        <ScrollArea className="flex-1 h-[calc(100vh-64px)]"> {/* Adjust 64px if your header height is different */}
+          <main className="flex-1 p-4 md:p-6">
             {children}
           </main>
         </ScrollArea>

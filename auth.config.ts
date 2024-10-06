@@ -31,6 +31,8 @@ const authConfig: NextAuthConfig = {
             return {
               id: data.id,
               email: data.email,
+              university: data.university,
+              career: data.career,
               accessToken: data.access,
               refreshToken: data.refresh
             }
@@ -52,6 +54,8 @@ const authConfig: NextAuthConfig = {
       if (user && account) {
         token.id = user.id; // Guardamos el id del usuario en el token
         token.email = user.email; // Guardamos el email del usuario en el token
+        token.university = user.university;
+        token.career = user.career;
         token.accessToken = user.accessToken;
         token.refreshToken = user.refreshToken;
         token.accessTokenExpires = Date.now() + 10 * 60 * 1000; // 10 minutos
@@ -77,6 +81,8 @@ const authConfig: NextAuthConfig = {
       // Pasamos el id y email del token al objeto `user` de la sesión
       session.user.id = token.id as string; // Ahora el id viene del token
       session.user.email = token.email as string; // El email también del token
+      session.user.university = token.university as string;
+      session.user.career = token.career as string; 
       session.user.accessToken = token.accessToken as string;
       session.user.refreshToken = token.refreshToken as string;
       session.error = token.error as string | undefined;

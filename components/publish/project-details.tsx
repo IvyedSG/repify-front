@@ -3,7 +3,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { CalendarIcon } from 'lucide-react'
-import { format } from 'date-fns'
+import { format, parseISO } from 'date-fns'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
@@ -22,6 +22,24 @@ interface ProjectDetailsProps {
 }
 
 export function ProjectDetails({ newProject, handleInputChange }: ProjectDetailsProps) {
+  const formatDateForDisplay = (dateString: string) => {
+    if (!dateString) return ''
+    try {
+      return format(parseISO(dateString), "PPP")
+    } catch {
+      return dateString
+    }
+  }
+
+  const handleDateChange = (date: Date | undefined) => {
+    if (date) {
+      const formattedDate = format(date, "yyyy-MM-dd")
+      handleInputChange('end_date', formattedDate)
+    } else {
+      handleInputChange('end_date', '')
+    }
+  }
+
   return (
     <div className="space-y-4">
       <div>
@@ -72,14 +90,14 @@ export function ProjectDetails({ newProject, handleInputChange }: ProjectDetails
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {newProject.end_date ? format(new Date(newProject.end_date), "PPP") : <span>Selecciona una fecha</span>}
+              {newProject.end_date ? formatDateForDisplay(newProject.end_date) : <span>Selecciona una fecha</span>}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
             <Calendar
               mode="single"
-              selected={newProject.end_date ? new Date(newProject.end_date) : undefined}
-              onSelect={(date) => handleInputChange('end_date', date ? date.toISOString() : '')}
+              selected={newProject.end_date ? parseISO(newProject.end_date) : undefined}
+              onSelect={handleDateChange}
               initialFocus
               className="dark:bg-gray-800 dark:text-white"
             />
