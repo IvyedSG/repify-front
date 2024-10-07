@@ -1,14 +1,16 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 import { convertToUniversitySiglas } from '@/lib/universityConverter'
 
 interface ProjectAdditionalInfoProps {
   newProject: {
     detailed_description: string;
-    expected_benefits: string;
-    necessary_requirements: string;
+    objectives: string[];
+    necessary_requirements: string[];
     accepting_applications: boolean;
     type_aplyuni: string;
   };
@@ -17,6 +19,9 @@ interface ProjectAdditionalInfoProps {
 }
 
 export function ProjectAdditionalInfo({ newProject, handleInputChange, userUniversity }: ProjectAdditionalInfoProps) {
+  const [newObjective, setNewObjective] = useState('')
+  const [newRequirement, setNewRequirement] = useState('')
+
   const handleTypeAplyUniChange = (checked: boolean) => {
     if (checked && userUniversity) {
       const universitySiglas = convertToUniversitySiglas(userUniversity);
@@ -25,6 +30,30 @@ export function ProjectAdditionalInfo({ newProject, handleInputChange, userUnive
       handleInputChange('type_aplyuni', 'LIBRE');
     }
   };
+
+  const addObjective = () => {
+    if (newObjective && newProject.objectives.length < 3) {
+      handleInputChange('objectives', [...newProject.objectives, newObjective])
+      setNewObjective('')
+    }
+  }
+
+  const addRequirement = () => {
+    if (newRequirement && newProject.necessary_requirements.length < 5) {
+      handleInputChange('necessary_requirements', [...newProject.necessary_requirements, newRequirement])
+      setNewRequirement('')
+    }
+  }
+
+  const removeObjective = (index: number) => {
+    const updatedObjectives = newProject.objectives.filter((_, i) => i !== index)
+    handleInputChange('objectives', updatedObjectives)
+  }
+
+  const removeRequirement = (index: number) => {
+    const updatedRequirements = newProject.necessary_requirements.filter((_, i) => i !== index)
+    handleInputChange('necessary_requirements', updatedRequirements)
+  }
 
   return (
     <div className="space-y-4">
@@ -42,30 +71,50 @@ export function ProjectAdditionalInfo({ newProject, handleInputChange, userUnive
         <p className="text-sm text-gray-500 mt-1">{newProject.detailed_description.length}/400 caracteres</p>
       </div>
       <div>
-        <Label htmlFor="expected_benefits">Beneficios Esperados</Label>
-        <Textarea
-          id="expected_benefits"
-          name="expected_benefits"
-          value={newProject.expected_benefits}
-          onChange={(e) => handleInputChange('expected_benefits', e.target.value.slice(0, 300))}
-          required
-          maxLength={300}
-          placeholder="Describa los beneficios que se esperan obtener del proyecto"
-        />
-        <p className="text-sm text-gray-500 mt-1">{newProject.expected_benefits.length}/300 caracteres</p>
+        <Label htmlFor="objectives">Objetivos del Proyecto (máximo 3)</Label>
+        <ul className="list-disc list-inside mb-2">
+          {newProject.objectives.map((objective, index) => (
+            <li key={index} className="flex items-center justify-between">
+              <span>{objective}</span>
+              <Button type="button" variant="ghost" onClick={() => removeObjective(index)}>Eliminar</Button>
+            </li>
+          ))}
+        </ul>
+        <div className="flex items-center space-x-2">
+          <Input
+            id="new-objective"
+            value={newObjective}
+            onChange={(e) => setNewObjective(e.target.value)}
+            placeholder="Nuevo objetivo"
+            disabled={newProject.objectives.length >= 3}
+          />
+          <Button type="button" onClick={addObjective} disabled={newProject.objectives.length >= 3}>
+            Agregar
+          </Button>
+        </div>
       </div>
       <div>
-        <Label htmlFor="necessary_requirements">Requisitos Necesarios</Label>
-        <Textarea
-          id="necessary_requirements"
-          name="necessary_requirements"
-          value={newProject.necessary_requirements}
-          onChange={(e) => handleInputChange('necessary_requirements', e.target.value.slice(0, 300))}
-          required
-          maxLength={300}
-          placeholder="Enumere los requisitos necesarios para participar en el proyecto"
-        />
-        <p className="text-sm text-gray-500 mt-1">{newProject.necessary_requirements.length}/300 caracteres</p>
+        <Label htmlFor="necessary_requirements">Requisitos Necesarios (máximo 5)</Label>
+        <ul className="list-disc list-inside mb-2">
+          {newProject.necessary_requirements.map((requirement, index) => (
+            <li key={index} className="flex items-center justify-between">
+              <span>{requirement}</span>
+              <Button type="button" variant="ghost" onClick={() => removeRequirement(index)}>Eliminar</Button>
+            </li>
+          ))}
+        </ul>
+        <div className="flex items-center space-x-2">
+          <Input
+            id="new-requirement"
+            value={newRequirement}
+            onChange={(e) => setNewRequirement(e.target.value)}
+            placeholder="Nuevo requisito"
+            disabled={newProject.necessary_requirements.length >= 5}
+          />
+          <Button type="button" onClick={addRequirement} disabled={newProject.necessary_requirements.length >= 5}>
+            Agregar
+          </Button>
+        </div>
       </div>
       <div className="flex items-center space-x-2">
         <Switch
