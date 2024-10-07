@@ -16,9 +16,9 @@ export default function DashboardLayout({
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
-      <div className="flex flex-col flex-1 overflow-hidden">
+      <div className="flex flex-col flex-1 h-screen"> {/* Ensure it takes full screen height */}
         <Header />
-        <ScrollArea className="flex-1 h-[calc(100vh-64px)]"> {/* Adjust 64px if your header height is different */}
+        <ScrollArea className="flex-1 h-full"> {/* Adjusted to take full height */}
           <main className="flex-1 p-4 md:p-6">
             {children}
           </main>
