@@ -40,16 +40,29 @@ interface Project {
 }
 
 const projectTypes = [
-  "Web Development",
-  "Mobile App",
-  "Data Science",
-  "Machine Learning",
-  "UI/UX Design",
-  "Blockchain",
-  "IoT",
-  "Cybersecurity",
-  "Cloud Computing",
-  "Artificial Intelligence"
+  "Investigación Académica",
+  "Desarrollo Social",
+  "Desarrollo de Software",
+  "Creativo",
+  "Consultoría",
+  "Educación",
+  "Ambiental",
+  "Diseño",
+  "Tecnología",
+  "Prototipo",
+  "Análisis de Datos",
+  "Estudio de Caso",
+  "Informe",
+  "Ensayo",
+  "Planificación",
+  "Gestión",
+  "Innovación",
+  "Emprendimiento",
+  "Comunitario",
+  "Evaluación",
+  "Simulación y Modelado",
+  "Clínico",
+  "Biomédico"
 ]
 
 export default function ViewProjects() {
