@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
+import Link from 'next/link'
 import PageContainer from '@/components/layout/page-container'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -19,8 +20,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { PublishProjectDialog } from '@/components/publish/publish-project-dialog'
 import { Dialog, DialogTrigger } from "@/components/ui/dialog"
-import { DetailedProjectDialog } from '@/components/projects/detailed-project-dialog'
-import { ProjectConfigurationDialog } from '@/components/projects/project-configuration-dialog'
+import { DetailedProjectDialog } from './dialogproject'
 import { 
   Users, 
   Settings, 
@@ -48,11 +48,13 @@ type Project = {
   responsible: number
   detailed_description: string
   type_aplyuni: string
-  expected_benefits: string
-  necessary_requirements: string
+  objectives: string[]
+  necessary_requirements: string[]
   progress: number
   accepting_applications: boolean
   name_uniuser: string
+  collaboration_count: number
+  collaborators: string[]
 }
 
 export default function ProjectsPage() {
@@ -66,7 +68,6 @@ export default function ProjectsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [isDetailedDialogOpen, setIsDetailedDialogOpen] = useState(false)
-  const [isConfigDialogOpen, setIsConfigDialogOpen] = useState(false)
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -180,7 +181,7 @@ export default function ProjectsPage() {
             </div>
             <div className="flex items-center">
               <Users className="h-4 w-4 text-gray-500" />
-              <span className="ml-2 text-sm">{project.name_uniuser}</span>
+              <span className="ml-2 text-sm">{project.collaboration_count} miembros</span>
             </div>
           </div>
           <div>
@@ -199,12 +200,12 @@ export default function ProjectsPage() {
             </div>
           </div>
           <div className="flex justify-between items-center pt-4">
-            <Dialog open={isDetailedDialogOpen} onOpenChange={setIsDetailedDialogOpen}>
-              <DialogTrigger asChild>
-                <Button variant="outline" onClick={() => setSelectedProject(project)}>Ver Detalles</Button>
-              </DialogTrigger>
-              <DetailedProjectDialog project={selectedProject} />
-            </Dialog>
+            <Button variant="outline" onClick={() => {
+              setSelectedProject(project)
+              setIsDetailedDialogOpen(true)
+            }}>
+              Ver Detalles
+            </Button>
             {isLeader && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -227,12 +228,11 @@ export default function ProjectsPage() {
                     <BarChart className="mr-2 h-4 w-4" />
                     <span>Ver Estadísticas</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => {
-                    setSelectedProject(project)
-                    setIsConfigDialogOpen(true)
-                  }}>
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Configuración del Proyecto</span>
+                  <DropdownMenuItem asChild>
+                    <Link href={`/projects/teams/${project.id}`}>
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Configuración del Proyecto</span>
+                    </Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -297,7 +297,7 @@ export default function ProjectsPage() {
             />
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-indigo-600 hover:bg-indigo-700 text-white">
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
                   <Plus className="mr-2 h-4 w-4" />
                   Publicar Proyecto
                 </Button>
@@ -321,10 +321,10 @@ export default function ProjectsPage() {
           ))}
         </Tabs>
       </div>
-      <ProjectConfigurationDialog 
+      <DetailedProjectDialog 
         project={selectedProject} 
-        isOpen={isConfigDialogOpen} 
-        onOpenChange={setIsConfigDialogOpen}
+        isOpen={isDetailedDialogOpen} 
+        onOpenChange={setIsDetailedDialogOpen}
       />
     </PageContainer>
   )
