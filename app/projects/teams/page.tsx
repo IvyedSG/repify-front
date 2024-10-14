@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { PublishProjectDialog } from '@/components/publish/publish-project-dialog'
 import { Dialog, DialogTrigger } from "@/components/ui/dialog"
-import { DetailedProjectDialog } from './dialogproject'
+import { DetailedProjectDialog } from '../../../components/myprojects/dialogproject'
 import { 
   Users, 
   Settings, 
@@ -215,19 +215,7 @@ export default function ProjectsPage() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>Gestión del Proyecto</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Users className="mr-2 h-4 w-4" />
-                    <span>Gestionar Miembros</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    <span>Añadir Nueva Tarea</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <BarChart className="mr-2 h-4 w-4" />
-                    <span>Ver Estadísticas</span>
-                  </DropdownMenuItem>
+                  
                   <DropdownMenuItem asChild>
                     <Link href={`/projects/teams/${project.id}`}>
                       <Settings className="mr-2 h-4 w-4" />

@@ -5,6 +5,7 @@ import { Progress } from "@/components/ui/progress"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Calendar, Clock, Flag, Users, CheckCircle, AlertCircle, FileText, Target, List, UserPlus, BarChart } from 'lucide-react'
+import { convertToUniversitySiglas } from '@/lib/universityConverter'
 
 interface Project {
   id: number
@@ -13,7 +14,6 @@ interface Project {
   start_date: string
   end_date: string
   status: string
-  
   project_type: string[]
   priority: string
   detailed_description: string
@@ -53,6 +53,15 @@ export function DetailedProjectDialog({ project, isOpen, onOpenChange }: Detaile
     }
   }
 
+  const getUniversityDisplay = (type_aplyuni: string) => {
+    if (type_aplyuni.toLowerCase() === "libre") {
+      return "Libre"
+    } else {
+      const siglas = convertToUniversitySiglas(type_aplyuni)
+      return `Solo ${siglas}`
+    }
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[700px]">
@@ -87,7 +96,7 @@ export function DetailedProjectDialog({ project, isOpen, onOpenChange }: Detaile
               </div>
               <div className="flex items-center">
                 <Flag className="h-4 w-4 mr-2" />
-                <span>{project.type_aplyuni === "LIBRE" ? "Libre" : "Solo UPC"}</span>
+                <span>{getUniversityDisplay(project.type_aplyuni)}</span>
               </div>
             </div>
 

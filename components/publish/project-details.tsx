@@ -9,7 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { cn } from '@/lib/utils'
 import { Slider } from '@/components/ui/slider'
 
-const projectStatuses = ["En progreso", "Planificación", "En espera", "Completado", "Cancelado"]
+const projectStatuses = ["Planificando", "En progreso", "En pausa"]
 
 interface ProjectDetailsProps {
   newProject: {

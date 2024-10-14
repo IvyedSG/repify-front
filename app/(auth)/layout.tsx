@@ -1,11 +1,15 @@
-import { ReactNode } from 'react'
-import dynamic from 'next/dynamic'
-import Image from 'next/image'
+import { ReactNode } from 'react';
+import dynamic from 'next/dynamic';
+import Image from 'next/image';
 
 const DynamicContent = dynamic(() => import('@/components/DynamicContent'), {
-  loading: () => <div className="flex items-center justify-center h-full">Loading...</div>,
-  ssr: false
-})
+  loading: () => (
+    <div className="flex items-center justify-center h-full">
+      <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+    </div>
+  ),
+  ssr: false,
+});
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
@@ -27,5 +31,5 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         {children}
       </div>
     </div>
-  )
+  );
 }
