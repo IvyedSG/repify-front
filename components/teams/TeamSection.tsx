@@ -17,10 +17,10 @@ export default function TeamSection({ project }: TeamSectionProps) {
         </label>
         <div className="flex items-center mt-2">
           <Avatar className="h-10 w-10">
-            <AvatarImage src="/placeholder-avatar.jpg" alt={project.name_uniuser} />
-            <AvatarFallback>{project.name_uniuser.charAt(0)}</AvatarFallback>
+            <AvatarImage src="/placeholder-avatar.jpg" alt={project.name_responsible} />
+            <AvatarFallback>{project.name_responsible.charAt(0)}</AvatarFallback>
           </Avatar>
-          <span className="ml-2 text-gray-800 dark:text-gray-200">{project.name_uniuser}</span>
+          <span className="ml-2 text-gray-800 dark:text-gray-200">{project.name_responsible}</span>
         </div>
       </div>
       <div>

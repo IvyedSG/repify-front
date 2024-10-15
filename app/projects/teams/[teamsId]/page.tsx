@@ -10,7 +10,7 @@ import { toast } from '@/components/ui/use-toast'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Pencil, Save, X, Trash2 } from 'lucide-react'
-import { Project } from '../../types/types'
+import { Project } from '@/types/types'
 import ProjectConfigSidebar from '@/components/teams/ProjectConfigSidebar'
 import GeneralSection from '@/components/teams/GeneralSection'
 import DetailsSection from '@/components/teams/DetailsSection'
@@ -82,7 +82,8 @@ export default function ProjectConfigPage() {
             necessary_requirements: project.necessary_requirements,
             progress: project.progress,
             accepting_applications: project.accepting_applications,
-            type_aplyuni: project.type_aplyuni
+            type_aplyuni: project.type_aplyuni,
+            name_responsible: project.name_responsible
           })
         })
         if (response.ok) {

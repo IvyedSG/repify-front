@@ -55,6 +55,7 @@ type Project = {
   name_uniuser: string
   collaboration_count: number
   collaborators: string[]
+  name_responsible: string
 }
 
 export default function ProjectsPage() {
@@ -137,9 +138,11 @@ export default function ProjectsPage() {
 
   const getStatusIcon = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'en espera': return <Clock className="h-4 w-4 text-yellow-500" />
+      case 'planificando': return <Clock className="h-4 w-4 text-yellow-500" />
+      case 'en pausa': return <Clock className="h-4 w-4 text-yellow-500" />
       case 'en progreso': return <AlertCircle className="h-4 w-4 text-blue-500" />
       case 'completado': return <CheckCircle className="h-4 w-4 text-green-500" />
+      case 'cancelado': return <AlertCircle className="h-4 w-4 text-red-500" />
       default: return <Clock className="h-4 w-4 text-gray-500" />
     }
   }

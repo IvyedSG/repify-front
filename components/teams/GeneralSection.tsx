@@ -63,9 +63,11 @@ export default function GeneralSection({ project, setProject, isEditing }: Gener
             <SelectValue placeholder="Selecciona el estado" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="En espera">En espera</SelectItem>
+            <SelectItem value="Planificando">Planificando</SelectItem>
             <SelectItem value="En progreso">En progreso</SelectItem>
+            <SelectItem value="En pausa">En pausa</SelectItem>
             <SelectItem value="Completado">Completado</SelectItem>
+            <SelectItem value="Cancelado">Cancelado</SelectItem>
           </SelectContent>
         </Select>
       </div>

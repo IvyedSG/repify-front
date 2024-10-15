@@ -1,8 +1,10 @@
 import React from 'react'
+import { useSession } from 'next-auth/react'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { UserPlus, Briefcase } from 'lucide-react'
 import { Project } from '../../types/types'
+import { convertToUniversitySiglas, convertToFullUniversityName } from '@/lib/universityConverter'
 
 interface ApplicationsSectionProps {
   project: Project;
@@ -11,6 +13,10 @@ interface ApplicationsSectionProps {
 }
 
 export default function ApplicationsSection({ project, setProject, isEditing }: ApplicationsSectionProps) {
+  const { data: session } = useSession()
+  const userUniversity = session?.user?.university || ''
+  const userUniversitySiglas = convertToUniversitySiglas(userUniversity)
+
   const handleSwitchChange = (checked: boolean) => {
     setProject(prev => prev ? { ...prev, accepting_applications: checked } : null)
   }
@@ -18,6 +24,14 @@ export default function ApplicationsSection({ project, setProject, isEditing }: 
   const handleSelectChange = (value: string) => {
     setProject(prev => prev ? { ...prev, type_aplyuni: value } : null)
   }
+
+  const getDisplayValue = (value: string) => {
+    if (value === 'LIBRE') return 'Libre'
+    const fullName = convertToFullUniversityName(value)
+    return `Solo ${fullName}`
+  }
+
+  const isUserUniversitySelected = project.type_aplyuni === userUniversitySiglas
 
   return (
     <div className="space-y-6">
@@ -38,13 +52,22 @@ export default function ApplicationsSection({ project, setProject, isEditing }: 
           <Briefcase className="inline-block w-4 h-4 mr-2" />
           Tipo de Aplicación
         </label>
-        <Select name="type_aplyuni" value={project.type_aplyuni} onValueChange={handleSelectChange} disabled={!isEditing}>
+        <Select 
+          name="type_aplyuni" 
+          value={project.type_aplyuni} 
+          onValueChange={handleSelectChange} 
+          disabled={!isEditing}
+        >
           <SelectTrigger>
-            <SelectValue placeholder="Selecciona el tipo de aplicación" />
+            <SelectValue placeholder="Selecciona el tipo de aplicación">
+              {getDisplayValue(project.type_aplyuni)}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="LIBRE">Libre</SelectItem>
-            <SelectItem value="UPC">Solo UPC</SelectItem>
+            <SelectItem value={userUniversitySiglas}>
+              Solo {userUniversity}
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
