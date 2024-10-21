@@ -1,66 +1,82 @@
 'use client'
 
-import React, { useState, useCallback, useRef, useEffect } from 'react'
-import { useTransition, animated } from '@react-spring/web'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import dynamic from 'next/dynamic'
 
-const words = ['LOGRAMOS', 'GRANDES', 'METAS']
+const reasons = [
+  "aprendemos haciendo lo que nos apasiona 💡",
+  "cada reto nos impulsa a ser mejores 🚀",
+  "todos aportamos algo único 🎯",
+  "creamos en equipo, crecemos en equipo 🤝",
+  "el aprendizaje nunca se detiene 🔥",
+  "las ideas fluyen sin barreras 🌊",
+  "juntos podemos con todo! 🌟"
+]
+
+const Globe = dynamic(() => import('./Globe'), { ssr: false, loading: () => <GlobeLoader /> })
+
+const GlobeLoader = () => (
+  <div className="absolute inset-0 flex items-center justify-center">
+    <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+  </div>
+)
+
+const ReasonText = ({ reason }: { reason: string }) => (
+  <motion.div
+    key={reason}
+    initial={{ y: 20, opacity: 0 }}
+    animate={{ y: 0, opacity: 1 }}
+    exit={{ y: -20, opacity: 0 }}
+    transition={{ duration: 0.5 }}
+    className="text-3xl font-bold text-blue-400"
+  >
+    {reason}
+  </motion.div>
+)
 
 export default function DynamicContent() {
-  const ref = useRef<ReturnType<typeof setTimeout>[]>([])
-  const [items, set] = useState<string[]>([])
-  const transitions = useTransition(items, {
-    from: {
-      opacity: 0,
-      height: 0,
-      innerHeight: 0,
-      transform: 'perspective(600px) rotateX(0deg)',
-      color: '#8fa5b6',
-    },
-    enter: [
-      { opacity: 1, height: 80, innerHeight: 80 },
-      { transform: 'perspective(600px) rotateX(180deg)', color: '#28d79f' },
-      { transform: 'perspective(600px) rotateX(0deg)' },
-    ],
-    leave: [{ color: '#c23369' }, { innerHeight: 0 }, { opacity: 0, height: 0 }],
-    update: { color: '#28b4d7' },
-  })
+  const [currentReason, setCurrentReason] = useState(0)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [globeSize, setGlobeSize] = useState(300)
 
-  const reset = useCallback(() => {
-    ref.current.forEach(clearTimeout)
-    ref.current = []
-    set([])
-    words.forEach((word, i) => {
-      ref.current.push(setTimeout(() => set(prev => [...prev, word]), i * 3000))
-    })
-  }, [])
-
-  useEffect(() => {
-    reset()
-
-    const interval = setInterval(() => {
-      reset(); // Reinicia el ciclo de palabras
-    }, words.length * 3000); // Ajusta el tiempo basado en la cantidad de palabras
-
-    return () => {
-      ref.current.forEach(clearTimeout)
-      clearInterval(interval); // Limpia el intervalo al desmontar
+  const onResize = useCallback(() => {
+    if (containerRef.current) {
+      const { width, height } = containerRef.current.getBoundingClientRect()
+      const size = Math.min(width, height) * 0.8
+      setGlobeSize(size)
     }
   }, [])
 
+  useEffect(() => {
+    onResize()
+    const resizeObserver = new ResizeObserver(onResize)
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current)
+    }
+    return () => resizeObserver.disconnect()
+  }, [onResize])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentReason((prev) => (prev + 1) % reasons.length)
+    }, 6000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const memoizedGlobe = useMemo(() => <Globe size={globeSize} />, [globeSize])
+
   return (
-    <div className="flex flex-col h-full bg-black items-center justify-center">
-      <div className="w-full max-w-3xl px-4">
-        <div className="h-[240px] md:h-[320px]">
-          {transitions(({ innerHeight, ...rest }, item) => (
-            <animated.div
-              className="overflow-hidden w-full text-white flex justify-center items-start text-6xl md:text-8xl font-extrabold uppercase will-change-transform cursor-pointer"
-              style={{ ...rest, marginTop: '20px' }} // Aumenta el margen superior según sea necesario
-              onClick={reset}
-            >
-              <animated.div style={{ overflow: 'hidden', height: innerHeight }}>{item}</animated.div>
-            </animated.div>
-          ))}
-        </div>
+    <div className="flex flex-col h-full" ref={containerRef}>
+      <div className="relative flex-grow flex items-center justify-center">
+        {memoizedGlobe}
+      </div>
+
+      <div className="text-center mt-4">
+        <h2 className="text-3xl font-bold mb-2">¡Aquí los proyectos son épicos porque...</h2>
+        <AnimatePresence mode="wait">
+          <ReasonText reason={reasons[currentReason]} />
+        </AnimatePresence>
       </div>
     </div>
   )

@@ -53,6 +53,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "1.0.0",
+    "cobe": "^0.6.3",
     "date-fns": "^4.1.0",
     "eslint-config-next": "^14.2.14",
     "eslint-plugin-import": "^2.30.0",
