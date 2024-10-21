@@ -17,13 +17,19 @@ export function AccountInfoStep({ form, loading }: AccountInfoStepProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="flex items-center mb-4 mt-4">
-              <Mail className="mr-2 h-4 w-4" />
+              <Mail className="mr-2 h-4 w-4" aria-hidden="true" />
               Tu correo electrónico
             </FormLabel>
             <FormControl>
-              <Input type="email" placeholder="estudiante@universidad.edu" disabled={loading} {...field} />
+              <Input 
+                type="email" 
+                placeholder="estudiante@universidad.edu" 
+                disabled={loading} 
+                {...field} 
+                aria-describedby="email-description"
+              />
             </FormControl>
-            <FormMessage />
+            <FormMessage id="email-description" />
           </FormItem>
         )}
       />
@@ -33,13 +39,19 @@ export function AccountInfoStep({ form, loading }: AccountInfoStepProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="flex items-center mb-4 mt-4">
-              <Lock className="mr-2 h-4 w-4" />
+              <Lock className="mr-2 h-4 w-4" aria-hidden="true" />
               Crea una contraseña segura
             </FormLabel>
             <FormControl>
-              <Input type="password" placeholder="Mínimo 8 caracteres" disabled={loading} {...field} />
+              <Input 
+                type="password" 
+                placeholder="Mínimo 8 caracteres" 
+                disabled={loading} 
+                {...field} 
+                aria-describedby="password-description"
+              />
             </FormControl>
-            <FormMessage />
+            <FormMessage id="password-description" />
           </FormItem>
         )}
       />
@@ -49,13 +61,19 @@ export function AccountInfoStep({ form, loading }: AccountInfoStepProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="flex items-center mb-4 mt-4">
-              <Lock className="mr-2 h-4 w-4" />
+              <Lock className="mr-2 h-4 w-4" aria-hidden="true" />
               Confirma tu contraseña
             </FormLabel>
             <FormControl>
-              <Input type="password" placeholder="Repite tu contraseña" disabled={loading} {...field} />
+              <Input 
+                type="password" 
+                placeholder="Repite tu contraseña" 
+                disabled={loading} 
+                {...field} 
+                aria-describedby="confirm-password-description"
+              />
             </FormControl>
-            <FormMessage />
+            <FormMessage id="confirm-password-description" />
           </FormItem>
         )}
       />

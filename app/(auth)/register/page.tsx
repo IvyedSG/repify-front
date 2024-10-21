@@ -1,9 +1,16 @@
+import { Suspense } from 'react'
 import Link from 'next/link'
-import UserRegisterForm from '@/components/forms/user-register-form'
+import dynamic from 'next/dynamic'
+import { Metadata } from 'next'
 
-export const metadata = {
-  title: 'Registro',
-  description: 'Crea una cuenta en Repify',
+const UserRegisterForm = dynamic(() => import('@/components/forms/user-register-form'), {
+  loading: () => <div className="w-full h-[400px] flex items-center justify-center">Cargando formulario de registro...</div>,
+  ssr: false
+})
+
+export const metadata: Metadata = {
+  title: 'Registro | Repify',
+  description: 'Crea una cuenta en Repify y únete a nuestra comunidad de aprendizaje',
 }
 
 export default function RegisterPage() {
@@ -17,7 +24,9 @@ export default function RegisterPage() {
           ¡Cada vez más cerca de unirte a nuestra comunidad!
         </p>
       </div>
-      <UserRegisterForm />
+      <Suspense fallback={<div className="w-full h-[400px] flex items-center justify-center">Cargando formulario de registro...</div>}>
+        <UserRegisterForm />
+      </Suspense>
       <p className="text-center text-sm text-muted-foreground">
         Al hacer clic en continuar, aceptas nuestros{' '}
         <Link

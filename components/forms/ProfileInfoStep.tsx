@@ -17,7 +17,7 @@ export function ProfileInfoStep({ form, loading }: ProfileInfoStepProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="flex items-center mb-4 mt-4">
-              <FileText className="mr-2 h-4 w-4" />
+              <FileText className="mr-2 h-4 w-4" aria-hidden="true" />
               Cuéntanos sobre ti
             </FormLabel>
             <FormControl>
@@ -25,9 +25,10 @@ export function ProfileInfoStep({ form, loading }: ProfileInfoStepProps) {
                 placeholder="Comparte tus intereses, pasiones o lo que te hace único..." 
                 disabled={loading} 
                 {...field} 
+                aria-describedby="biography-description"
               />
             </FormControl>
-            <FormMessage />
+            <FormMessage id="biography-description" />
           </FormItem>
         )}
       />
@@ -37,7 +38,7 @@ export function ProfileInfoStep({ form, loading }: ProfileInfoStepProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="flex items-center mb-4 mt-4">
-              <Award className="mr-2 h-4 w-4" />
+              <Award className="mr-2 h-4 w-4" aria-hidden="true" />
               Tus logros
             </FormLabel>
             <FormControl>
@@ -45,9 +46,10 @@ export function ProfileInfoStep({ form, loading }: ProfileInfoStepProps) {
                 placeholder="Comparte tus logros académicos, proyectos destacados o reconocimientos..." 
                 disabled={loading} 
                 {...field} 
+                aria-describedby="achievements-description"
               />
             </FormControl>
-            <FormMessage />
+            <FormMessage id="achievements-description" />
           </FormItem>
         )}
       />

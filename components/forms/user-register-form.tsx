@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -56,7 +56,7 @@ export default function UserRegisterForm() {
     }
   });
 
-  const onSubmit = async (data: UserFormValue) => {
+  const onSubmit = useCallback(async (data: UserFormValue) => {
     setLoading(true);
     try {
       const response = await fetch('https://repo-s7h0.onrender.com/usuario/login/Register/', {
@@ -80,9 +80,9 @@ export default function UserRegisterForm() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [router]);
 
-  const nextStep = async () => {
+  const nextStep = useCallback(async () => {
     const fields = step === 1 ? ['email', 'password', 'confirmPassword'] :
                    step === 2 ? ['first_name', 'last_name'] :
                    step === 3 ? ['university', 'career', 'cycle'] :
@@ -90,13 +90,13 @@ export default function UserRegisterForm() {
   
     const isValid = await form.trigger(fields);
     if (isValid && step < 4) {
-      setStep(step + 1);
+      setStep(prevStep => prevStep + 1);
     }
-  };
+  }, [form, step]);
 
-  const prevStep = () => setStep(step - 1);
+  const prevStep = useCallback(() => setStep(prevStep => prevStep - 1), []);
 
-  const renderStep = (currentStep: number) => {
+  const renderStep = useCallback((currentStep: number) => {
     const stepComponents = [
       <AccountInfoStep key="account" form={form} loading={loading} />,
       <PersonalInfoStep key="personal" form={form} loading={loading} />,
@@ -105,7 +105,7 @@ export default function UserRegisterForm() {
     ];
 
     return stepComponents[currentStep - 1];
-  };
+  }, [form, loading]);
 
   const stepTitles = [
     "Crea tu cuenta",
@@ -153,7 +153,7 @@ export default function UserRegisterForm() {
               )}
             </div>
             {step === 4 && (
-              <Button type="submit" disabled={loading} className="w-full mt-4">
+              <Button type="submit" disabled={loading}   className="w-full mt-4">
                 {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

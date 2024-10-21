@@ -50,48 +50,47 @@ const authConfig: NextAuthConfig = {
   },
   callbacks: {
     async jwt({ token, user, account }) {
-      // Primera vez que el usuario inicia sesión
       if (user && account) {
-        token.id = user.id; // Guardamos el id del usuario en el token
-        token.email = user.email; // Guardamos el email del usuario en el token
-        token.university = user.university;
-        token.career = user.career;
-        token.accessToken = user.accessToken;
-        token.refreshToken = user.refreshToken;
-        token.accessTokenExpires = Date.now() + 10 * 60 * 1000; // 10 minutos
-        token.refreshTokenExpires = Date.now() + 24 * 60 * 60 * 1000; // 1 día
+        return {
+          ...token,
+          id: user.id,
+          email: user.email,
+          university: user.university,
+          career: user.career,
+          accessToken: user.accessToken,
+          refreshToken: user.refreshToken,
+          accessTokenExpires: Date.now() + 10 * 60 * 1000,
+          refreshTokenExpires: Date.now() + 24 * 60 * 60 * 1000,
+        }
       }
-  
-      // En las próximas solicitudes, ya no tendrás acceso al `user`, pero sí al `token`
-      // Aquí validamos si el token sigue siendo válido
+
       if (Date.now() < (token.accessTokenExpires as number)) {
-        return token;
+        return token
       }
-  
-      // Si el refresh token ha expirado, forzar el inicio de sesión
+
       if (Date.now() > (token.refreshTokenExpires as number)) {
-        return { ...token, error: 'RefreshTokenExpired' };
+        return { ...token, error: 'RefreshTokenExpired' }
       }
-  
-      // Si el token ha expirado, intenta actualizarlo
-      return refreshAccessToken(token);
+
+      return refreshAccessToken(token)
     },
-  
     async session({ session, token }) {
-      // Pasamos el id y email del token al objeto `user` de la sesión
-      session.user.id = token.id as string; // Ahora el id viene del token
-      session.user.email = token.email as string; // El email también del token
-      session.user.university = token.university as string;
-      session.user.career = token.career as string; 
-      session.user.accessToken = token.accessToken as string;
-      session.user.refreshToken = token.refreshToken as string;
-      session.error = token.error as string | undefined;
-      return session;
+      session.user = {
+        ...session.user,
+        id: token.id as string,
+        email: token.email as string,
+        university: token.university as string,
+        career: token.career as string,
+        accessToken: token.accessToken as string,
+        refreshToken: token.refreshToken as string,
+      }
+      session.error = token.error as string | undefined
+      return session
     }
   },
   events: {
     async signOut({ token }) {
-      signOut({ callbackUrl: '/' });
+      signOut({ callbackUrl: '/' })
     }
   }
 }
@@ -111,7 +110,7 @@ async function refreshAccessToken(token: any) {
     return {
       ...token,
       accessToken: refreshedTokens.access,
-      accessTokenExpires: Date.now() + 10 * 60 * 1000, // 10 minutos
+      accessTokenExpires: Date.now() + 10 * 60 * 1000,
       refreshToken: refreshedTokens.refresh ?? token.refreshToken,
     }
   } catch (error) {

@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useMemo } from 'react'
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { School, BookOpen } from 'lucide-react'
@@ -56,6 +56,10 @@ interface AcademicInfoStepProps {
 }
 
 export function AcademicInfoStep({ form, loading }: AcademicInfoStepProps) {
+  const memoizedUniversities = useMemo(() => universities, []);
+  const memoizedCareers = useMemo(() => careers, []);
+  const memoizedCycles = useMemo(() => cycles, []);
+
   return (
     <div className="space-y-4">
       <FormField
@@ -64,17 +68,17 @@ export function AcademicInfoStep({ form, loading }: AcademicInfoStepProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="flex items-center mb-2">
-              <School className="mr-2 h-4 w-4" />
+              <School className="mr-2 h-4 w-4" aria-hidden="true" />
               Universidad
             </FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <Select onValueChange={field.onChange} defaultValue={field.value} disabled={loading}>
               <FormControl>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Selecciona tu universidad" />
                 </SelectTrigger>
               </FormControl>
               <SelectContent className="max-h-[200px] overflow-y-auto">
-                {universities.map((university) => (
+                {memoizedUniversities.map((university) => (
                   <SelectItem key={university} value={university}>
                     {university}
                   </SelectItem>
@@ -91,17 +95,17 @@ export function AcademicInfoStep({ form, loading }: AcademicInfoStepProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="flex items-center mb-2">
-              <BookOpen className="mr-2 h-4 w-4" />
+              <BookOpen className="mr-2 h-4 w-4" aria-hidden="true" />
               Carrera
             </FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <Select onValueChange={field.onChange} defaultValue={field.value} disabled={loading}>
               <FormControl>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Selecciona tu carrera" />
                 </SelectTrigger>
               </FormControl>
               <SelectContent className="max-h-[200px] overflow-y-auto">
-                {careers.map((career) => (
+                {memoizedCareers.map((career) => (
                   <SelectItem key={career} value={career}>
                     {career}
                   </SelectItem>
@@ -118,17 +122,17 @@ export function AcademicInfoStep({ form, loading }: AcademicInfoStepProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="flex items-center mb-2">
-              <BookOpen className="mr-2 h-4 w-4" />
+              <BookOpen className="mr-2 h-4 w-4" aria-hidden="true" />
               Ciclo actual
             </FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <Select onValueChange={field.onChange} defaultValue={field.value} disabled={loading}>
               <FormControl>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Selecciona tu ciclo" />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {cycles.map((cycle) => (
+                {memoizedCycles.map((cycle) => (
                   <SelectItem key={cycle} value={cycle}>
                     {cycle}
                   </SelectItem>

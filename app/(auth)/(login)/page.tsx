@@ -1,9 +1,22 @@
+import { Suspense } from 'react'
 import Link from 'next/link'
-import UserAuthForm from '@/components/forms/user-auth-form'
+import dynamic from 'next/dynamic'
+import { Metadata } from 'next'
 
-export const metadata = {
-  title: 'Login',
-  description: 'Ingresa',
+const UserAuthForm = dynamic(() => import('@/components/forms/user-auth-form'), {
+  loading: () => <LoadingPlaceholder />,
+  ssr: false
+})
+
+const LoadingPlaceholder = () => (
+  <div className="w-full h-[200px] flex items-center justify-center">
+    Cargando formulario...
+  </div>
+)
+
+export const metadata: Metadata = {
+  title: 'Iniciar sesión | Repify',
+  description: 'Ingresa a tu cuenta de Repify para una experiencia única de aprendizaje',
 }
 
 export default function LoginPage() {
@@ -17,7 +30,9 @@ export default function LoginPage() {
           ¡Prepárate para una experiencia única aprendiendo!
         </p>
       </div>
-      <UserAuthForm />
+      <Suspense fallback={<LoadingPlaceholder />}>
+        <UserAuthForm />
+      </Suspense>
       <div className="text-center text-sm">
         <Link
           href="/reset-password"

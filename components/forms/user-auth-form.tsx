@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useCallback, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
@@ -7,7 +8,6 @@ import { useToast } from "@/components/ui/use-toast"
 import { zodResolver } from '@hookform/resolvers/zod'
 import { signIn, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 
@@ -29,17 +29,9 @@ export default function UserAuthForm() {
     defaultValues: { email: '', password: '' }
   })
 
-  useEffect(() => {
-    if (status === 'authenticated') {
-      console.log('Session authenticated, redirecting to /projects')
-      router.push('/projects')
-    }
-  }, [status, router])
-
-  const onSubmit = async (data: UserFormValue) => {
+  const onSubmit = useCallback(async (data: UserFormValue) => {
     setLoading(true)
     try {
-      console.log('Attempting to sign in')
       const result = await signIn('credentials', {
         redirect: false,
         email: data.email,
@@ -47,14 +39,12 @@ export default function UserAuthForm() {
       })
 
       if (result?.error) {
-        console.error('Sign in error:', result.error)
         toast({
           variant: "destructive",
           title: "Error",
           description: "Correo electrónico o contraseña inválidos",
         })
       } else if (result?.ok) {
-        console.log('Sign in successful')
         toast({
           title: "Éxito",
           description: "Inicio de sesión exitoso. Redirigiendo...",
@@ -62,7 +52,6 @@ export default function UserAuthForm() {
         router.push('/projects')
       }
     } catch (error) {
-      console.error('Error during login:', error)
       toast({
         variant: "destructive",
         title: "Error",
@@ -71,42 +60,41 @@ export default function UserAuthForm() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [router, toast])
+
+  const formFields = useMemo(() => [
+    { name: 'email', label: 'Correo electrónico', type: 'email', placeholder: 'junior@help.me' },
+    { name: 'password', label: 'Contraseña', type: 'password', placeholder: '***********' }
+  ], [])
 
   if (status === 'loading') {
-    console.log('Session status: loading')
     return <div>Cargando...</div>
+  }
+
+  if (status === 'authenticated') {
+    router.push('/projects')
+    return null
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-4">
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Correo electrónico</FormLabel>
-              <FormControl>
-                <Input type="email" placeholder="junior@help.me" disabled={loading} {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Contraseña</FormLabel>
-              <FormControl>
-                <Input type="password" placeholder="***********" disabled={loading} {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {formFields.map((field) => (
+          <FormField
+            key={field.name}
+            control={form.control}
+            name={field.name as 'email' | 'password'}
+            render={({ field: formField }) => (
+              <FormItem>
+                <FormLabel>{field.label}</FormLabel>
+                <FormControl>
+                  <Input type={field.type} placeholder={field.placeholder} disabled={loading} {...formField} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        ))}
         <Button disabled={loading} className="w-full" type="submit">
           {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
         </Button>

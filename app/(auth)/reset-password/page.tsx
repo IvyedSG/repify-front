@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,9 +12,11 @@ export default function ResetPasswordPage() {
   const [email, setEmail] = useState("")
   const [code, setCode] = useState(["", "", "", "", "", ""])
   const [newPassword, setNewPassword] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleEmailSubmit = async (e: React.FormEvent) => {
+  const handleEmailSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsLoading(true)
     try {
       const response = await fetch('https://repo-s7h0.onrender.com/usuario/login/request-password-reset/', {
         method: 'POST',
@@ -31,11 +33,14 @@ export default function ResetPasswordPage() {
       }
     } catch (error) {
       toast.error('Error al enviar el código de verificación')
+    } finally {
+      setIsLoading(false)
     }
-  }
+  }, [email])
 
-  const handleCodeSubmit = async (e: React.FormEvent) => {
+  const handleCodeSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsLoading(true)
     try {
       const response = await fetch('https://repo-s7h0.onrender.com/usuario/login/reset_password/', {
         method: 'POST',
@@ -50,26 +55,31 @@ export default function ResetPasswordPage() {
       })
       if (response.ok) {
         toast.success('Contraseña restablecida con éxito')
-        // Aquí puedes redirigir al usuario a la página de inicio de sesión
+        // Redirect to login page after successful password reset
+        setTimeout(() => window.location.href = '/', 2000)
       } else {
         throw new Error('Error al restablecer la contraseña')
       }
     } catch (error) {
       toast.error('Error al restablecer la contraseña')
+    } finally {
+      setIsLoading(false)
     }
-  }
+  }, [email, code, newPassword])
 
-  const handleCodeChange = (index: number, value: string) => {
-    const newCode = [...code]
-    newCode[index] = value
-    setCode(newCode)
+  const handleCodeChange = useCallback((index: number, value: string) => {
+    setCode(prevCode => {
+      const newCode = [...prevCode]
+      newCode[index] = value
+      return newCode
+    })
 
     // Move to next input if value is entered
     if (value && index < 5) {
       const nextInput = document.getElementById(`code-${index + 1}`) as HTMLInputElement
       if (nextInput) nextInput.focus()
     }
-  }
+  }, [])
 
   return (
     <div className="mx-auto w-full max-w-sm space-y-6">
@@ -94,9 +104,12 @@ export default function ResetPasswordPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required 
+              disabled={isLoading}
             />
           </div>
-          <Button type="submit" className="w-full">Enviar Código</Button>
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? 'Enviando...' : 'Enviar Código'}
+          </Button>
         </form>
       ) : (
         <form onSubmit={handleCodeSubmit} className="space-y-4">
@@ -114,6 +127,7 @@ export default function ResetPasswordPage() {
                   onChange={(e) => handleCodeChange(index, e.target.value)}
                   className="w-12 text-center"
                   required
+                  disabled={isLoading}
                 />
               ))}
             </div>
@@ -126,9 +140,12 @@ export default function ResetPasswordPage() {
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               required
+              disabled={isLoading}
             />
           </div>
-          <Button type="submit" className="w-full">Restablecer Contraseña</Button>
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? 'Restableciendo...' : 'Restablecer Contraseña'}
+          </Button>
         </form>
       )}
 

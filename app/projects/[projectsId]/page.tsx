@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, lazy, Suspense } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -12,6 +12,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { toast } from '@/components/ui/use-toast'
 import { useTheme } from "next-themes"
+
+// Lazy load components
+const ProjectDetails = lazy(() => import('./ProjectDetails'))
+const ProjectObjectives = lazy(() => import('./ProjectObjectives'))
+const ProjectRequirements = lazy(() => import('./ProjectRequirements'))
 
 interface Project {
   id: number;
@@ -34,7 +39,7 @@ interface Project {
   collaboration_count: number;
 }
 
-export default function ProjectDetails() {
+export default function ProjectDetailsPage() {
   const { data: session } = useSession()
   const router = useRouter()
   const { theme } = useTheme()
@@ -86,7 +91,7 @@ export default function ProjectDetails() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+        <Loader2 className="h-32 w-32 animate-spin text-primary" />
       </div>
     )
   }
@@ -118,61 +123,17 @@ export default function ProjectDetails() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-xl font-bold">Detalles del Proyecto</CardTitle>
-                  <Badge variant="secondary" className="bg-primary text-primary-foreground">
-                    {project.status}
-                  </Badge>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="flex items-center text-muted-foreground">
-                      <CalendarIcon className="mr-2 h-5 w-5" />
-                      <span>{new Date(project.start_date).toLocaleDateString()} - {new Date(project.end_date).toLocaleDateString()}</span>
-                    </div>
-                    <div className="flex items-center text-muted-foreground">
-                      <Target className="mr-2 h-5 w-5" />
-                      <span>Prioridad {project.priority}</span>
-                    </div>
-                    <div className="flex items-center text-muted-foreground">
-                      <FileText className="mr-2 h-5 w-5" />
-                      <span>{project.project_type.join(', ')}</span>
-                    </div>
-                    <div className="flex items-center text-muted-foreground">
-                      <Users className="mr-2 h-5 w-5" />
-                      <span>{project.collaboration_count} Colaboradores</span>
-                    </div>
-                  </div>
-                  <p className="text-foreground">{project.detailed_description}</p>
-                </CardContent>
-              </Card>
+              <Suspense fallback={<Loader2 className="h-8 w-8 animate-spin" />}>
+                <ProjectDetails project={project} />
+              </Suspense>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl font-bold">Objetivos del Proyecto</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="list-disc list-inside space-y-2 text-foreground">
-                    {project.objectives.map((objective, index) => (
-                      <li key={index}>{objective}</li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
+              <Suspense fallback={<Loader2 className="h-8 w-8 animate-spin" />}>
+                <ProjectObjectives objectives={project.objectives} />
+              </Suspense>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl font-bold">Requisitos Necesarios</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="list-disc list-inside space-y-2 text-foreground">
-                    {project.necessary_requirements.map((requirement, index) => (
-                      <li key={index}>{requirement}</li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
+              <Suspense fallback={<Loader2 className="h-8 w-8 animate-spin" />}>
+                <ProjectRequirements requirements={project.necessary_requirements} />
+              </Suspense>
             </div>
 
             <div className="space-y-6">
