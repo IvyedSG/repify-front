@@ -2,14 +2,13 @@
 
 import React, { useState, useEffect, lazy, Suspense } from 'react'
 import { useSession } from 'next-auth/react'
-import { useRouter, useParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { toast } from '@/components/ui/use-toast'
 import { useTheme } from "next-themes"
 import { ProjectSkeleton } from '@/components/skeletons/ProjectSkeleton'
 import { Share2 } from 'lucide-react';
-
 
 const ProjectDetails = lazy(() => import('@/components/projectid/ProjectDetails'))
 const ProjectObjectives = lazy(() => import('@/components/projectid/ProjectObjectives'))
@@ -45,6 +44,7 @@ export default function ProjectDetailsPage() {
   const [project, setProject] = useState<Project | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [applying, setApplying] = useState(false)
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
@@ -81,10 +81,38 @@ export default function ProjectDetailsPage() {
   }, [session])
 
   const handleApply = async () => {
-    toast({
-      title: "Aplicación enviada",
-      description: "Tu solicitud ha sido enviada exitosamente.",
-    })
+    if (!project) return
+
+    setApplying(true)
+    try {
+      const response = await fetch('http://127.0.0.1:8000/usuario/projects/ApplyProject/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.user.accessToken}`
+        },
+        body: JSON.stringify({ project_id: project.id })
+      })
+
+      if (response.ok) {
+        toast({
+          title: "Aplicación enviada",
+          description: "Tu solicitud ha sido enviada exitosamente.",
+        })
+      } else {
+        const errorData = await response.json()
+        throw new Error(errorData.detail || 'Failed to apply to the project')
+      }
+    } catch (error) {
+      console.error('Error applying to project:', error)
+      toast({
+        title: "Error",
+        description: "Hubo un problema al enviar tu aplicación. Por favor, intenta de nuevo más tarde.",
+        variant: "destructive"
+      })
+    } finally {
+      setApplying(false)
+    }
   }
 
   if (loading) {
@@ -142,10 +170,11 @@ export default function ProjectDetailsPage() {
 
               <Button 
                 onClick={handleApply} 
-                disabled={!project.accepting_applications}
+                disabled={!project.accepting_applications || applying}
                 className="w-full py-6 text-lg"
               >
-                {project.accepting_applications ? 'Aplicar al Proyecto' : 'No se aceptan aplicaciones'}
+                {applying ? 'Enviando aplicación...' : 
+                 project.accepting_applications ? 'Aplicar al Proyecto' : 'No se aceptan aplicaciones'}
               </Button>
 
               <div className="flex justify-end">
