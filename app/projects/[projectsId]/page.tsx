@@ -2,21 +2,20 @@
 
 import React, { useState, useEffect, lazy, Suspense } from 'react'
 import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Progress } from '@/components/ui/progress'
-import { Badge } from '@/components/ui/badge'
-import { CalendarIcon, Users, Target, FileText, Share2, Loader2 } from 'lucide-react'
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { toast } from '@/components/ui/use-toast'
 import { useTheme } from "next-themes"
+import { ProjectSkeleton } from '@/components/skeletons/ProjectSkeleton'
+import { Share2 } from 'lucide-react';
 
-// Lazy load components
-const ProjectDetails = lazy(() => import('./ProjectDetails'))
-const ProjectObjectives = lazy(() => import('./ProjectObjectives'))
-const ProjectRequirements = lazy(() => import('./ProjectRequirements'))
+
+const ProjectDetails = lazy(() => import('@/components/projectid/ProjectDetails'))
+const ProjectObjectives = lazy(() => import('@/components/projectid/ProjectObjectives'))
+const ProjectRequirements = lazy(() => import('@/components/projectid/ProjectRequirements'))
+const ProjectProgress = lazy(() => import('@/components/projectid/ProjectProgress'))
+const ProjectLeader = lazy(() => import('@/components/projectid/ProjectLeader'))
 
 interface Project {
   id: number;
@@ -89,11 +88,7 @@ export default function ProjectDetailsPage() {
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <Loader2 className="h-32 w-32 animate-spin text-primary" />
-      </div>
-    )
+    return <ProjectSkeleton />
   }
 
   if (error) {
@@ -115,7 +110,7 @@ export default function ProjectDetailsPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <ScrollArea className="h-screen">
-        <div className="max-w-7xl mx-auto p-6 space-y-6">
+        <div className="max-w-7xl mx-auto p-6 space-y-6 pb-12">
           <div className="space-y-2">
             <h1 className="text-4xl font-bold">{project.name}</h1>
             <p className="text-xl text-muted-foreground">{project.description}</p>
@@ -123,48 +118,27 @@ export default function ProjectDetailsPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
-              <Suspense fallback={<Loader2 className="h-8 w-8 animate-spin" />}>
+              <Suspense fallback={<ProjectSkeleton />}>
                 <ProjectDetails project={project} />
               </Suspense>
 
-              <Suspense fallback={<Loader2 className="h-8 w-8 animate-spin" />}>
+              <Suspense fallback={<ProjectSkeleton />}>
                 <ProjectObjectives objectives={project.objectives} />
               </Suspense>
 
-              <Suspense fallback={<Loader2 className="h-8 w-8 animate-spin" />}>
+              <Suspense fallback={<ProjectSkeleton />}>
                 <ProjectRequirements requirements={project.necessary_requirements} />
               </Suspense>
             </div>
 
             <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl font-bold">Progreso del Proyecto</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <Progress value={project.progress} className="w-full h-2" />
-                    <p className="text-right font-medium">{project.progress}% Completado</p>
-                  </div>
-                </CardContent>
-              </Card>
+              <Suspense fallback={<ProjectSkeleton />}>
+                <ProjectProgress progress={project.progress} />
+              </Suspense>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl font-bold">Líder del Proyecto</CardTitle>
-                </CardHeader>
-                <CardContent className="flex items-center gap-4">
-                  <Avatar className="h-16 w-16">
-                    <AvatarFallback className="bg-primary text-primary-foreground">
-                      {project.creator_name.split(' ').map(n => n[0]).join('')}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-semibold">{project.creator_name}</p>
-                    <p className="text-sm text-muted-foreground">{project.name_uniuser}</p>
-                  </div>
-                </CardContent>
-              </Card>
+              <Suspense fallback={<ProjectSkeleton />}>
+                <ProjectLeader creator={project.creator_name} university={project.name_uniuser} />
+              </Suspense>
 
               <Button 
                 onClick={handleApply} 

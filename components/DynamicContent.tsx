@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import dynamic from 'next/dynamic'
 
@@ -64,12 +64,10 @@ export default function DynamicContent() {
     return () => clearInterval(interval)
   }, [])
 
-  const memoizedGlobe = useMemo(() => <Globe size={globeSize} />, [globeSize])
-
   return (
     <div className="flex flex-col h-full" ref={containerRef}>
       <div className="relative flex-grow flex items-center justify-center">
-        {memoizedGlobe}
+        <Globe size={globeSize} />
       </div>
 
       <div className="text-center mt-4">

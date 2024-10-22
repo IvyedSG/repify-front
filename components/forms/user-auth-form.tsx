@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
@@ -25,7 +25,7 @@ export default function UserAuthForm() {
   const { toast } = useToast()
 
   const form = useForm<UserFormValue>({
-    resolver: zodResolver(formSchema),
+    resolver:  zodResolver(formSchema),
     defaultValues: { email: '', password: '' }
   })
 
@@ -62,11 +62,6 @@ export default function UserAuthForm() {
     }
   }, [router, toast])
 
-  const formFields = useMemo(() => [
-    { name: 'email', label: 'Correo electrónico', type: 'email', placeholder: 'junior@help.me' },
-    { name: 'password', label: 'Contraseña', type: 'password', placeholder: '***********' }
-  ], [])
-
   if (status === 'loading') {
     return <div>Cargando...</div>
   }
@@ -79,22 +74,32 @@ export default function UserAuthForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-4">
-        {formFields.map((field) => (
-          <FormField
-            key={field.name}
-            control={form.control}
-            name={field.name as 'email' | 'password'}
-            render={({ field: formField }) => (
-              <FormItem>
-                <FormLabel>{field.label}</FormLabel>
-                <FormControl>
-                  <Input type={field.type} placeholder={field.placeholder} disabled={loading} {...formField} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        ))}
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Correo electrónico</FormLabel>
+              <FormControl>
+                <Input type="email" placeholder="junior@help.me" disabled={loading} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Contraseña</FormLabel>
+              <FormControl>
+                <Input type="password" placeholder="***********" disabled={loading} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <Button disabled={loading} className="w-full" type="submit">
           {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
         </Button>

@@ -1,6 +1,6 @@
 'use client'
 
-import { ReactNode, useState } from 'react'
+import { ReactNode, useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 
@@ -15,14 +15,18 @@ const DynamicContent = dynamic(() => import('@/components/DynamicContent'), {
 export default function AuthLayout({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
 
-  const handleLoadComplete = () => {
-    setIsLoading(false)
-  }
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false)
+    }, 3000) // Adjust this time as needed
+
+    return () => clearTimeout(timer)
+  }, [])
 
   return (
     <div className="flex h-screen">
       {isLoading ? (
-        <ThreeJsLoader onLoadComplete={handleLoadComplete} />
+        <ThreeJsLoader onLoadComplete={() => setIsLoading(false)} />
       ) : (
         <>
           <div className="relative hidden w-1/2 flex-col bg-black p-10 text-white lg:flex">

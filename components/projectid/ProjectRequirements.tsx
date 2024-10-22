@@ -1,7 +1,11 @@
 import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-export default function ProjectRequirements({ requirements }) {
+interface ProjectRequirementsProps {
+  requirements: string[];
+}
+
+export default function ProjectRequirements({ requirements }: ProjectRequirementsProps) {
   return (
     <Card>
       <CardHeader>

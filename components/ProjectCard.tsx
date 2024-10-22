@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { CalendarIcon, Users, GraduationCap, Briefcase, AlertTriangle } from 'lucide-react'
+
 
 interface Project {
   id: number
@@ -46,7 +47,7 @@ const universityColors: { [key: string]: { main: string, text: string } } = {
   LIBRE: { main: '#2A9D8F', text: '#FFFFFF' }
 }
 
-export function ProjectCard({ project, onViewDetails }: ProjectCardProps) {
+const ProjectCard = memo(({ project, onViewDetails }: ProjectCardProps) => {
   const getInitials = (name: string | null) => {
     if (!name) return 'N/A'
     return name.split(' ').map(n => n[0]).join('').toUpperCase()
@@ -148,4 +149,8 @@ export function ProjectCard({ project, onViewDetails }: ProjectCardProps) {
       </CardFooter>
     </Card>
   )
-}
+})
+
+ProjectCard.displayName = 'ProjectCard'
+
+export { ProjectCard }

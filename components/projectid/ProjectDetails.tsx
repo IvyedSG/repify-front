@@ -3,7 +3,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { CalendarIcon, Users, Target, FileText } from 'lucide-react'
 
-export default function ProjectDetails({ project }) {
+interface ProjectDetailsProps {
+  project: {
+    status: string;
+    start_date: string;
+    end_date: string;
+    priority: string;
+    project_type: string[];
+    collaboration_count: number;
+    detailed_description: string;
+  }
+}
+
+export default function ProjectDetails({ project }: ProjectDetailsProps) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

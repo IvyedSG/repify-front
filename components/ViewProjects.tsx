@@ -1,12 +1,15 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import PageContainer from '@/components/layout/page-container'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ProjectCard } from '@/components/ProjectCard'
+import { SkeletonProjectCard } from '@/components/skeletons/SkeletonProjectCard'
+import { Button } from '@/components/ui/button'
+import { ChevronUp } from 'lucide-react'
 
 interface ColorScheme {
   primary: string
@@ -70,70 +73,73 @@ export default function ViewProjects() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterType, setFilterType] = useState('all')
+  const [showBackToTop, setShowBackToTop] = useState(false)
   const router = useRouter()
   const { data: session, status } = useSession()
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      if (status === 'loading') return
+  const fetchProjects = useCallback(async () => {
+    if (status === 'loading' || !session) return
 
-      if (!session) {
-        console.error('No session found')
-        router.push('/')
-        return
-      }
+    const accessToken = session.user.accessToken
 
-      const accessToken = session.user.accessToken
-
-      if (accessToken) {
-        try {
-          const response = await fetch('http://127.0.0.1:8000/usuario/projects/view_project_all/', {
-            headers: {
-              'Accept': '*/*',
-              'Authorization': `Bearer ${accessToken}`
-            }
-          })
-
-          if (response.ok) {
-            const data = await response.json()
-            const projectsWithExtras = data.map((project: Project, index: number) => ({
-              ...project,
-              colorScheme: colorSchemes[index % colorSchemes.length]
-            }))
-            setProjects(projectsWithExtras)
-          } else {
-            console.error('Failed to fetch projects')
+    if (accessToken) {
+      try {
+        setLoading(true)
+        const response = await fetch('http://127.0.0.1:8000/usuario/projects/view_project_all/', {
+          headers: {
+            'Accept': '*/*',
+            'Authorization': `Bearer ${accessToken}`
           }
-        } catch (error) {
-          console.error('Error fetching projects:', error)
-        } finally {
-          setLoading(false)
-        }
-      } else {
-        console.error('No access token found')
-        setLoading(false)
-        router.push('/')
-      }
-    }
+        })
 
-    fetchProjects()
+        if (response.ok) {
+          const data = await response.json()
+          const projectsWithExtras = data.map((project: Project, index: number) => ({
+            ...project,
+            colorScheme: colorSchemes[index % colorSchemes.length]
+          }))
+          setProjects(projectsWithExtras)
+        } else {
+          console.error('Failed to fetch projects')
+        }
+      } catch (error) {
+        console.error('Error fetching projects:', error)
+      } finally {
+        setLoading(false)
+      }
+    } else {
+      console.error('No access token found')
+      setLoading(false)
+      router.push('/')
+    }
   }, [status, session, router])
 
-  const handleViewDetails = (project: Project) => {
-    router.push(`/projects/${project.id}`)
-  }
+  useEffect(() => {
+    fetchProjects()
+  }, [fetchProjects])
 
-  const filteredProjects = projects.filter(project => 
-    project.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-    (filterType === 'all' || project.project_type === filterType)
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 300)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  const handleViewDetails = useCallback((project: Project) => {
+    router.push(`/projects/${project.id}`)
+  }, [router])
+
+  const filteredProjects = useMemo(() => 
+    projects.filter(project => 
+      project.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (filterType === 'all' || project.project_type === filterType)
+    ), [projects, searchTerm, filterType]
   )
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    )
+  const handleBackToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (
@@ -160,10 +166,32 @@ export default function ViewProjects() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filteredProjects.map((project) => (
-            <ProjectCard key={project.id} project={project} onViewDetails={handleViewDetails} />
-          ))}
+          {loading ? (
+            Array.from({ length: 6 }).map((_, index) => (
+              <SkeletonProjectCard key={`skeleton-${index}`} />
+            ))
+          ) : (
+            filteredProjects.map((project) => (
+              <ProjectCard key={project.id} project={project} onViewDetails={handleViewDetails} />
+            ))
+          )}
         </div>
+
+        {!loading && filteredProjects.length === 0 && (
+          <div className="text-center text-gray-500">
+            No se encontraron proyectos que coincidan con los criterios de búsqueda.
+          </div>
+        )}
+
+        {showBackToTop && (
+          <Button
+            className="fixed bottom-8 right-8 rounded-full p-3"
+            onClick={handleBackToTop}
+            aria-label="Volver arriba"
+          >
+            <ChevronUp className="h-6 w-6" />
+          </Button>
+        )}
       </div>
     </PageContainer>
   )
