@@ -145,7 +145,7 @@ export default function ViewProjects() {
   return (
     <PageContainer scrollable={true}>
       <div className="space-y-8">
-        <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+        <div className="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4">
           <Input 
             className="flex-grow" 
             placeholder="Buscar proyectos..." 
@@ -185,11 +185,11 @@ export default function ViewProjects() {
 
         {showBackToTop && (
           <Button
-            className="fixed bottom-8 right-8 rounded-full p-3"
+            className="fixed p-3 rounded-full bottom-8 right-8"
             onClick={handleBackToTop}
             aria-label="Volver arriba"
           >
-            <ChevronUp className="h-6 w-6" />
+            <ChevronUp className="w-6 h-6" />
           </Button>
         )}
       </div>

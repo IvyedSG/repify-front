@@ -4,6 +4,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { X } from 'lucide-react'
 import { convertToUniversitySiglas } from '@/lib/universityConverter'
 
 interface ProjectAdditionalInfoProps {
@@ -66,21 +67,24 @@ export function ProjectAdditionalInfo({ newProject, handleInputChange, userUnive
           onChange={(e) => handleInputChange('detailed_description', e.target.value.slice(0, 400))}
           required
           maxLength={400}
+          className="mt-2"
           placeholder="Proporcione una descripción completa del proyecto, sus objetivos y alcance"
         />
-        <p className="text-sm text-gray-500 mt-1">{newProject.detailed_description.length}/400 caracteres</p>
+        <p className="text-sm text-gray-500 mt-2">{newProject.detailed_description.length}/400 caracteres</p>
       </div>
       <div>
         <Label htmlFor="objectives">Objetivos del Proyecto (máximo 3)</Label>
-        <ul className="list-disc list-inside mb-2">
+        <div className="flex flex-wrap gap-2 mt-2">
           {newProject.objectives.map((objective, index) => (
-            <li key={index} className="flex items-center justify-between">
+            <div key={index} className="flex items-center bg-secondary/50 p-2 rounded-md">
               <span>{objective}</span>
-              <Button type="button" variant="ghost" onClick={() => removeObjective(index)}>Eliminar</Button>
-            </li>
+              <Button type="button" variant="ghost" size="icon" className="ml-2" onClick={() => removeObjective(index)}>
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
           ))}
-        </ul>
-        <div className="flex items-center space-x-2">
+        </div>
+        <div className="flex items-center space-x-2 mt-2">
           <Input
             id="new-objective"
             value={newObjective}
@@ -95,15 +99,17 @@ export function ProjectAdditionalInfo({ newProject, handleInputChange, userUnive
       </div>
       <div>
         <Label htmlFor="necessary_requirements">Requisitos Necesarios (máximo 5)</Label>
-        <ul className="list-disc list-inside mb-2">
+        <div className="flex flex-wrap gap-2 mt-2">
           {newProject.necessary_requirements.map((requirement, index) => (
-            <li key={index} className="flex items-center justify-between">
+            <div key={index} className="flex items-center bg-secondary/50 p-2 rounded-md">
               <span>{requirement}</span>
-              <Button type="button" variant="ghost" onClick={() => removeRequirement(index)}>Eliminar</Button>
-            </li>
+              <Button type="button" variant="ghost" size="icon" className="ml-2" onClick={() => removeRequirement(index)}>
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
           ))}
-        </ul>
-        <div className="flex items-center space-x-2">
+        </div>
+        <div className="flex items-center space-x-2 mt-2">
           <Input
             id="new-requirement"
             value={newRequirement}
