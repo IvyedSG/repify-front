@@ -38,6 +38,7 @@ export function UserNav() {
                 {session.user?.email}
               </p>
             </div>
+            
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
