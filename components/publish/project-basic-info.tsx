@@ -41,7 +41,7 @@ interface ProjectBasicInfoProps {
 
 export function ProjectBasicInfo({ newProject, handleInputChange }: ProjectBasicInfoProps) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div>
         <Label htmlFor="name">Nombre del Proyecto</Label>
         <Input
@@ -51,6 +51,7 @@ export function ProjectBasicInfo({ newProject, handleInputChange }: ProjectBasic
           onChange={(e) => handleInputChange('name', e.target.value.slice(0, 40))}
           required
           maxLength={40}
+          className="mt-2"
           placeholder="Ingrese un nombre conciso y descriptivo"
         />
         <p className="text-sm text-gray-500 mt-1">{newProject.name.length}/40 caracteres</p>
@@ -64,19 +65,22 @@ export function ProjectBasicInfo({ newProject, handleInputChange }: ProjectBasic
           onChange={(e) => handleInputChange('description', e.target.value.slice(0, 200))}
           required
           maxLength={200}
+          className="mt-2"
           placeholder="Resuma brevemente el propósito y alcance del proyecto"
         />
         <p className="text-sm text-gray-500 mt-1">{newProject.description.length}/200 caracteres</p>
       </div>
       <div>
         <Label>Tipo de Proyecto (Máximo 3)</Label>
-        <MultiSelect
-          options={projectTypes}
-          selected={newProject.project_type}
-          onChange={(selected) => handleInputChange('project_type', selected)}
-          placeholder="Seleccione hasta 3 tipos de proyecto"
-          maxItems={3}
-        />
+        <div className="mt-2">
+          <MultiSelect
+            options={projectTypes}
+            selected={newProject.project_type}
+            onChange={(selected) => handleInputChange('project_type', selected)}
+            placeholder="Seleccione hasta 3 tipos de proyecto"
+            maxItems={3}
+          />
+        </div>
       </div>
     </div>
   )

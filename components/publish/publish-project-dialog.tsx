@@ -101,14 +101,14 @@ export function PublishProjectDialog({ setIsDialogOpen }: PublishProjectDialogPr
   const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1))
 
   return (
-    <DialogContent className="sm:max-w-[550px]">
+    <DialogContent className="sm:max-w-[900px]">
       <DialogHeader>
         <DialogTitle>Publicar Nuevo Proyecto</DialogTitle>
         <DialogDescription>
           Completa la información de tu nuevo proyecto. Avanza por los pasos para llenar todos los detalles.
         </DialogDescription>
       </DialogHeader>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-8">
         {currentStep === 1 && (
           <ProjectBasicInfo 
             newProject={newProject} 
@@ -145,7 +145,7 @@ export function PublishProjectDialog({ setIsDialogOpen }: PublishProjectDialogPr
             <Button type="submit" disabled={isLoading}>
               {isLoading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   Publicando...
                 </>
               ) : (

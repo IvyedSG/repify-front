@@ -32,10 +32,4 @@ export const navItems: NavItem[] = [
     icon: 'perfil',
     label: 'Mi Perfil'
   },
-  {
-    title: 'Cerrar Sesión',
-    href: '/',
-    icon: 'salir',
-    label: 'Salir'
-  },
 ];
