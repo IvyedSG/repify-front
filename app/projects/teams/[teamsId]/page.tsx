@@ -70,7 +70,7 @@ export default function ProjectConfigPage() {
           start_date: project.start_date,
           end_date: project.end_date,
           status: project.status,
-          project_type: project.project_type.join(', '),
+          project_type: project.project_type,
           priority: project.priority,
           responsible: project.responsible,
           detailed_description: project.detailed_description,
