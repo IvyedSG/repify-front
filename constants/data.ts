@@ -32,4 +32,10 @@ export const navItems: NavItem[] = [
     icon: 'perfil',
     label: 'Mi Perfil'
   },
+  {
+    title: 'Formularios',
+    href: '/projects/forms',
+    icon: 'page',
+    label: 'Formularios'
+  },
 ];

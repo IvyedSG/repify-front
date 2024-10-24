@@ -4,9 +4,15 @@ import dynamic from 'next/dynamic'
 import { Metadata } from 'next'
 
 const UserRegisterForm = dynamic(() => import('@/components/forms/user-register-form'), {
-  loading: () => <div className="w-full h-[400px] flex items-center justify-center">Cargando formulario de registro...</div>,
+  loading: () => <LoadingPlaceholder />,
   ssr: false
 })
+
+const LoadingPlaceholder = () => (
+  <div className="w-full h-[400px] flex items-center justify-center">
+    Cargando formulario de registro...
+  </div>
+)
 
 export const metadata: Metadata = {
   title: 'Registro | Repify',
@@ -24,7 +30,7 @@ export default function RegisterPage() {
           ¡Cada vez más cerca de unirte a nuestra comunidad!
         </p>
       </div>
-      <Suspense fallback={<div className="w-full h-[400px] flex items-center justify-center">Cargando formulario de registro...</div>}>
+      <Suspense fallback={<LoadingPlaceholder />}>
         <UserRegisterForm />
       </Suspense>
       <p className="text-sm text-center text-muted-foreground">

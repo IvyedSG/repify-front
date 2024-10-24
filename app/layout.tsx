@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   title: 'Repify',
   description: 'Unique platform',
   icons: {
-    icon: '/icon.ico',
+    icon: '/favicon.ico',
   },
 };
 

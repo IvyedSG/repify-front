@@ -22,21 +22,33 @@ export default function ThreeJsLoader({ onLoadComplete }: { onLoadComplete: () =
   useEffect(() => {
     if (!canvasRef.current) return
 
-    const scene = new THREE.Scene()
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
-    const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, alpha: true })
+    let renderer: THREE.WebGLRenderer | null = null
+    let scene: THREE.Scene | null = null
+    let camera: THREE.PerspectiveCamera | null = null
+    let icosahedron: THREE.LineSegments | null = null
 
-    renderer.setSize(window.innerWidth, window.innerHeight)
-    renderer.setClearColor(0x000000, 0)
+    try {
+      scene = new THREE.Scene()
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
+      renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, alpha: true })
 
-    const geometry = new THREE.IcosahedronGeometry(1, 1)
-    const material = new THREE.LineBasicMaterial({ color: 0x666666 })
-    const icosahedron = new THREE.LineSegments(new THREE.WireframeGeometry(geometry), material)
-    scene.add(icosahedron)
+      renderer.setSize(window.innerWidth, window.innerHeight)
+      renderer.setClearColor(0x000000, 0)
 
-    camera.position.z = 5
+      const geometry = new THREE.IcosahedronGeometry(1, 1)
+      const material = new THREE.LineBasicMaterial({ color: 0x666666 })
+      icosahedron = new THREE.LineSegments(new THREE.WireframeGeometry(geometry), material)
+      scene.add(icosahedron)
+
+      camera.position.z = 5
+    } catch (error) {
+      console.error("Error initializing Three.js:", error)
+      onLoadComplete()
+      return
+    }
 
     const animate = () => {
+      if (!icosahedron || !renderer || !scene || !camera) return
       requestAnimationFrame(animate)
       icosahedron.rotation.x += 0.005
       icosahedron.rotation.y += 0.005
@@ -58,6 +70,7 @@ export default function ThreeJsLoader({ onLoadComplete }: { onLoadComplete: () =
     const progressInterval = setInterval(incrementProgress, 30)
 
     const handleResize = () => {
+      if (!camera || !renderer) return
       const width = window.innerWidth
       const height = window.innerHeight
       camera.aspect = width / height
@@ -70,8 +83,14 @@ export default function ThreeJsLoader({ onLoadComplete }: { onLoadComplete: () =
     return () => {
       clearInterval(progressInterval)
       window.removeEventListener('resize', handleResize)
+      if (renderer) {
+        renderer.dispose()
+      }
+      if (scene) {
+        scene.clear()
+      }
     }
-  }, [])
+  }, [onLoadComplete])
 
   return (
     <animated.div style={fadeProps} className="fixed inset-0 flex items-center justify-center bg-black">

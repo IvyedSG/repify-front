@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import React, { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
@@ -31,14 +31,14 @@ const formSchema = z.object({
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Las contraseñas no coinciden",
   path: ["confirmPassword"],
-});
+})
 
-type UserFormValue = z.infer<typeof formSchema>;
+type UserFormValue = z.infer<typeof formSchema>
 
 export default function UserRegisterForm() {
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState(1);
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
+  const [step, setStep] = useState(1)
   const form = useForm<UserFormValue>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,10 +54,10 @@ export default function UserRegisterForm() {
       achievements: '',
       photo: ''
     }
-  });
+  })
 
   const onSubmit = useCallback(async (data: UserFormValue) => {
-    setLoading(true);
+    setLoading(true)
     try {
       const response = await fetch('https://repo-s7h0.onrender.com/usuario/login/Register/', {
         method: 'POST',
@@ -65,36 +65,36 @@ export default function UserRegisterForm() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
-      });
+      })
 
       if (response.ok) {
-        toast.success('¡Bienvenido a bordo! Preparando tu espacio...');
-        setTimeout(() => router.push('/'), 2000);
+        toast.success('¡Bienvenido a bordo! Preparando tu espacio...')
+        setTimeout(() => router.push('/'), 2000)
       } else {
-        const errorData = await response.json();
-        toast.error(`Ups, algo salió mal: ${errorData.message || 'Intenta nuevamente'}`);
+        const errorData = await response.json()
+        toast.error(`Ups, algo salió mal: ${errorData.message || 'Intenta nuevamente'}`)
       }
     } catch (error) {
-      console.error('Error durante el registro:', error);
-      toast.error('Error inesperado. ¿Podrías intentarlo de nuevo?');
+      console.error('Error durante el registro:', error)
+      toast.error('Error inesperado. ¿Podrías intentarlo de nuevo?')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  }, [router]);
+  }, [router])
 
   const nextStep = useCallback(async () => {
     const fields = step === 1 ? ['email', 'password', 'confirmPassword'] :
                    step === 2 ? ['first_name', 'last_name'] :
                    step === 3 ? ['university', 'career', 'cycle'] :
-                   ['biography', 'achievements'];
+                   ['biography', 'achievements']
   
-    const isValid = await form.trigger(fields);
+    const isValid = await form.trigger(fields)
     if (isValid && step < 4) {
-      setStep(prevStep => prevStep + 1);
+      setStep(prevStep => prevStep + 1)
     }
-  }, [form, step]);
+  }, [form, step])
 
-  const prevStep = useCallback(() => setStep(prevStep => prevStep - 1), []);
+  const prevStep = useCallback(() => setStep(prevStep => prevStep - 1), [])
 
   const renderStep = useCallback((currentStep: number) => {
     const stepComponents = [
@@ -102,17 +102,17 @@ export default function UserRegisterForm() {
       <PersonalInfoStep key="personal" form={form} loading={loading} />,
       <AcademicInfoStep key="academic" form={form} loading={loading} />,
       <ProfileInfoStep key="profile" form={form} loading={loading} />
-    ];
+    ]
 
-    return stepComponents[currentStep - 1];
-  }, [form, loading]);
+    return stepComponents[currentStep - 1]
+  }, [form, loading])
 
   const stepTitles = [
     "Crea tu cuenta",
     "Cuéntanos sobre ti",
     "Tu información académica",
     "Perfil del estudiante"
-  ];
+  ]
 
   return (
     <>
@@ -153,7 +153,7 @@ export default function UserRegisterForm() {
               )}
             </div>
             {step === 4 && (
-              <Button type="submit" disabled={loading}   className="w-full mt-4">
+              <Button type="submit" disabled={loading} className="w-full mt-4">
                 {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -168,5 +168,5 @@ export default function UserRegisterForm() {
         </Form>
       </div>
     </>
-  );
+  )
 }

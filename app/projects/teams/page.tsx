@@ -97,7 +97,9 @@ export default function ProjectsPage() {
     )
   }, [allProjects, searchTerm])
 
-  const getStatusIcon = useCallback((status: string) => {
+  const getStatusIcon = useCallback((status: string | null) => {
+    if (!status) return <Clock className="h-4 w-4 text-gray-500" />
+  
     switch (status.toLowerCase()) {
       case 'planificando':
       case 'en pausa':
@@ -112,6 +114,7 @@ export default function ProjectsPage() {
         return <Clock className="h-4 w-4 text-gray-500" />
     }
   }, [])
+  
 
   const getPriorityColor = useCallback((priority: string) => {
     switch (priority.toLowerCase()) {
