@@ -2,7 +2,7 @@ import React from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { Settings, FileText, Users, BarChart, List, UserPlus } from 'lucide-react'
+import { Settings, FileText, Users, BarChart, List, UserPlus, UserCheck } from 'lucide-react'
 
 interface ProjectConfigSidebarProps {
   activeSection: string;
@@ -12,11 +12,12 @@ interface ProjectConfigSidebarProps {
 export default function ProjectConfigSidebar({ activeSection, setActiveSection }: ProjectConfigSidebarProps) {
   const sectionIcons = {
     general: <Settings className="w-6 h-6" />,
-    details: <FileText className="w-6 h-6" />,
-    team: <Users className="w-6 h-6" />,
-    progress: <BarChart className="w-6 h-6" />,
-    requirements: <List className="w-6 h-6" />,
-    applications: <UserPlus className="w-6 h-6" />,
+    detalles: <FileText className="w-6 h-6" />,
+    equipo: <Users className="w-6 h-6" />,
+    progreso: <BarChart className="w-6 h-6" />,
+    requerimientos: <List className="w-6 h-6" />,
+    aplicaciones: <UserPlus className="w-6 h-6" />,
+    solicitudes: <UserCheck className="w-6 h-6" />
   }
 
   return (

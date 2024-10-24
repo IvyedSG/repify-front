@@ -1,8 +1,9 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
+import useSWR from 'swr'
 import PageContainer from '@/components/layout/page-container'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -15,7 +16,6 @@ import {
   DropdownMenuContent, 
   DropdownMenuItem, 
   DropdownMenuLabel, 
-  DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu'
 import { PublishProjectDialog } from '@/components/publish/publish-project-dialog'
@@ -24,17 +24,15 @@ import { DetailedProjectDialog } from '../../../components/myprojects/dialogproj
 import { 
   Users, 
   Settings, 
-  PlusCircle, 
-  CheckCircle, 
   Clock, 
+  CheckCircle, 
   AlertCircle, 
   XCircle, 
   Calendar, 
   Flag, 
-  BarChart, 
-  Plus,
-  Loader2
+  Plus
 } from 'lucide-react'
+import { Skeleton } from '@/components/ui/skeleton'
 
 type Project = {
   id: number
@@ -58,105 +56,73 @@ type Project = {
   name_responsible: string
 }
 
+const fetcher = async (url: string, token: string) => {
+  const res = await fetch(url, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
+  if (res.ok) {
+    return res.json()
+  }
+  if (res.status === 404) {
+    return [] // Return an empty array for 404 responses
+  }
+  throw new Error('An error occurred while fetching the data.')
+}
+
 export default function ProjectsPage() {
   const { data: session } = useSession()
-  const [myProjects, setMyProjects] = useState<Project[]>([])
-  const [collaboratedProjects, setCollaboratedProjects] = useState<Project[]>([])
   const [searchTerm, setSearchTerm] = useState('')
-  const [loading, setLoading] = useState(true)
-  const [errorMyProjects, setErrorMyProjects] = useState<string | null>(null)
-  const [errorCollaboratedProjects, setErrorCollaboratedProjects] = useState<string | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [isDetailedDialogOpen, setIsDetailedDialogOpen] = useState(false)
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      if (session?.user?.accessToken) {
-        setLoading(true)
-        
-        // Fetch my projects
-        try {
-          const myProjectsResponse = await fetch('http://127.0.0.1:8000/usuario/projects/my-projects/', {
-            headers: { 'Authorization': `Bearer ${session.user.accessToken}` }
-          })
-          if (myProjectsResponse.ok) {
-            const myProjectsData = await myProjectsResponse.json()
-            setMyProjects(myProjectsData)
-          } else {
-            setErrorMyProjects('Failed to fetch my projects')
-            setMyProjects([])
-          }
-        } catch (error) {
-          console.error('Error fetching my projects:', error)
-          setErrorMyProjects('Error fetching my projects')
-          setMyProjects([])
-        }
-
-        // Fetch collaborated projects
-        try {
-          const collaboratedProjectsResponse = await fetch('http://127.0.0.1:8000/usuario/projects/my-collaborated-projects/', {
-            headers: { 'Authorization': `Bearer ${session.user.accessToken}` }
-          })
-          if (collaboratedProjectsResponse.ok) {
-            const collaboratedProjectsData = await collaboratedProjectsResponse.json()
-            setCollaboratedProjects(collaboratedProjectsData)
-          } else if (collaboratedProjectsResponse.status === 404) {
-            // If 404, assume no collaborated projects
-            setCollaboratedProjects([])
-          } else {
-            setErrorCollaboratedProjects('Failed to fetch collaborated projects')
-            setCollaboratedProjects([])
-          }
-        } catch (error) {
-          console.error('Error fetching collaborated projects:', error)
-          setErrorCollaboratedProjects('Error fetching collaborated projects')
-          setCollaboratedProjects([])
-        }
-
-        setLoading(false)
-      }
-    }
-
-    fetchProjects()
-  }, [session])
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    )
-  }
-
-  const allProjects = [...myProjects, ...collaboratedProjects]
-
-  const filteredProjects = allProjects.filter(project =>
-    project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    project.description.toLowerCase().includes(searchTerm.toLowerCase())
+  const { data: myProjects, error: myProjectsError } = useSWR<Project[]>(
+    session?.user?.accessToken ? ['http://127.0.0.1:8000/usuario/projects/my-projects/', session.user.accessToken] : null,
+    ([url, token]) => fetcher(url, token)
   )
 
-  const getStatusIcon = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'planificando': return <Clock className="h-4 w-4 text-yellow-500" />
-      case 'en pausa': return <Clock className="h-4 w-4 text-yellow-500" />
-      case 'en progreso': return <AlertCircle className="h-4 w-4 text-blue-500" />
-      case 'completado': return <CheckCircle className="h-4 w-4 text-green-500" />
-      case 'cancelado': return <AlertCircle className="h-4 w-4 text-red-500" />
-      default: return <Clock className="h-4 w-4 text-gray-500" />
-    }
-  }
+  const { data: collaboratedProjects, error: collaboratedProjectsError } = useSWR<Project[]>(
+    session?.user?.accessToken ? ['http://127.0.0.1:8000/usuario/projects/my-collaborated-projects/', session.user.accessToken] : null,
+    ([url, token]) => fetcher(url, token)
+  )
 
-  const getPriorityColor = (priority: string) => {
+  const allProjects = useMemo(() => {
+    return [...(myProjects || []), ...(collaboratedProjects || [])]
+  }, [myProjects, collaboratedProjects])
+
+  const filteredProjects = useMemo(() => {
+    return allProjects.filter(project =>
+      project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      project.description.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  }, [allProjects, searchTerm])
+
+  const getStatusIcon = useCallback((status: string) => {
+    switch (status.toLowerCase()) {
+      case 'planificando':
+      case 'en pausa':
+        return <Clock className="h-4 w-4 text-yellow-500" />
+      case 'en progreso':
+        return <AlertCircle className="h-4 w-4 text-blue-500" />
+      case 'completado':
+        return <CheckCircle className="h-4 w-4 text-green-500" />
+      case 'cancelado':
+        return <AlertCircle className="h-4 w-4 text-red-500" />
+      default:
+        return <Clock className="h-4 w-4 text-gray-500" />
+    }
+  }, [])
+
+  const getPriorityColor = useCallback((priority: string) => {
     switch (priority.toLowerCase()) {
       case 'alta': return 'text-red-500'
       case 'media': return 'text-yellow-500'
       case 'baja': return 'text-green-500'
       default: return 'text-gray-500'
     }
-  }
+  }, [])
 
-  const renderProjectCard = (project: Project, isLeader: boolean) => (
+  const renderProjectCard = useCallback((project: Project, isLeader: boolean) => (
     <Card key={project.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
@@ -218,7 +184,6 @@ export default function ProjectsPage() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>Gestión del Proyecto</DropdownMenuLabel>
-                  
                   <DropdownMenuItem asChild>
                     <Link href={`/projects/teams/${project.id}`}>
                       <Settings className="mr-2 h-4 w-4" />
@@ -232,23 +197,73 @@ export default function ProjectsPage() {
         </div>
       </CardContent>
     </Card>
-  )
+  ), [getStatusIcon, getPriorityColor])
 
-  const renderEmptyState = (message: string) => (
+  const renderEmptyState = useCallback((message: string) => (
     <div className="flex flex-col items-center justify-center h-64">
       <Clock className="h-16 w-16 text-gray-400 mb-4" />
       <p className="text-xl font-semibold text-gray-600">{message}</p>
     </div>
-  )
+  ), [])
 
-  const renderErrorState = (message: string) => (
+  const renderErrorState = useCallback((message: string) => (
     <div className="flex flex-col items-center justify-center h-64">
       <XCircle className="h-16 w-16 text-red-500 mb-4" />
       <p className="text-xl font-semibold text-red-600">{message}</p>
     </div>
-  )
+  ), [])
 
-  const renderContent = (tab: 'all' | 'leader' | 'member') => {
+  const renderSkeletonCard = useCallback(() => (
+    <Card className="overflow-hidden">
+      <CardHeader className="pb-2">
+        <div className="flex justify-between items-start">
+          <Skeleton className="h-6 w-3/4" />
+          <Skeleton className="h-5 w-16" />
+        </div>
+        <Skeleton className="h-4 w-full mt-2" />
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            {[...Array(4)].map((_, i) => (
+              <Skeleton key={i} className="h-4 w-full" />
+            ))}
+          </div>
+          <Skeleton className="h-4 w-full" />
+          <div className="flex flex-wrap gap-2">
+            {[...Array(3)].map((_, i) => (
+              <Skeleton key={i} className="h-6 w-16" />
+            ))}
+          </div>
+          <Skeleton className="h-2 w-full" />
+          <div className="flex justify-between items-center pt-4">
+            <Skeleton className="h-9 w-24" />
+            <Skeleton className="h-8 w-8 rounded-full" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  ), [])
+
+  const renderContent = useCallback((tab: 'all' | 'leader' | 'member') => {
+    if (myProjectsError) {
+      return renderErrorState("Error al cargar los proyectos que lideras. Por favor, intente de nuevo más tarde.")
+    }
+
+    if (collaboratedProjectsError && collaboratedProjectsError.message !== 'An error occurred while fetching the data.') {
+      return renderErrorState("Error al cargar los proyectos en los que participas. Por favor, intente de nuevo más tarde.")
+    }
+
+    if (!myProjects || !collaboratedProjects) {
+      return (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {[...Array(6)].map((_, i) => (
+            <div key={i}>{renderSkeletonCard()}</div>
+          ))}
+        </div>
+      )
+    }
+
     const projectsToShow = 
       tab === 'all' ? filteredProjects :
       tab === 'leader' ? myProjects.filter(p => filteredProjects.includes(p)) :
@@ -272,7 +287,8 @@ export default function ProjectsPage() {
         ))}
       </div>
     )
-  }
+  }, [myProjects, collaboratedProjects, myProjectsError, collaboratedProjectsError, filteredProjects, renderProjectCard, renderEmptyState, renderErrorState, renderSkeletonCard])
+
 
   return (
     <PageContainer scrollable={true}>

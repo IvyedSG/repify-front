@@ -10,6 +10,8 @@ import { ProjectCard } from '@/components/ProjectCard'
 import { SkeletonProjectCard } from '@/components/skeletons/SkeletonProjectCard'
 import { Button } from '@/components/ui/button'
 import { ChevronUp } from 'lucide-react'
+import { useInView } from 'react-intersection-observer'
+import useSWR from 'swr'
 
 interface ColorScheme {
   primary: string
@@ -68,55 +70,40 @@ const projectTypes = [
   "Biomédico"
 ]
 
+const fetcher = async (url: string, accessToken: string) => {
+  const res = await fetch(url, {
+    headers: {
+      'Accept': '*/*',
+      'Authorization': `Bearer ${accessToken}`
+    }
+  })
+  if (!res.ok) throw new Error('Failed to fetch projects')
+  return res.json()
+}
+
 export default function ViewProjects() {
-  const [projects, setProjects] = useState<Project[]>([])
-  const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterType, setFilterType] = useState('all')
   const [showBackToTop, setShowBackToTop] = useState(false)
   const router = useRouter()
   const { data: session, status } = useSession()
+  const [ref, inView] = useInView({
+    triggerOnce: true,
+    rootMargin: '200px 0px',
+  })
 
-  const fetchProjects = useCallback(async () => {
-    if (status === 'loading' || !session) return
-
-    const accessToken = session.user.accessToken
-
-    if (accessToken) {
-      try {
-        setLoading(true)
-        const response = await fetch('http://127.0.0.1:8000/usuario/projects/view_project_all/', {
-          headers: {
-            'Accept': '*/*',
-            'Authorization': `Bearer ${accessToken}`
-          }
-        })
-
-        if (response.ok) {
-          const data = await response.json()
-          const projectsWithExtras = data.map((project: Project, index: number) => ({
-            ...project,
-            colorScheme: colorSchemes[index % colorSchemes.length]
-          }))
-          setProjects(projectsWithExtras)
-        } else {
-          console.error('Failed to fetch projects')
-        }
-      } catch (error) {
-        console.error('Error fetching projects:', error)
-      } finally {
-        setLoading(false)
-      }
-    } else {
-      console.error('No access token found')
-      setLoading(false)
-      router.push('/')
+  const { data: projects, error } = useSWR(
+    status === 'authenticated' && inView
+      ? ['http://127.0.0.1:8000/usuario/projects/view_project_all/', session.user.accessToken]
+      : null,
+    ([url, token]) => fetcher(url, token),
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
     }
-  }, [status, session, router])
+  )
 
-  useEffect(() => {
-    fetchProjects()
-  }, [fetchProjects])
+  const loading = !projects && !error && status === 'authenticated'
 
   useEffect(() => {
     const handleScroll = () => {
@@ -132,15 +119,25 @@ export default function ViewProjects() {
   }, [router])
 
   const filteredProjects = useMemo(() => 
-    projects.filter(project => 
-      project.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      (filterType === 'all' || project.project_type === filterType)
-    ), [projects, searchTerm, filterType]
+    projects
+      ? projects
+          .map((project: Project, index: number) => ({
+            ...project,
+            colorScheme: colorSchemes[index % colorSchemes.length]
+          }))
+          .filter(project => 
+            project.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+            (filterType === 'all' || project.project_type === filterType)
+          )
+      : [],
+    [projects, searchTerm, filterType]
   )
 
   const handleBackToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
+
+  if (error) return <div>Failed to load projects</div>
 
   return (
     <PageContainer scrollable={true}>
@@ -165,7 +162,7 @@ export default function ViewProjects() {
           </Select>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div ref={ref} className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {loading ? (
             Array.from({ length: 6 }).map((_, index) => (
               <SkeletonProjectCard key={`skeleton-${index}`} />
