@@ -55,7 +55,6 @@ export default function ResetPasswordPage() {
       })
       if (response.ok) {
         toast.success('Contraseña restablecida con éxito')
-        // Redirect to login page after successful password reset
         setTimeout(() => window.location.href = '/', 2000)
       } else {
         throw new Error('Error al restablecer la contraseña')
@@ -74,7 +73,6 @@ export default function ResetPasswordPage() {
       return newCode
     })
 
-    // Move to next input if value is entered
     if (value && index < 5) {
       const nextInput = document.getElementById(`code-${index + 1}`) as HTMLInputElement
       if (nextInput) nextInput.focus()
@@ -144,7 +142,7 @@ export default function ResetPasswordPage() {
             />
           </div>
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? 'Restableciendo...' : 'Restablecer Contraseña'}
+            {isLoading ? 'Restableciendo...' : 'Restablecer  Contraseña'}
           </Button>
         </form>
       )}

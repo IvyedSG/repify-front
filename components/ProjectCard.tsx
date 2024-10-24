@@ -5,7 +5,6 @@ import { Progress } from "@/components/ui/progress"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { CalendarIcon, Users, GraduationCap, Briefcase, AlertTriangle } from 'lucide-react'
 
-
 interface Project {
   id: number
   name: string
@@ -53,13 +52,13 @@ const ProjectCard = memo(({ project, onViewDetails }: ProjectCardProps) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase()
   }
 
-  const formatDate = (date) => {
+  const formatDate = (date: string) => {
     return new Intl.DateTimeFormat('es-ES', {
       day: 'numeric',
       month: 'long',
       year: 'numeric',
-    }).format(new Date(date));
-  };
+    }).format(new Date(date))
+  }
 
   const priorityColors = {
     'Alta': 'text-red-600 dark:text-red-400',
@@ -89,11 +88,11 @@ const ProjectCard = memo(({ project, onViewDetails }: ProjectCardProps) => {
           <div className="flex flex-wrap items-center dark:text-gray-300 text-gray-600">
             <Briefcase className="w-4 h-4 mr-2 flex-shrink-0" />
             <div className="flex flex-wrap gap-1">
-              {project.project_type.map((type, index) => (
-                <span key={index} className="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-full text-xs">
-                  {type}
-                </span>
-              ))}
+            {project.project_type?.map((type, index) => (
+              <span key={index} className="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-full text-xs">
+                {type}
+              </span>
+            )) || <span>No especificado</span>}
             </div>
           </div>
           <div className="flex items-center">

@@ -9,36 +9,33 @@ const DynamicContent = dynamic(() => import('@/components/DynamicContent'), { ss
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
-  const [loadDynamicContent, setLoadDynamicContent] = useState(true) // Activado por defecto
-  const fpsRef = useRef<number[]>([]) // Guardar los FPS medidos
+  const [loadDynamicContent, setLoadDynamicContent] = useState(true)
+  const fpsRef = useRef<number[]>([])
 
-  // Medir rendimiento usando requestAnimationFrame
-  const measurePerformance = () => {
-    let lastTimestamp = performance.now()
+  useEffect(() => {
+    const measurePerformance = () => {
+      let lastTimestamp = performance.now()
 
-    const updateFPS = (now: number) => {
-      const delta = now - lastTimestamp
-      lastTimestamp = now
+      const updateFPS = (now: number) => {
+        const delta = now - lastTimestamp
+        lastTimestamp = now
 
-      const fps = 1000 / delta
-      fpsRef.current.push(fps)
+        const fps = 1000 / delta
+        fpsRef.current.push(fps)
 
-      // Limitar las mediciones a las últimas 60
-      if (fpsRef.current.length > 60) fpsRef.current.shift()
+        if (fpsRef.current.length > 60) fpsRef.current.shift()
 
-      // Calcular el promedio de FPS y desactivar contenido si es bajo
-      const avgFPS = fpsRef.current.reduce((a, b) => a + b) / fpsRef.current.length
-      if (avgFPS < 30) setLoadDynamicContent(false) // Desactivar si FPS < 30
+        const avgFPS = fpsRef.current.reduce((a, b) => a + b) / fpsRef.current.length
+        if (avgFPS < 30) setLoadDynamicContent(false)
+
+        requestAnimationFrame(updateFPS)
+      }
 
       requestAnimationFrame(updateFPS)
     }
 
-    requestAnimationFrame(updateFPS)
-  }
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 3000) // Ajusta si es necesario
-    measurePerformance() // Iniciar medición de FPS
+    const timer = setTimeout(() => setIsLoading(false), 3000)
+    measurePerformance()
 
     return () => clearTimeout(timer)
   }, [])
@@ -47,7 +44,6 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
     return <ThreeJsLoader onLoadComplete={() => setIsLoading(false)} />
   }
 
-  // Mostrar solo el login si el contenido dinámico está desactivado
   if (!loadDynamicContent) {
     return (
       <div className="flex h-screen w-full items-center justify-center">

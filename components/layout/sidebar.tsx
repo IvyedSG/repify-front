@@ -33,12 +33,13 @@ export default function Sidebar({ className }: SidebarProps) {
           target="_blank"
         >
         
-          <Image
+        <Image
             src="/logo.webp"
-            alt="Logo"
-            width={40} 
+            alt="Logo de Repify"
+            width={40}
             height={40}
             className="mr-2"
+            priority
           />
         </Link>
       </div>

@@ -133,9 +133,9 @@ export default function ViewProjects() {
     [projects, searchTerm, filterType]
   )
 
-  const handleBackToTop = () => {
+  const handleBackToTop = useCallback(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
+  }, [])
 
   if (error) return <div>Failed to load projects</div>
 

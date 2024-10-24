@@ -9,7 +9,7 @@ const ViewProjects = dynamic(() => import('@/components/ViewProjects'), {
 
 export default function ProjectsPage() {
   return (
-    <div className="w-full max-w-[100%] mx-auto px-4 py-6 h-full"> {/* Personaliza el ancho aquí */}
+    <div className="w-full max-w-full mx-auto px-4 py-6 h-full">
       <Suspense fallback={<SkeletonProjects />}>
         <ViewProjects />
       </Suspense>
