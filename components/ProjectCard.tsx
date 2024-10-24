@@ -53,6 +53,14 @@ const ProjectCard = memo(({ project, onViewDetails }: ProjectCardProps) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase()
   }
 
+  const formatDate = (date) => {
+    return new Intl.DateTimeFormat('es-ES', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    }).format(new Date(date));
+  };
+
   const priorityColors = {
     'Alta': 'text-red-600 dark:text-red-400',
     'Media': 'text-yellow-600 dark:text-yellow-400',
@@ -134,9 +142,11 @@ const ProjectCard = memo(({ project, onViewDetails }: ProjectCardProps) => {
         </div>
 
         <div className="flex items-center text-sm dark:text-gray-400 text-gray-500">
-          <CalendarIcon className="mr-2 h-4 w-4 flex-shrink-0" />
-          <span>{new Date(project.start_date).toLocaleDateString()} - {new Date(project.end_date).toLocaleDateString()}</span>
-        </div>
+        <CalendarIcon className="mr-2 h-4 w-4 flex-shrink-0" />
+        <span>
+          Del {formatDate(project.start_date)} al {formatDate(project.end_date)}
+        </span>
+      </div>
       </CardContent>
       
       <CardFooter className="p-6 flex justify-between items-center border-t dark:border-gray-700 border-gray-200">

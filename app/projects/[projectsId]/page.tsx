@@ -35,6 +35,7 @@ interface Project {
   type_aplyuni: string;
   creator_name: string;
   collaboration_count: number;
+  has_applied: boolean;
 }
 
 export default function ProjectDetailsPage() {
@@ -81,7 +82,7 @@ export default function ProjectDetailsPage() {
   }, [session])
 
   const handleApply = async () => {
-    if (!project) return
+    if (!project || project.has_applied) return
 
     setApplying(true)
     try {
@@ -99,6 +100,7 @@ export default function ProjectDetailsPage() {
           title: "Aplicación enviada",
           description: "Tu solicitud ha sido enviada exitosamente.",
         })
+        setProject({ ...project, has_applied: true })
       } else {
         const errorData = await response.json()
         throw new Error(errorData.detail || 'Failed to apply to the project')
@@ -170,10 +172,11 @@ export default function ProjectDetailsPage() {
 
               <Button 
                 onClick={handleApply} 
-                disabled={!project.accepting_applications || applying}
+                disabled={!project.accepting_applications || applying || project.has_applied}
                 className="w-full py-6 text-lg"
               >
                 {applying ? 'Enviando aplicación...' : 
+                 project.has_applied ? 'Ya has aplicado' :
                  project.accepting_applications ? 'Aplicar al Proyecto' : 'No se aceptan aplicaciones'}
               </Button>
 

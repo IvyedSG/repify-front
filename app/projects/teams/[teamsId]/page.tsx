@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -9,7 +9,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { toast } from '@/components/ui/use-toast'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import { Pencil, Save, X, Trash2 } from 'lucide-react'
+import { Pencil, Save, X, Trash2, AlertCircle } from 'lucide-react'
 import { Project } from '@/types/types'
 import ProjectConfigSidebar from '@/components/teams/ProjectConfigSidebar'
 import GeneralSection from '@/components/teams/GeneralSection'
@@ -18,9 +18,11 @@ import TeamSection from '@/components/teams/TeamSection'
 import ProgressSection from '@/components/teams/ProgressSection'
 import RequirementsSection from '@/components/teams/RequirementsSection'
 import ApplicationsSection from '@/components/teams/AplicationSection'
+import ProjectJoinRequests from '@/components/teams/ProjectJoinRequests'
 
 export default function ProjectConfigPage() {
   const { teamsId } = useParams()
+  const router = useRouter()
   const { data: session } = useSession()
   const [project, setProject] = useState<Project | null>(null)
   const [loading, setLoading] = useState(true)
@@ -61,57 +63,85 @@ export default function ProjectConfigPage() {
   const handleSave = async () => {
     if (session?.user?.accessToken && project) {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/usuario/projects/update-project/`, {
+        const payload = {
+          project_id: project.id,
+          name: project.name,
+          description: project.description,
+          start_date: project.start_date,
+          end_date: project.end_date,
+          status: project.status,
+          project_type: project.project_type,
+          priority: project.priority,
+          responsible: project.responsible,
+          detailed_description: project.detailed_description,
+          objectives: project.objectives,
+          necessary_requirements: project.necessary_requirements,
+          progress: project.progress,
+          accepting_applications: project.accepting_applications,
+          type_aplyuni: project.type_aplyuni
+        };
+  
+        console.log('Payload enviado al endpoint PUT:', payload);
+  
+        const response = await fetch('http://127.0.0.1:8000/usuario/projects/update-project/', {
           method: 'PUT',
           headers: {
             'Authorization': `Bearer ${session.user.accessToken}`,
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({
-            id_project: project.id,
-            name: project.name,
-            description: project.description,
-            start_date: project.start_date,
-            end_date: project.end_date,
-            status: project.status,
-            project_type: project.project_type.join(', '),
-            priority: project.priority,
-            responsible: 0, // Assuming this is not editable in the UI
-            detailed_description: project.detailed_description,
-            objectives: project.objectives,
-            necessary_requirements: project.necessary_requirements,
-            progress: project.progress,
-            accepting_applications: project.accepting_applications,
-            type_aplyuni: project.type_aplyuni,
-            name_responsible: project.name_responsible
-          })
-        })
+          body: JSON.stringify(payload)
+        });
+  
         if (response.ok) {
           toast({
             title: "Éxito",
             description: "Proyecto actualizado correctamente",
-          })
-          setIsEditing(false)
+          });
+          setIsEditing(false);
         } else {
-          throw new Error('Failed to update project')
+          throw new Error('Failed to update project');
         }
       } catch (error) {
-        console.error('Error updating project:', error)
+        console.error('Error updating project:', error);
         toast({
           title: "Error",
           description: "No se pudo actualizar el proyecto",
           variant: "destructive",
+        });
+      }
+    }
+  };
+  
+
+  const handleDelete = async () => {
+    if (session?.user?.accessToken && project) {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/usuario/projects/delete_project/', {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${session.user.accessToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ id: project.id })
+        })
+        if (response.ok) {
+          toast({
+            title: "Éxito",
+            description: "Proyecto eliminado correctamente",
+          })
+          router.push('/projects/teams') // Asegúrate de que esta ruta sea correcta para tu aplicación
+        } else {
+          throw new Error('Failed to delete project')
+        }
+      } catch (error) {
+        console.error('Error deleting project:', error)
+        toast({
+          title: "Error",
+          description: "No se pudo eliminar el proyecto",
+          variant: "destructive",
         })
       }
     }
-  }
-
-  const handleDelete = async () => {
-    // This is a placeholder for the delete functionality
-    toast({
-      title: "Información",
-      description: "La funcionalidad de eliminación aún no está implementada.",
-    })
   }
 
   if (loading) {
@@ -171,7 +201,9 @@ export default function ProjectConfigPage() {
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete}>Eliminar</AlertDialogAction>
+                    <AlertDialogAction onClick={handleDelete}>
+                      Eliminar
+                    </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
@@ -193,20 +225,23 @@ export default function ProjectConfigPage() {
                   {activeSection === 'general' && (
                     <GeneralSection project={project} setProject={setProject} isEditing={isEditing} />
                   )}
-                  {activeSection === 'details' && (
+                  {activeSection === 'detalles' && (
                     <DetailsSection project={project} setProject={setProject} isEditing={isEditing} />
                   )}
-                  {activeSection === 'team' && (
+                  {activeSection === 'equipo' && (
                     <TeamSection project={project} />
                   )}
-                  {activeSection === 'progress' && (
+                  {activeSection === 'progreso' && (
                     <ProgressSection project={project} setProject={setProject} isEditing={isEditing} />
                   )}
-                  {activeSection === 'requirements' && (
+                  {activeSection === 'requerimientos' && (
                     <RequirementsSection project={project} setProject={setProject} isEditing={isEditing} />
                   )}
-                  {activeSection === 'applications' && (
+                  {activeSection === 'aplicaciones' && (
                     <ApplicationsSection project={project} setProject={setProject} isEditing={isEditing} />
+                  )}
+                  {activeSection === 'solicitudes' && (
+                    <ProjectJoinRequests projectId={project.id} />
                   )}
                 </motion.div>
               </CardContent>
