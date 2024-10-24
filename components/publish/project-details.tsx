@@ -43,8 +43,8 @@ export function ProjectDetails({ newProject, handleInputChange }: ProjectDetails
   return (
     <div className="space-y-4">
       <div>
-        <Label htmlFor="status">Estado del Proyecto</Label>
-        <div className="mt-2"> {/* Puedes ajustar el valor de "mt-4" según el espacio que necesites */}
+        <Label htmlFor="status ">Estado del Proyecto</Label>
+        <div className="mt-2">
   <Select 
     name="status" 
     value={newProject.status} 
@@ -63,11 +63,10 @@ export function ProjectDetails({ newProject, handleInputChange }: ProjectDetails
     </SelectContent>
   </Select>
 </div>
-
       </div>
       <div>
         <Label htmlFor="priority">Prioridad</Label>
-        <div className="mt-2"> {/* Ajusta el valor de "mt-4" según el espaciado que prefieras */}
+        <div className="mt-2">
   <Select 
     name="priority" 
     value={newProject.priority} 
@@ -88,7 +87,7 @@ export function ProjectDetails({ newProject, handleInputChange }: ProjectDetails
       </div>
       <div>
         <Label htmlFor="end_date">Fecha de Finalización</Label>
-        <div className="mt-2"> {/* Ajusta "mt-4" según el espaciado que necesites */}
+        <div className="mt-2">
   <Popover>
     <PopoverTrigger asChild>
       <Button
@@ -98,7 +97,7 @@ export function ProjectDetails({ newProject, handleInputChange }: ProjectDetails
           !newProject.end_date && "text-muted-foreground"
         )}
       >
-        <CalendarIcon className="mr-2 h-4 w-4" />
+        <CalendarIcon className="w-4 h-4 mr-2" />
         {newProject.end_date ? formatDateForDisplay(newProject.end_date) : <span>Selecciona una fecha</span>}
       </Button>
     </PopoverTrigger>
@@ -113,10 +112,11 @@ export function ProjectDetails({ newProject, handleInputChange }: ProjectDetails
     </PopoverContent>
   </Popover>
 </div>
+
       </div>
       <div>
         <Label htmlFor="progress">Progreso (%)</Label>
-        <div className="mt-4"> {/* Ajusta "mt-4" según el espaciado que necesites */}
+        <div className="mt-4">
   <Slider
     id="progress"
     min={0}
@@ -127,7 +127,7 @@ export function ProjectDetails({ newProject, handleInputChange }: ProjectDetails
   />
 </div>
 
-        <p className="text-sm text-gray-500 mt-1">{newProject.progress}%</p>
+        <p className="mt-1 text-sm text-gray-500">{newProject.progress}%</p>
       </div>
     </div>
   )
