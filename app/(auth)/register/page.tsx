@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 
 export default function RegisterPage() {
   return (
-    <div className="mx-auto w-full max-w-md space-y-6">
+    <div className="w-full max-w-md mx-auto space-y-6">
       <div className="space-y-2 text-center">
         <h1 className="text-3xl font-semibold tracking-tight">
           Regístrate
@@ -33,24 +33,24 @@ export default function RegisterPage() {
       <Suspense fallback={<LoadingPlaceholder />}>
         <UserRegisterForm />
       </Suspense>
-      <p className="text-center text-sm text-muted-foreground">
+      <p className="text-sm text-center text-muted-foreground">
         Al hacer clic en continuar, aceptas nuestros{' '}
         <Link
-          href="/terms"
+          href="/servicios"
           className="underline underline-offset-4 hover:text-primary"
         >
           Términos de Servicio
         </Link>{' '}
         y{' '}
         <Link
-          href="/privacy"
+          href="/terminos"
           className="underline underline-offset-4 hover:text-primary"
         >
           Política de Privacidad
         </Link>
         .
       </p>
-      <p className="text-center text-sm text-muted-foreground">
+      <p className="text-sm text-center text-muted-foreground">
         ¿Ya tienes una cuenta?{' '}
         <Link
           href="/"

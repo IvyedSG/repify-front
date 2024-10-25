@@ -22,7 +22,8 @@ const universities = [
   "Universidad Tecnológica del Perú",
   "Universidad Científica del Sur",
   "Universidad Privada Arzobispo Loayza",
-  "Universidad Autónoma del Perú"
+  "Universidad Autónoma del Perú",
+  "Universidad Cesar Vallejo"
 ]
 
 const careers = [
@@ -68,7 +69,7 @@ export function AcademicInfoStep({ form, loading }: AcademicInfoStepProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="flex items-center mb-2">
-              <School className="mr-2 h-4 w-4" aria-hidden="true" />
+              <School className="w-4 h-4 mr-2" aria-hidden="true" />
               Universidad
             </FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value} disabled={loading}>
@@ -95,7 +96,7 @@ export function AcademicInfoStep({ form, loading }: AcademicInfoStepProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="flex items-center mb-2">
-              <BookOpen className="mr-2 h-4 w-4" aria-hidden="true" />
+              <BookOpen className="w-4 h-4 mr-2" aria-hidden="true" />
               Carrera
             </FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value} disabled={loading}>
@@ -122,7 +123,7 @@ export function AcademicInfoStep({ form, loading }: AcademicInfoStepProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="flex items-center mb-2">
-              <BookOpen className="mr-2 h-4 w-4" aria-hidden="true" />
+              <BookOpen className="w-4 h-4 mr-2" aria-hidden="true" />
               Ciclo actual
             </FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value} disabled={loading}>

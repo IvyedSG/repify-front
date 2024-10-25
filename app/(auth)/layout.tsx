@@ -46,7 +46,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
 
   if (!loadDynamicContent) {
     return (
-      <div className="flex h-screen w-full items-center justify-center">
+      <div className="flex items-center justify-center w-full h-screen">
         {children}
       </div>
     )
@@ -54,7 +54,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex h-screen">
-      <div className="relative hidden w-1/2 flex-col bg-black p-10 text-white lg:flex">
+      <div className="relative flex-col hidden w-1/2 p-10 text-white bg-black lg:flex">
         <div className="flex items-center text-lg font-medium">
           <Image
             src="/logo.webp"
@@ -68,7 +68,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         </div>
         <DynamicContent />
       </div>
-      <div className="flex w-full items-center justify-center lg:w-1/2">
+      <div className="flex items-center justify-center w-full lg:w-1/2">
         {children}
       </div>
     </div>
