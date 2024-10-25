@@ -104,7 +104,7 @@ export default function UserProfilePage() {
               <CardHeader>
                 <div className="flex flex-col sm:flex-row items-center gap-4">
                   <Avatar className="h-24 w-24">
-                    <AvatarImage src="/placeholder-user.jpg" alt={profile.name} />
+                    <AvatarImage src="/placeholder-user.png" alt={profile.name} />
                     <AvatarFallback>{profile.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                   </Avatar>
                   <div className="space-y-1 text-center sm:text-left">

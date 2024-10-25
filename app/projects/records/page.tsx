@@ -147,7 +147,7 @@ export default function StudentRecordsPage() {
           </div>
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">
-              <AvatarImage src="/placeholder-user.jpg" alt="Student" />
+              <AvatarImage src="/placeholder-user.png" alt="Student" />
               <AvatarFallback>JS</AvatarFallback>
             </Avatar>
             <div>
