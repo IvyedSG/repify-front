@@ -30,6 +30,7 @@ export default function ProjectConfigPage() {
   const [activeSection, setActiveSection] = useState('general')
   const [isEditing, setIsEditing] = useState(false)
 
+  
   useEffect(() => {
     const fetchProjectDetails = async () => {
       if (session?.user?.accessToken) {
