@@ -28,7 +28,7 @@ const colorSchemes: ColorScheme[] = [
 ]
 
 interface Project {
-  id: number // Change this to number
+  id: number
   name: string
   description: string
   start_date: string
@@ -129,7 +129,7 @@ export default function ViewProjects() {
             project.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
             (filterType === 'all' || project.project_type === filterType)
           )
-      : [],
+      : [], 
     [projects, searchTerm, filterType]
   )
 
@@ -140,7 +140,7 @@ export default function ViewProjects() {
   if (error) return <div>Failed to load projects</div>
 
   return (
-    <PageContainer scrollable={true}>
+    <PageContainer>
       <div className="space-y-8">
         <div className="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4">
           <Input 
@@ -162,7 +162,8 @@ export default function ViewProjects() {
           </Select>
         </div>
 
-        <div ref={ref} className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {/* Cambia el diseño responsivo para una card por fila a partir de 1150px */}
+        <div ref={ref} className="grid gap-6 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3">
           {loading ? (
             Array.from({ length: 6 }).map((_, index) => (
               <SkeletonProjectCard key={`skeleton-${index}`} />
@@ -193,3 +194,4 @@ export default function ViewProjects() {
     </PageContainer>
   )
 }
+
