@@ -36,14 +36,14 @@ export default function RegisterPage() {
       <p className="text-sm text-center text-muted-foreground">
         Al hacer clic en continuar, aceptas nuestros{' '}
         <Link
-          href="/app/(auth)/Terminos/page.tsx"
+          href="/servicios"
           className="underline underline-offset-4 hover:text-primary"
         >
           Términos de Servicio
         </Link>{' '}
         y{' '}
         <Link
-          href="/app/(auth)/Terminos/page.tsx"
+          href="/terminos"
           className="underline underline-offset-4 hover:text-primary"
         >
           Política de Privacidad

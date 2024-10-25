@@ -54,7 +54,7 @@ export function ProjectBasicInfo({ newProject, handleInputChange }: ProjectBasic
           className="mt-2"
           placeholder="Ingrese un nombre conciso y descriptivo"
         />
-        <p className="text-sm text-gray-500 mt-1">{newProject.name.length}/40 caracteres</p>
+        <p className="mt-1 text-sm text-gray-500">{newProject.name.length}/40 caracteres</p>
       </div>
       <div>
         <Label htmlFor="description">Descripción Breve</Label>
@@ -68,7 +68,7 @@ export function ProjectBasicInfo({ newProject, handleInputChange }: ProjectBasic
           className="mt-2"
           placeholder="Resuma brevemente el propósito y alcance del proyecto"
         />
-        <p className="text-sm text-gray-500 mt-1">{newProject.description.length}/200 caracteres</p>
+        <p className="mt-1 text-sm text-gray-500">{newProject.description.length}/200 caracteres</p>
       </div>
       <div>
         <Label>Tipo de Proyecto (Máximo 3)</Label>
@@ -78,7 +78,7 @@ export function ProjectBasicInfo({ newProject, handleInputChange }: ProjectBasic
             selected={newProject.project_type}
             onChange={(selected) => handleInputChange('project_type', selected)}
             placeholder="Seleccione hasta 3 tipos de proyecto"
-            maxItems={3}
+            maxItems={3} // Fuerza que el menú se abra hacia abajo
           />
         </div>
       </div>
