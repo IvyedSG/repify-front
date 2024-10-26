@@ -163,7 +163,10 @@ export default function ApplicationsPage() {
     }
     const filteredApps = filterApplications(tab)
     if (filteredApps.length === 0) {
-      return <div className="col-span-full text-center text-gray-500">No hay solicitudes actuales</div>
+      if (applications && applications.length === 0) {
+        return <div className="col-span-full text-center text-gray-500">Aún no te has postulado a ningún proyecto.</div>
+      }
+      return <div className="col-span-full text-center text-gray-500">No hay solicitudes que coincidan con los criterios de búsqueda.</div>
     }
     return filteredApps.map((application) => (
       <Card key={application.id_solicitud}>
@@ -202,7 +205,7 @@ export default function ApplicationsPage() {
         </CardContent>
       </Card>
     ))
-  }, [loading, error, filterApplications, getStatusColor, ApplicationSkeleton])
+  }, [loading, error, filterApplications, getStatusColor, ApplicationSkeleton, applications])
 
   return (
     <PageContainer scrollable={true}>

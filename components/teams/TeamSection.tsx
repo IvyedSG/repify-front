@@ -42,7 +42,7 @@ export default function TeamSection({ project, onCollaboratorRemoved }: TeamSect
 
   const handleRemoveCollaborator = async (userId: number) => {
     if (!session?.user?.accessToken) return
-
+    console.log("Enviando DELETE para:", { userId, projectId: project.id });
     setIsRemoving(true)
     try {
       const response = await fetch('http://127.0.0.1:8000/usuario/projects/delete_collaborator/', {
