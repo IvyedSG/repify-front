@@ -2,10 +2,10 @@ import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface ProjectObjectivesProps {
-  objectives: string[];
+  objectives?: string[]; 
 }
 
-export default function ProjectObjectives({ objectives }: ProjectObjectivesProps) {
+export default function ProjectObjectives({ objectives = [] }: ProjectObjectivesProps) {
   return (
     <Card>
       <CardHeader>

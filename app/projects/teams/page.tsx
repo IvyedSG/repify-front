@@ -34,26 +34,31 @@ import {
 } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 
+type Collaborator = {
+  id: number;
+  name: string;
+}
+
 type Project = {
-  id: number
-  name: string
-  description: string
-  start_date: string
-  end_date: string
-  status: string
-  project_type: string[]
-  priority: string
-  responsible: number
-  detailed_description: string
-  type_aplyuni: string
-  objectives: string[]
-  necessary_requirements: string[]
-  progress: number
-  accepting_applications: boolean
-  name_uniuser: string
-  collaboration_count: number
-  collaborators: string[]
-  name_responsible: string
+  id: number;
+  name: string;
+  description: string;
+  start_date: string;
+  end_date: string;
+  status: string;
+  project_type: string[];
+  priority: string;
+  responsible: number;
+  name_responsible: string;
+  detailed_description: string;
+  type_aplyuni: string;
+  objectives: string[];
+  necessary_requirements: string[];
+  progress: number;
+  accepting_applications: boolean;
+  name_uniuser: string;
+  collaboration_count: number;
+  collaborators: Collaborator[];
 }
 
 const fetcher = async (url: string, token: string) => {
@@ -101,20 +106,19 @@ export default function ProjectsPage() {
     if (!status) return <Clock className="h-4 w-4 text-gray-500" />
   
     switch (status.toLowerCase()) {
-      case 'planificando':
-      case 'en pausa':
+      case 'planificación':
+      case 'en espera':
         return <Clock className="h-4 w-4 text-yellow-500" />
       case 'en progreso':
         return <AlertCircle className="h-4 w-4 text-blue-500" />
       case 'completado':
         return <CheckCircle className="h-4 w-4 text-green-500" />
       case 'cancelado':
-        return <AlertCircle className="h-4 w-4 text-red-500" />
+        return <XCircle className="h-4 w-4 text-red-500" />
       default:
         return <Clock className="h-4 w-4 text-gray-500" />
     }
   }, [])
-  
 
   const getPriorityColor = useCallback((priority: string) => {
     switch (priority.toLowerCase()) {
