@@ -16,19 +16,18 @@ export default function NotFound() {
         Something&apos;s missing
       </h2>
       <p>
-        Sorry, the page you are looking for doesn&apos;t exist or has been
-        moved.
+        Lo siento, la página a la que intentas ingresar no existe.
       </p>
       <div className="mt-8 flex justify-center gap-2">
         <Button onClick={() => router.back()} variant="default" size="lg">
-          Go back
+          Volver
         </Button>
         <Button
           onClick={() => router.push('/projects')}
           variant="ghost"
           size="lg"
         >
-          Back to Home
+          Ir a proyectos
         </Button>
       </div>
     </div>

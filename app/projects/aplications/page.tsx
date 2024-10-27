@@ -19,7 +19,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 import useSWR, { mutate } from 'swr'
 
@@ -41,7 +40,12 @@ const fetcher = async (url: string, token: string) => {
       'Authorization': `Bearer ${token}`
     }
   })
-  if (!res.ok) throw new Error('Failed to fetch applications')
+  if (res.status === 404) {
+    return [] // Return an empty array for 404 responses
+  }
+  if (!res.ok) {
+    throw new Error('Failed to fetch applications')
+  }
   return res.json()
 }
 
@@ -53,7 +57,7 @@ export default function ApplicationsPage() {
   const [applicationToDelete, setApplicationToDelete] = useState<number | null>(null)
 
   const { data: applications, error } = useSWR<Application[]>(
-    session?.user.accessToken ? ['http://127.0.0.1:8000/usuario/projects/solicitudes_user/', session.user.accessToken] : null,
+    session?.user?.accessToken ? ['http://127.0.0.1:8000/usuario/projects/solicitudes_user/', session.user.accessToken] : null,
     ([url, token]) => fetcher(url, token),
     {
       revalidateOnFocus: false,
@@ -106,7 +110,7 @@ export default function ApplicationsPage() {
   ), [])
 
   const handleDeleteApplication = async () => {
-    if (!session?.user.accessToken || applicationToDelete === null) {
+    if (!session?.user?.accessToken || applicationToDelete === null) {
       toast({
         title: "Error",
         description: "You must be logged in to perform this action.",
@@ -162,11 +166,14 @@ export default function ApplicationsPage() {
       return <div className="col-span-full text-center text-red-500">Failed to load applications. Please try again later.</div>
     }
     const filteredApps = filterApplications(tab)
-    if (filteredApps.length === 0) {
-      if (applications && applications.length === 0) {
-        return <div className="col-span-full text-center text-gray-500">Aún no te has postulado a ningún proyecto.</div>
-      }
-      return <div className="col-span-full text-center text-gray-500">No hay solicitudes que coincidan con los criterios de búsqueda.</div>
+    if (applications?.length === 0 || filteredApps.length === 0) {
+      return (
+        <div className="col-span-full text-center text-gray-500">
+          {applications?.length === 0
+            ? 'Aún no has postulado a ningún proyecto.'
+            : 'No hay solicitudes que coincidan con los criterios de búsqueda.'}
+        </div>
+      )
     }
     return filteredApps.map((application) => (
       <Card key={application.id_solicitud}>
@@ -188,7 +195,6 @@ export default function ApplicationsPage() {
           {application.status.toLowerCase() === 'pendiente' ? (
             <Button 
               className="w-full mt-4" 
-              
               onClick={() => {
                 setApplicationToDelete(application.id_solicitud)
                 setDeleteDialogOpen(true)
