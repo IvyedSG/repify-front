@@ -51,11 +51,11 @@ export default function FormsSection() {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const addNewForm = (newForm: Omit<Form, 'id' | 'date'>) => {
+  const addNewForm = (newForm: Omit<Form, "id" | "date">) => {
     const newFormWithId = {
       ...newForm,
       id: (forms.length + 1).toString(),
-      date: new Date().toISOString().split('T')[0],
+      date: new Date().toISOString().split("T")[0],
     };
     setForms((prevForms) => [...prevForms, newFormWithId]);
   };
@@ -66,7 +66,7 @@ export default function FormsSection() {
         <div>
           <h2 className="text-3xl font-bold tracking-tight">FORMULARIOS</h2>
           <p className="text-muted-foreground">
-            SUBA Y VISUALIZE OTROS FORMULARIOS DE LA COMUNDIAD
+            FORMULARIOS DE LA COMUNIDAD
           </p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -74,12 +74,15 @@ export default function FormsSection() {
             <Button>+ Publicar Formulario</Button>
           </DialogTrigger>
           <DialogContent>
-            <CreateFormDialog setIsDialogOpen={setIsDialogOpen} onFormSubmit={addNewForm} />
+            <CreateFormDialog
+              setIsDialogOpen={setIsDialogOpen}
+              onFormSubmit={addNewForm}
+            />
           </DialogContent>
         </Dialog>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
         {forms.map((form) => (
           <Card key={form.id} className="flex flex-col">
             <CardHeader className="flex flex-row items-center gap-4">
@@ -87,7 +90,12 @@ export default function FormsSection() {
               <div>
                 <CardTitle>{form.title}</CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  <a href={form.link} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                  <a
+                    href={form.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline"
+                  >
                     {form.link}
                   </a>
                 </p>
@@ -97,10 +105,10 @@ export default function FormsSection() {
             <div
               className="bg-muted p-2 text-center text-sm text-muted-foreground"
               style={{
-                borderTopLeftRadius: '0px',
-                borderTopRightRadius: '0px',
-                borderBottomLeftRadius: '8px', // Ajusta este valor según lo que necesites
-                borderBottomRightRadius: '8px',
+                borderTopLeftRadius: "0px",
+                borderTopRightRadius: "0px",
+                borderBottomLeftRadius: "8px",
+                borderBottomRightRadius: "8px",
               }}
             >
               Subido el {new Date(form.date).toLocaleDateString()}
