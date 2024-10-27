@@ -31,45 +31,25 @@ interface DetailedProjectDialogProps {
   project: Project | null
   isOpen: boolean
   onOpenChange: (open: boolean) => void
-  isDarkMode: boolean
 }
 
-export function DetailedProjectDialog({ project, isOpen, onOpenChange, isDarkMode }: DetailedProjectDialogProps) {
+export default function DetailedProjectDialog({ project, isOpen, onOpenChange }: DetailedProjectDialogProps) {
   if (!project) return null
 
   const getStatusIcon = (status: string) => {
-    const iconColor = isDarkMode ? {
-      'en progreso': "text-blue-500",
-      'completado': "text-green-500",
-      'default': "text-yellow-500"
-    } : {
-      'en progreso': "text-blue-600",
-      'completado': "text-green-600",
-      'default': "text-yellow-600"
-    }
-
     switch (status.toLowerCase()) {
-      case 'en progreso': return <AlertCircle className={`w-4 h-4 ${iconColor['en progreso']} sm:w-5 sm:h-5`} />
-      case 'completado': return <CheckCircle className={`w-4 h-4 ${iconColor['completado']} sm:w-5 sm:h-5`} />
-      default: return <Clock className={`w-4 h-4 ${iconColor['default']} sm:w-5 sm:h-5`} />
+      case 'en progreso': return <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+      case 'completado': return <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+      default: return <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
     }
   }
 
   const getPriorityColor = (priority: string) => {
-    if (isDarkMode) {
-      switch (priority.toLowerCase()) {
-        case 'alta': return 'bg-red-500 text-white'
-        case 'media': return 'bg-yellow-500 text-black'
-        case 'baja': return 'bg-green-500 text-white'
-        default: return 'bg-gray-500 text-white'
-      }
-    } else {
-      switch (priority.toLowerCase()) {
-        case 'alta': return 'bg-red-100 text-red-800'
-        case 'media': return 'bg-yellow-100 text-yellow-800'
-        case 'baja': return 'bg-green-100 text-green-800'
-        default: return 'bg-gray-100 text-gray-800'
-      }
+    switch (priority.toLowerCase()) {
+      case 'alta': return 'bg-red-500 text-white'
+      case 'media': return 'bg-yellow-500 text-black'
+      case 'baja': return 'bg-green-500 text-white'
+      default: return 'bg-gray-500 text-white'
     }
   }
 
@@ -115,19 +95,19 @@ export function DetailedProjectDialog({ project, isOpen, onOpenChange, isDarkMod
 
               <div className={`grid grid-cols-1 gap-3 p-3 text-xs rounded-lg sm:grid-cols-2 sm:gap-4 sm:p-4 sm:text-sm`}>
                 <div className="flex items-center">
-                  <Calendar className={`w-4 h-4 mr-2 ${themeStyles.icon} sm:w-5 sm:h-5`} />
+                  <Calendar className="w-4 h-4 mr-2 sm:w-5 sm:h-5" />
                   <span>Inicio: {project.start_date}</span>
                 </div>
                 <div className="flex items-center">
-                  <Calendar className={`w-4 h-4 mr-2 ${themeStyles.icon} sm:w-5 sm:h-5`} />
+                  <Calendar className="w-4 h-4 mr-2 sm:w-5 sm:h-5" />
                   <span>Fin: {project.end_date}</span>
                 </div>
                 <div className="flex items-center">
-                  <Users className={`w-4 h-4 mr-2 ${themeStyles.icon} sm:w-5 sm:h-5`} />
+                  <Users className="w-4 h-4 mr-2 sm:w-5 sm:h-5" />
                   <span>{project.name_uniuser}</span>
                 </div>
                 <div className="flex items-center">
-                  <Flag className={`w-4 h-4 mr-2 ${themeStyles.icon} sm:w-5 sm:h-5`} />
+                  <Flag className="w-4 h-4 mr-2 sm:w-5 sm:h-5" />
                   <span>{getUniversityDisplay(project.type_aplyuni)}</span>
                 </div>
               </div>
@@ -139,7 +119,7 @@ export function DetailedProjectDialog({ project, isOpen, onOpenChange, isDarkMod
                   <FileText className={`w-4 h-4 mr-2 ${themeStyles.icon} sm:w-5 sm:h-5`} />
                   Descripción Detallada
                 </h3>
-                <p className={`text-xs ${themeStyles.subtext} sm:text-sm`}>{project.detailed_description}</p>
+                <p className="text-xs sm:text-sm">{project.detailed_description}</p>
               </div>
 
               <div className={`p-3 rounded-lg sm:p-4`}>
@@ -147,7 +127,7 @@ export function DetailedProjectDialog({ project, isOpen, onOpenChange, isDarkMod
                   <Target className={`w-4 h-4 mr-2 ${themeStyles.icon} sm:w-5 sm:h-5`} />
                   Objetivos
                 </h3>
-                <ul className={`text-xs ${themeStyles.subtext} list-disc list-inside sm:text-sm`}>
+                <ul className="text-xs list-disc list-inside sm:text-sm">
                   {project.objectives.map((objective, index) => (
                     <li key={index}>{objective}</li>
                   ))}
@@ -159,7 +139,7 @@ export function DetailedProjectDialog({ project, isOpen, onOpenChange, isDarkMod
                   <List className={`w-4 h-4 mr-2 ${themeStyles.icon} sm:w-5 sm:h-5`} />
                   Requisitos Necesarios
                 </h3>
-                <ul className={`text-xs ${themeStyles.subtext} list-disc list-inside sm:text-sm`}>
+                <ul className="text-xs list-disc list-inside sm:text-sm">
                   {project.necessary_requirements.map((requirement, index) => (
                     <li key={index}>{requirement}</li>
                   ))}
