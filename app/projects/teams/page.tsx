@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { PublishProjectDialog } from '@/components/publish/publish-project-dialog'
 import { Dialog, DialogTrigger } from "@/components/ui/dialog"
-import { DetailedProjectDialog } from '../../../components/myprojects/dialogproject'
+import DetailedProjectDialog from '@/components/myprojects/dialogproject'
 import { 
   Users, 
   Settings, 
