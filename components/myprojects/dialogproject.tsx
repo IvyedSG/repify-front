@@ -63,13 +63,13 @@ export default function DetailedProjectDialog({ project, isOpen, onOpenChange }:
   }
 
   const themeStyles = {
-    text: isDarkMode ? 'text-white' : 'text-gray-500', // Texto blanco en oscuro y gris en claro
-    subtext: isDarkMode ? 'text-gray-500' : 'text-gray-500', // Subtexto gris suave en ambos modos
-    icon: isDarkMode ? 'text-purple-400' : 'text-purple-600', // Íconos púrpura para destacar en ambos fondos
-    badge: isDarkMode ? 'text-purple-200 bg-purple-800 border-purple-500' : 'text-purple-700 bg-purple-200 border-purple-400', // Fondo y borde púrpura para el badge
-    progressBg: isDarkMode ? 'bg-gray-700' : 'bg-gray-300', // Fondo de progreso en gris para contraste
-    progressIndicator: isDarkMode ? 'bg-purple-500' : 'bg-purple-600', // Indicador de progreso en púrpura más vivo
-    title: isDarkMode ? 'text-purple-300' : 'text-purple-800', // Título en púrpura claro en oscuro y púrpura oscuro en claro
+    text:'text-gray-500', // Texto blanco en oscuro y gris en claro
+    subtext:'text-gray-500', // Subtexto gris suave en ambos modos
+    icon: 'text-purple-600', // Íconos púrpura para destacar en ambos fondos
+    badge:'text-purple-700 bg-purple-200 border-purple-400', // Fondo y borde púrpura para el badge
+    progressBg: 'bg-gray-300', // Fondo de progreso en gris para contraste
+    progressIndicator:'bg-purple-600', // Indicador de progreso en púrpura más vivo
+    title: 'text-purple-800', // Título en púrpura claro en oscuro y púrpura oscuro en claro
 };
 
 
