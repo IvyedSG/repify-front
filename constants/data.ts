@@ -27,15 +27,15 @@ export const navItems: NavItem[] = [
     label: 'Mis Records'
   },
   {
-    title: 'Perfil',
-    href: '/projects/profiles',
-    icon: 'perfil',
-    label: 'Mi Perfil'
-  },
-  {
     title: 'Formularios',
     href: '/projects/forms',
     icon: 'page',
     label: 'Formularios'
   },
+  {
+    title: 'Perfil',
+    href: '/projects/profiles',
+    icon: 'perfil',
+    label: 'Mi Perfil'
+  }
 ];

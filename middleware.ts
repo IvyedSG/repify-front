@@ -1,25 +1,41 @@
-import { NextResponse } from 'next/server'
-import { getToken } from 'next-auth/jwt'
-import type { NextRequest } from 'next/server'
+import { NextResponse } from 'next/server';
+import { getToken } from 'next-auth/jwt';
+import type { NextRequest } from 'next/server';
 
-const protectedRoutes = ['/projects']
+const protectedRoutes = ['/projects'];
 
 export async function middleware(req: NextRequest) {
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
+  const { pathname } = req.nextUrl;
 
-  const { pathname } = req.nextUrl
-
-  if (!token && protectedRoutes.some(route => pathname.startsWith(route))) {
-    return NextResponse.redirect(new URL('/', req.url))
+  if (!protectedRoutes.some(route => pathname.startsWith(route))) {
+    return NextResponse.next();
   }
 
-  if (token?.error === 'RefreshTokenExpired') {
-    return NextResponse.redirect(new URL('/', req.url))
+  try {
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+
+
+    if (!token) {
+      return redirectToLogin(req);
+    }
+
+    if (token.error === 'RefreshTokenExpired') {
+      return redirectToLogin(req);
+    }
+
+  } catch (error) {
+    console.error('Error en la autenticación:', error);
+    return redirectToLogin(req); 
   }
 
-  return NextResponse.next()
+  return NextResponse.next();
+}
+
+
+function redirectToLogin(req: NextRequest) {
+  return NextResponse.redirect(new URL('/', req.url));
 }
 
 export const config = {
   matcher: ['/projects/:path*'],
-}
+};
