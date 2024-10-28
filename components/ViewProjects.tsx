@@ -92,8 +92,21 @@ export default function ViewProjects() {
     rootMargin: '200px 0px',
   })
 
-  const { data: projects, error } = useSWR(
-    status === 'authenticated' && inView
+  // Fetch initial 3 projects
+  const { data: initialProjects, error: initialError } = useSWR(
+    status === 'authenticated'
+      ? ['http://127.0.0.1:8000/usuario/projects/view_recent_projects/', session.user.accessToken]
+      : null,
+    ([url, token]) => fetcher(url, token),
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
+  )
+
+  // Fetch all projects in the background
+  const { data: allProjects, error: allError } = useSWR(
+    status === 'authenticated' && initialProjects
       ? ['http://127.0.0.1:8000/usuario/projects/view_project_all/', session.user.accessToken]
       : null,
     ([url, token]) => fetcher(url, token),
@@ -103,7 +116,7 @@ export default function ViewProjects() {
     }
   )
 
-  const loading = !projects && !error && status === 'authenticated'
+  const loading = !initialProjects && !initialError && status === 'authenticated'
 
   useEffect(() => {
     const handleScroll = () => {
@@ -118,18 +131,18 @@ export default function ViewProjects() {
     router.push(`/projects/${project.id}`)
   }, [router])
 
+  const projects = useMemo(() => allProjects || initialProjects || [], [allProjects, initialProjects])
+
   const filteredProjects = useMemo(() => 
     projects
-      ? projects
-          .map((project: Project, index: number) => ({
-            ...project,
-            colorScheme: colorSchemes[index % colorSchemes.length]
-          }))
-          .filter(project => 
-            project.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-            (filterType === 'all' || project.project_type === filterType)
-          )
-      : [], 
+      .map((project: Project, index: number) => ({
+        ...project,
+        colorScheme: colorSchemes[index % colorSchemes.length]
+      }))
+      .filter(project => 
+        project.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        (filterType === 'all' || project.project_type === filterType)
+      ), 
     [projects, searchTerm, filterType]
   )
 
@@ -137,7 +150,7 @@ export default function ViewProjects() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [])
 
-  if (error) return <div>Failed to load projects</div>
+  if (initialError || allError) return <div>Failed to load projects</div>
 
   return (
     <PageContainer>
@@ -162,10 +175,9 @@ export default function ViewProjects() {
           </Select>
         </div>
 
-        {/* Cambia el diseño responsivo para una card por fila a partir de 1150px */}
         <div ref={ref} className="grid gap-6 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3">
           {loading ? (
-            Array.from({ length: 6 }).map((_, index) => (
+            Array.from({ length: 3 }).map((_, index) => (
               <SkeletonProjectCard key={`skeleton-${index}`} />
             ))
           ) : (
@@ -187,11 +199,10 @@ export default function ViewProjects() {
             onClick={handleBackToTop}
             aria-label="Volver arriba"
           >
-            <ChevronUp className="w-6 h-6" />
+            <ChevronUp className="w-6 w-6" />
           </Button>
         )}
       </div>
     </PageContainer>
   )
 }
-

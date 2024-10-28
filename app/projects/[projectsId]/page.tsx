@@ -63,23 +63,25 @@ export default function ProjectDetailsPage() {
         })
 
         if (response.ok) {
-          const data = await response.json()
-          setProject(data)
+          const data = await response.json();
+          setProject(data);
         } else {
-          throw new Error('Failed to fetch project details')
+          
+          router.push('/not-found');
         }
       } catch (error) {
-        console.error('Error fetching project details:', error)
-        setError('Failed to load project details. Please try again later.')
+        console.error('Error fetching project details:', error);
+
+        router.push('/not-found');
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
     if (session) {
-      fetchProjectDetails()
+      fetchProjectDetails();
     }
-  }, [session])
+  }, [session, router]);
 
   const handleApply = async () => {
     if (!project || project.has_applied) return

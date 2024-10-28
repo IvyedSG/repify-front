@@ -44,22 +44,23 @@ export default function ProjectConfigPage() {
             body: JSON.stringify({ id_project: Number(teamsId) })
           })
           if (response.ok) {
-            const projectData = await response.json()
-            setProject(projectData)
+            const projectData = await response.json();
+            setProject(projectData);
           } else {
-            setError('Failed to fetch project details')
+
+            router.push('/not-found');
           }
         } catch (error) {
-          console.error('Error fetching project details:', error)
-          setError('Error fetching project details')
+
+          router.push('/not-found');
         } finally {
-          setLoading(false)
+          setLoading(false);
         }
       }
-    }
+    };
 
-    fetchProjectDetails()
-  }, [session, teamsId])
+    fetchProjectDetails();
+  }, [session, teamsId, router]);
 
   const handleSave = async () => {
     if (session?.user?.accessToken && project) {
@@ -130,7 +131,7 @@ export default function ProjectConfigPage() {
             title: "Éxito",
             description: "Proyecto eliminado correctamente",
           })
-          router.push('/projects/teams') // Asegúrate de que esta ruta sea correcta para tu aplicación
+          router.push('/projects/teams') 
         } else {
           throw new Error('Failed to delete project')
         }

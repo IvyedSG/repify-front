@@ -10,6 +10,7 @@ import { signIn, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
+import { Eye, EyeOff } from 'lucide-react' 
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Ingresa un correo electrónico válido' }),
@@ -22,12 +23,15 @@ export default function UserAuthForm() {
   const router = useRouter()
   const { data: session, status } = useSession()
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const { toast } = useToast()
 
   const form = useForm<UserFormValue>({
     resolver: zodResolver(formSchema),
     defaultValues: { email: '', password: '' }
   })
+
+  const togglePasswordVisibility = () => setShowPassword(!showPassword)
 
   const onSubmit = useCallback(async (data: UserFormValue) => {
     setLoading(true)
@@ -94,7 +98,22 @@ export default function UserAuthForm() {
             <FormItem>
               <FormLabel>Contraseña</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="***********" disabled={loading} {...field} />
+                <div className="relative">
+                  <Input
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="***********"
+                    disabled={loading}
+                    {...field}
+                  />
+                  <button
+                    type="button"
+                    onClick={togglePasswordVisibility}
+                    className="absolute inset-y-0 right-0 px-3 flex items-center"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>

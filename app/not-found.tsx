@@ -13,21 +13,14 @@ export default function NotFound() {
         404
       </span>
       <h2 className="font-heading my-2 text-2xl font-bold">
-        Something&apos;s missing
+      Este proyecto está más perdido que un cachimbo en su primer día 😿
       </h2>
       <p>
         Lo siento, la página a la que intentas ingresar no existe.
       </p>
       <div className="mt-8 flex justify-center gap-2">
-        <Button onClick={() => router.back()} variant="default" size="lg">
+        <Button onClick={() => router.push('/projects')} variant="default" size="lg">
           Volver
-        </Button>
-        <Button
-          onClick={() => router.push('/projects')}
-          variant="ghost"
-          size="lg"
-        >
-          Ir a proyectos
         </Button>
       </div>
     </div>
