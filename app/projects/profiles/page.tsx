@@ -1,288 +1,284 @@
 "use client"
 
-import { useState } from 'react';
-import PageContainer from '@/components/layout/page-container';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
-import { toast } from '@/components/ui/use-toast';
-import { Book, Edit2, GraduationCap, Globe, MapPin, Save, User, AtSign, Bell } from 'lucide-react';
-import { Progress } from '@/components/ui/progress';
+import { useState } from 'react'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import useSWR, { mutate } from 'swr'
+import PageContainer from '@/components/layout/page-container'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
+import { toast } from '@/components/ui/use-toast'
+import { Edit2, Save, User, AtSign, Book, GraduationCap } from 'lucide-react'
+import { Progress } from '@/components/ui/progress'
+import { Skeleton } from '@/components/ui/skeleton'
 
-type UserProfile = {
-  name: string;
-  email: string;
-  bio: string;
-  location: string;
-  university: string;
-  major: string;
-  graduationYear: string;
-  interests: string[];
-  achievements: string[];
-  joinDate: string;
-  academicYear: string;
-};
+interface UserProfile {
+  id?: number
+  university: string
+  career: string
+  cycle: string
+  biography: string
+  interests: string[]
+  photo: string
+  achievements: string
+  created_at: string
+  email: string
+  first_name: string
+  last_name: string
+  date_joined: string
+}
 
-type UserSettings = {
-  emailNotifications: boolean;
-  language: string;
-  privacyLevel: 'public' | 'private' | 'university';
-};
+const fetcher = async (url: string, token: string) => {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ user_id: url.split('/').pop() })
+  })
+  if (!res.ok) throw new Error('Failed to fetch profile')
+  return res.json()
+}
 
-export default function UserProfilePage() {
-  const [isEditing, setIsEditing] = useState(false);
-  const [profile, setProfile] = useState<UserProfile>({
-    name: 'Ana García',
-    email: 'ana.garcia@universidad.edu',
-    bio: 'Estudiante apasionada por la investigación en biología molecular y su aplicación en la medicina regenerativa.',
-    location: 'Madrid, España',
-    university: 'Universidad Autónoma de Madrid',
-    major: 'Biología',
-    graduationYear: '2025',
-    interests: ['Biología Molecular', 'Medicina Regenerativa', 'Genética'],
-    achievements: ['Premio al Mejor Proyecto de Investigación 2023', 'Beca de Excelencia Académica'],
-    joinDate: '2022-09-01',
-    academicYear: '3er año',
-  });
+const ProfileSkeleton = () => (
+  <Card>
+    <CardHeader>
+      <div className="flex flex-col sm:flex-row items-center gap-4">
+        <Skeleton className="h-24 w-24 rounded-full" />
+        <div className="space-y-2 w-full">
+          <Skeleton className="h-8 w-3/4" />
+          <Skeleton className="h-4 w-1/2" />
+          <div className="flex flex-wrap gap-2">
+            <Skeleton className="h-6 w-20" />
+            <Skeleton className="h-6 w-24" />
+            <Skeleton className="h-6 w-16" />
+          </div>
+        </div>
+      </div>
+    </CardHeader>
+    <CardContent className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="space-y-2">
+            <Skeleton className="h-4 w-1/4" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        ))}
+        <div className="space-y-2 md:col-span-2">
+          <Skeleton className="h-4 w-1/4" />
+          <Skeleton className="h-24 w-full" />
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+)
 
-  const [settings, setSettings] = useState<UserSettings>({
-    emailNotifications: true,
-    language: 'es',
-    privacyLevel: 'university',
-  });
+export default function UserProfilePage({ userId }: { userId?: string }) {
+  const [isEditing, setIsEditing] = useState(false)
+  const { data: session } = useSession()
+  const router = useRouter()
+
+  const { data: profile, error, mutate } = useSWR<UserProfile>(
+    session?.user?.accessToken ? [`http://127.0.0.1:8000/usuario/perfil/profile/${userId || ''}`, session.user.accessToken] : null,
+    ([url, token]) => fetcher(url, token),
+    { revalidateOnFocus: false, revalidateOnReconnect: false }
+  )
+
+  const isOwnProfile = !userId || userId === session?.user?.id
 
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setProfile({ ...profile, [e.target.name]: e.target.value });
-  };
+    if (profile) {
+      mutate({ ...profile, [e.target.name]: e.target.value }, false)
+    }
+  }
 
-  const handleSettingsChange = (key: keyof UserSettings, value: any) => {
-    setSettings({ ...settings, [key]: value });
-  };
+  const handleInterestsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (profile) {
+      mutate({ ...profile, interests: e.target.value.split(',').map(item => item.trim()) }, false)
+    }
+  }
 
-  const handleSave = () => {
-    setIsEditing(false);
-    toast({
-      title: "Perfil Actualizado",
-      description: "Tu perfil ha sido actualizado exitosamente.",
-    });
-  };
+  const handleSave = async () => {
+    if (!profile || !session?.user?.accessToken) return
+
+    try {
+      const response = await fetch('http://127.0.0.1:8000/usuario/perfil/update-profile/', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.user.accessToken}`
+        },
+        body: JSON.stringify({
+          id: profile.id,
+          university: profile.university,
+          career: profile.career,
+          cycle: profile.cycle,
+          biography: profile.biography,
+          interests: profile.interests,
+          photo: profile.photo,
+          achievements: profile.achievements
+        })
+      })
+
+      if (!response.ok) throw new Error('Failed to update profile')
+
+      await mutate()
+      setIsEditing(false)
+      toast({
+        title: "Perfil Actualizado",
+        description: "Tu perfil ha sido actualizado exitosamente.",
+      })
+    } catch (error) {
+      console.error('Error updating profile:', error)
+      toast({
+        title: "Error",
+        description: "Failed to update profile. Please try again.",
+        variant: "destructive"
+      })
+    }
+  }
+
+  if (error) {
+    return <div>Error loading profile. Please try again later.</div>
+  }
+
+  if (!profile) {
+    return <ProfileSkeleton />
+  }
 
   return (
     <PageContainer scrollable={true}>
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <h2 className="text-3xl font-bold tracking-tight">Mi Perfil</h2>
-          <Button onClick={() => setIsEditing(!isEditing)}>
-            {isEditing ? (
-              <>
-                <Save className="mr-2 h-4 w-4" /> Guardar Cambios
-              </>
-            ) : (
-              <>
-                <Edit2 className="mr-2 h-4 w-4" /> Editar Perfil
-              </>
-            )}
-          </Button>
+          <h2 className="text-3xl font-bold tracking-tight">
+            {isOwnProfile ? 'Mi Perfil' : `Perfil de ${profile.first_name} ${profile.last_name}`}
+          </h2>
+          {isOwnProfile && (
+            <Button onClick={() => isEditing ? handleSave() : setIsEditing(true)}>
+              {isEditing ? (
+                <>
+                  <Save className="mr-2 h-4 w-4" /> Guardar Cambios
+                </>
+              ) : (
+                <>
+                  <Edit2 className="mr-2 h-4 w-4" /> Editar Perfil
+                </>
+              )}
+            </Button>
+          )}
         </div>
 
-        <Tabs defaultValue="profile" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="profile">Perfil</TabsTrigger>
-            <TabsTrigger value="settings">Configuración</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="profile">
-            <Card>
-              <CardHeader>
-                <div className="flex flex-col sm:flex-row items-center gap-4">
-                  <Avatar className="h-24 w-24">
-                    <AvatarImage src="/placeholder-user.png" alt={profile.name} />
-                    <AvatarFallback>{profile.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                  </Avatar>
-                  <div className="space-y-1 text-center sm:text-left">
-                    <h3 className="text-2xl font-semibold">{profile.name}</h3>
-                    <p className="text-sm text-muted-foreground">{profile.major} - {profile.academicYear}</p>
-                    <div className="flex flex-wrap justify-center sm:justify-start gap-2">
-                      {profile.interests.map((interest, index) => (
-                        <Badge key={index} variant="secondary">{interest}</Badge>
-                      ))}
-                    </div>
-                  </div>
+        <Card>
+          <CardHeader>
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <Avatar className="h-24 w-24">
+                <AvatarImage src={profile.photo || "/placeholder-user.png"} alt={`${profile.first_name} ${profile.last_name}`} />
+                <AvatarFallback>{profile.first_name[0]}{profile.last_name[0]}</AvatarFallback>
+              </Avatar>
+              <div className="space-y-1 text-center sm:text-left">
+                <h3 className="text-2xl font-semibold">{profile.first_name} {profile.last_name}</h3>
+                <p className="text-sm text-muted-foreground">{profile.career} - {profile.cycle} Ciclo</p>
+                <div className="flex flex-wrap justify-center sm:justify-start gap-2">
+                  {profile.interests.map((interest, index) => (
+                    <Badge key={index} variant="secondary">{interest}</Badge>
+                  ))}
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Nombre</Label>
-                    <Input
-                      id="name"
-                      name="name"
-                      value={profile.name}
-                      onChange={handleProfileChange}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Correo Electrónico</Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      value={profile.email}
-                      onChange={handleProfileChange}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                  <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="bio">Biografía</Label>
-                    <Textarea
-                      id="bio"
-                      name="bio"
-                      value={profile.bio}
-                      onChange={handleProfileChange}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="location">Ubicación</Label>
-                    <Input
-                      id="location"
-                      name="location"
-                      value={profile.location}
-                      onChange={handleProfileChange}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="university">Universidad</Label>
-                    <Input
-                      id="university"
-                      name="university"
-                      value={profile.university}
-                      onChange={handleProfileChange}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="major">Carrera</Label>
-                    <Input
-                      id="major"
-                      name="major"
-                      value={profile.major}
-                      onChange={handleProfileChange}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="graduationYear">Año de Graduación</Label>
-                    <Input
-                      id="graduationYear"
-                      name="graduationYear"
-                      value={profile.graduationYear}
-                      onChange={handleProfileChange}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                </div>
-                <Separator />
-                <div>
-                  <h4 className="font-semibold mb-2">Logros</h4>
-                  <ul className="list-disc list-inside space-y-1">
-                    {profile.achievements.map((achievement, index) => (
-                      <li key={index} className="text-sm">{achievement}</li>
-                    ))}
-                  </ul>
-                </div>
-                <Separator />
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                  <div className="flex items-center gap-2">
-                    <User className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">Miembro desde {profile.joinDate}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <GraduationCap className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">{profile.academicYear}</span>
-                  </div>
-                </div>
-              </CardContent>
-              {isEditing && (
-                <CardFooter>
-                  <Button onClick={handleSave} className="ml-auto">Guardar Cambios</Button>
-                </CardFooter>
-              )}
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="settings">
-            <Card>
-              <CardHeader>
-                <CardTitle>Configuración de la Cuenta</CardTitle>
-                <CardDescription>Gestiona tus preferencias y configuración de la cuenta</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="emailNotifications" className="flex items-center gap-2">
-                    <Bell className="h-4 w-4" />
-                    Notificaciones por Correo
-                  </Label>
-                  <Switch
-                    id="emailNotifications"
-                    checked={settings.emailNotifications}
-                    onCheckedChange={(checked) => handleSettingsChange('emailNotifications', checked)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="language" className="flex items-center gap-2">
-                    <Globe className="h-4 w-4" />
-                    Idioma
-                  </Label>
-                  <Select
-                    value={settings.language}
-                    onValueChange={(value) => handleSettingsChange('language', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecciona un idioma" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="es">Español</SelectItem>
-                      <SelectItem value="en">English</SelectItem>
-                      <SelectItem value="fr">Français</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="privacyLevel" className="flex items-center gap-2">
-                    <User className="h-4 w-4" />
-                    Nivel de Privacidad
-                  </Label>
-                  <Select
-                    value={settings.privacyLevel}
-                    onValueChange={(value: 'public' | 'private' | 'university') => handleSettingsChange('privacyLevel', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecciona el nivel de privacidad" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="public">Público</SelectItem>
-                      <SelectItem value="university">Solo Universidad</SelectItem>
-                      <SelectItem value="private">Privado</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Button onClick={() => toast({ title: "Configuración Guardada", description: "Tu configuración ha sido actualizada exitosamente." })} className="ml-auto">Guardar Configuración</Button>
-              </CardFooter>
-            </Card>
-          </TabsContent>
-        </Tabs>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="university">Universidad</Label>
+                <Input
+                  id="university"
+                  name="university"
+                  value={profile.university}
+                  onChange={handleProfileChange}
+                  disabled={!isEditing}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="career">Carrera</Label>
+                <Input
+                  id="career"
+                  name="career"
+                  value={profile.career}
+                  onChange={handleProfileChange}
+                  disabled={!isEditing}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="cycle">Ciclo</Label>
+                <Input
+                  id="cycle"
+                  name="cycle"
+                  value={profile.cycle}
+                  onChange={handleProfileChange}
+                  disabled={!isEditing}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Correo Electrónico</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  value={profile.email}
+                  disabled={true}
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="biography">Biografía</Label>
+                <Textarea
+                  id="biography"
+                  name="biography"
+                  value={profile.biography}
+                  onChange={handleProfileChange}
+                  disabled={!isEditing}
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="interests">Intereses (separados por comas)</Label>
+                <Input
+                  id="interests"
+                  name="interests"
+                  value={profile.interests.join(', ')}
+                  onChange={handleInterestsChange}
+                  disabled={!isEditing}
+                />
+              </div>
+            </div>
+            <Separator />
+            <div>
+              <h4 className="font-semibold mb-2">Logros</h4>
+              <Textarea
+                id="achievements"
+                name="achievements"
+                value={profile.achievements}
+                onChange={handleProfileChange}
+                disabled={!isEditing}
+              />
+            </div>
+            <Separator />
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+              <div className="flex items-center gap-2">
+                <User className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">Miembro desde {new Date(profile.date_joined).toLocaleDateString()}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <GraduationCap className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">{profile.cycle} Ciclo</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>
@@ -315,5 +311,5 @@ export default function UserProfilePage() {
         </Card>
       </div>
     </PageContainer>
-  );
+  )
 }
