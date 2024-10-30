@@ -112,17 +112,17 @@ export default function FormsSection() {
   const FormCardSkeleton = () => (
     <Card className="flex flex-col">
       <CardHeader className="flex flex-row items-center gap-4">
-        <Skeleton className="h-6 w-6 rounded-full" />
+        <Skeleton className="w-6 h-6 rounded-full" />
         <div className="flex-grow space-y-2">
-          <Skeleton className="h-4 w-3/4" />
-          <Skeleton className="h-3 w-1/2" />
+          <Skeleton className="w-3/4 h-4" />
+          <Skeleton className="w-1/2 h-3" />
         </div>
       </CardHeader>
       <CardContent className="flex-grow">
-        <Skeleton className="h-4 w-2/3" />
+        <Skeleton className="w-2/3 h-4" />
       </CardContent>
-      <div className="bg-muted p-2">
-        <Skeleton className="h-4 w-1/3 mx-auto" />
+      <div className="p-2 bg-muted">
+        <Skeleton className="w-1/3 h-4 mx-auto" />
       </div>
     </Card>
   )
@@ -141,7 +141,7 @@ export default function FormsSection() {
 
   return (
     <PageContainer scrollable={true}>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">FORMULARIOS</h2>
           <p className="text-muted-foreground">
@@ -181,7 +181,7 @@ export default function FormsSection() {
               </div>
               {formError && (
                 <Alert variant="destructive">
-                  <AlertCircle className="h-4 w-4" />
+                  <AlertCircle className="w-4 h-4" />
                   <AlertTitle>Error</AlertTitle>
                   <AlertDescription>{formError}</AlertDescription>
                 </Alert>
@@ -197,7 +197,7 @@ export default function FormsSection() {
           <DialogTitle>Confirmar Publicación</DialogTitle>
           <DialogDescription>
             ¿Está seguro de que desea publicar este formulario? Recuerde que:
-            <ul className="list-disc list-inside mt-2">
+            <ul className="mt-2 list-disc list-inside">
               <li>Solo puede publicar un formulario por cuenta.</li>
               <li>No podrá eliminar el formulario hasta que pasen 15 días desde su publicación.</li>
             </ul>
@@ -220,10 +220,10 @@ export default function FormsSection() {
           forms.map((form) => (
             <Card key={form.id} className="flex flex-col">
               <CardHeader className="flex flex-row items-center gap-4">
-                <Link className="h-6 w-6 flex-shrink-0" />
+                <Link className="flex-shrink-0 w-6 h-6" />
                 <div className="flex-grow overflow-hidden">
                   <CardTitle className="truncate">{form.title}</CardTitle>
-                  <p className="text-sm text-muted-foreground truncate">
+                  <p className="text-sm truncate text-muted-foreground">
                     <a href={form.url} target="_blank" rel="noopener noreferrer" className="hover:underline">
                       {form.url}
                     </a>
@@ -236,7 +236,7 @@ export default function FormsSection() {
                 </p>
               </CardContent>
               <div
-                className="bg-muted p-2 text-center text-sm text-muted-foreground"
+                className="p-2 text-sm text-center bg-muted text-muted-foreground"
                 style={{
                   borderBottomLeftRadius: '0.5rem',
                   borderBottomRightRadius: '0.5rem',

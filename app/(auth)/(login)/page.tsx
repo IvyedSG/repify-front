@@ -9,7 +9,7 @@ const UserAuthForm = dynamic(() => import('@/components/forms/user-auth-form'), 
 })
 
 const LoadingPlaceholder = () => (
-  <div className="w-full h-[200px] flex items-center justify-center">
+  <div className="w-full h-[300px] flex items-center justify-center">
     Cargando formulario...
   </div>
 )
@@ -21,27 +21,27 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="mx-auto w-full max-w-sm space-y-6">
-      <div className="space-y-2 text-center">
-        <h1 className="text-3xl font-semibold tracking-tight">
+    <div className="w-full max-w-md mx-auto space-y-8 md:max-w-lg lg:max-w-xl">
+      <div className="space-y-4 text-center">
+        <h1 className="text-4xl font-semibold tracking-tight">
           Ingresa
         </h1>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-base text-muted-foreground">
           ¡Prepárate para una experiencia única aprendiendo!
         </p>
       </div>
       <Suspense fallback={<LoadingPlaceholder />}>
         <UserAuthForm />
       </Suspense>
-      <div className="text-center text-sm">
+      <div className="text-base text-center">
         <Link
           href="/reset-password"
-          className="text-muted-foreground underline underline-offset-4 hover:text-primary"
+          className="underline text-muted-foreground underline-offset-4 hover:text-primary"
         >
           ¿Olvidaste tu contraseña?
         </Link>
       </div>
-      <p className="text-center text-sm text-muted-foreground">
+      <p className="text-base text-center text-muted-foreground">
         ¿No tienes una cuenta?{' '}
         <Link
           href="/register"

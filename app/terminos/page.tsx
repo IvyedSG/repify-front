@@ -15,7 +15,7 @@ export default function TerminosDeUso() {
           </Link>
           <nav className="flex space-x-4">
             <Button variant="ghost" className="text-gray-200 transition-colors hover:bg-gray-800 hover:text-white" asChild>
-              <Link href="/register">Registrarse</Link>
+              <Link href="/register">Regresar</Link>
             </Button>
           </nav>
         </div>
@@ -23,8 +23,8 @@ export default function TerminosDeUso() {
 
       {/* Main Content - Scrollable */}
       <main className="flex-1 pt-16 overflow-y-auto">
-        <div className="container px-4 py-10 mx-auto md:px-8 lg:px-12">
-          <article className="max-w-3xl mx-auto space-y-8">
+        <div className="container max-w-5xl px-4 py-10 mx-auto md:px-8 lg:px-12">
+          <article className="space-y-8">
             <h1 className="mb-8 text-4xl font-bold text-gray-100">Términos de Uso</h1>
 
             {[
@@ -37,9 +37,9 @@ export default function TerminosDeUso() {
               { title: "7. Modificaciones a los Términos de Uso", content: "La Empresa puede revisar estos Términos de Uso en cualquier momento sin previo aviso." },
               { title: "8. Ley Aplicable", content: "Estos términos se rigen por las leyes del país de la Empresa, y usted se somete a la jurisdicción exclusiva de sus tribunales." },
             ].map((section, index) => (
-              <section key={index} className="p-6 transition-shadow duration-300 bg-gray-800 rounded-lg shadow-lg hover:shadow-xl">
-                <h2 className="mb-4 text-2xl font-semibold text-gray-100">{section.title}</h2>
-                <p className="mb-4 leading-relaxed text-gray-300">{section.content}</p>
+              <div key={index} className="mb-6">
+                <h2 className="mb-2 text-2xl font-semibold text-gray-100">{section.title}</h2>
+                <p className="leading-relaxed text-gray-300">{section.content}</p>
                 {section.list && (
                   <ul className="ml-6 space-y-2 text-gray-300 list-disc">
                     {section.list.map((item, i) => (
@@ -47,9 +47,8 @@ export default function TerminosDeUso() {
                     ))}
                   </ul>
                 )}
-              </section>
+              </div>
             ))}
-
           </article>
         </div>
       </main>

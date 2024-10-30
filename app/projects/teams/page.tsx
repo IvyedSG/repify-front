@@ -103,20 +103,20 @@ export default function ProjectsPage() {
   }, [allProjects, searchTerm])
 
   const getStatusIcon = useCallback((status: string | null) => {
-    if (!status) return <Clock className="h-4 w-4 text-gray-500" />
+    if (!status) return <Clock className="w-4 h-4 text-gray-500" />
   
     switch (status.toLowerCase()) {
       case 'planificación':
       case 'en espera':
-        return <Clock className="h-4 w-4 text-yellow-500" />
+        return <Clock className="w-4 h-4 text-yellow-500" />
       case 'en progreso':
-        return <AlertCircle className="h-4 w-4 text-blue-500" />
+        return <AlertCircle className="w-4 h-4 text-blue-500" />
       case 'completado':
-        return <CheckCircle className="h-4 w-4 text-green-500" />
+        return <CheckCircle className="w-4 h-4 text-green-500" />
       case 'cancelado':
-        return <XCircle className="h-4 w-4 text-red-500" />
+        return <XCircle className="w-4 h-4 text-red-500" />
       default:
-        return <Clock className="h-4 w-4 text-gray-500" />
+        return <Clock className="w-4 h-4 text-gray-500" />
     }
   }, [])
 
@@ -130,9 +130,9 @@ export default function ProjectsPage() {
   }, [])
 
   const renderProjectCard = useCallback((project: Project, isLeader: boolean) => (
-    <Card key={project.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
+    <Card key={project.id} className="overflow-hidden transition-shadow duration-300 hover:shadow-lg">
       <CardHeader className="pb-2">
-        <div className="flex justify-between items-start">
+        <div className="flex items-start justify-between">
           <CardTitle className="text-xl">{project.name}</CardTitle>
           <Badge variant={isLeader ? 'default' : 'secondary'}>
             {isLeader ? 'Líder' : 'Miembro'}
@@ -152,16 +152,16 @@ export default function ProjectsPage() {
               <span className="ml-2 text-sm">{project.priority}</span>
             </div>
             <div className="flex items-center">
-              <Calendar className="h-4 w-4 text-gray-500" />
+              <Calendar className="w-4 h-4 text-gray-500" />
               <span className="ml-2 text-sm">{project.end_date}</span>
             </div>
             <div className="flex items-center">
-              <Users className="h-4 w-4 text-gray-500" />
+              <Users className="w-4 h-4 text-gray-500" />
               <span className="ml-2 text-sm">{project.collaboration_count} miembros</span>
             </div>
           </div>
           <div>
-            <h4 className="text-sm font-semibold mb-2">Tipo de Proyecto</h4>
+            <h4 className="mb-2 text-sm font-semibold">Tipo de Proyecto</h4>
             <div className="flex flex-wrap gap-2">
               {project.project_type.map((type, index) => (
                 <Badge key={index} variant="outline">{type}</Badge>
@@ -169,13 +169,13 @@ export default function ProjectsPage() {
             </div>
           </div>
           <div>
-            <h4 className="text-sm font-semibold mb-2">Progreso del Proyecto</h4>
+            <h4 className="mb-2 text-sm font-semibold">Progreso del Proyecto</h4>
             <div className="flex items-center">
               <Progress value={project.progress} className="flex-grow h-2" />
               <span className="ml-2 text-sm font-medium">{project.progress}%</span>
             </div>
           </div>
-          <div className="flex justify-between items-center pt-4">
+          <div className="flex items-center justify-between pt-4">
             <Button variant="outline" onClick={() => {
               setSelectedProject(project)
               setIsDetailedDialogOpen(true)
@@ -186,14 +186,14 @@ export default function ProjectsPage() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon">
-                    <Settings className="h-4 w-4" />
+                    <Settings className="w-4 h-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>Gestión del Proyecto</DropdownMenuLabel>
                   <DropdownMenuItem asChild>
                     <Link href={`/projects/teams/${project.id}`}>
-                      <Settings className="mr-2 h-4 w-4" />
+                      <Settings className="w-4 h-4 mr-2" />
                       <span>Configuración del Proyecto</span>
                     </Link>
                   </DropdownMenuItem>
@@ -208,14 +208,14 @@ export default function ProjectsPage() {
 
   const renderEmptyState = useCallback((message: string) => (
     <div className="flex flex-col items-center justify-center h-64">
-      <Clock className="h-16 w-16 text-gray-400 mb-4" />
+      <Clock className="w-16 h-16 mb-4 text-gray-400" />
       <p className="text-xl font-semibold text-gray-600">{message}</p>
     </div>
   ), [])
 
   const renderErrorState = useCallback((message: string) => (
     <div className="flex flex-col items-center justify-center h-64">
-      <XCircle className="h-16 w-16 text-red-500 mb-4" />
+      <XCircle className="w-16 h-16 mb-4 text-red-500" />
       <p className="text-xl font-semibold text-red-600">{message}</p>
     </div>
   ), [])
@@ -223,29 +223,29 @@ export default function ProjectsPage() {
   const renderSkeletonCard = useCallback(() => (
     <Card className="overflow-hidden">
       <CardHeader className="pb-2">
-        <div className="flex justify-between items-start">
-          <Skeleton className="h-6 w-3/4" />
-          <Skeleton className="h-5 w-16" />
+        <div className="flex items-start justify-between">
+          <Skeleton className="w-3/4 h-6" />
+          <Skeleton className="w-16 h-5" />
         </div>
-        <Skeleton className="h-4 w-full mt-2" />
+        <Skeleton className="w-full h-4 mt-2" />
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             {[...Array(4)].map((_, i) => (
-              <Skeleton key={i} className="h-4 w-full" />
+              <Skeleton key={i} className="w-full h-4" />
             ))}
           </div>
-          <Skeleton className="h-4 w-full" />
+          <Skeleton className="w-full h-4" />
           <div className="flex flex-wrap gap-2">
             {[...Array(3)].map((_, i) => (
-              <Skeleton key={i} className="h-6 w-16" />
+              <Skeleton key={i} className="w-16 h-6" />
             ))}
           </div>
-          <Skeleton className="h-2 w-full" />
-          <div className="flex justify-between items-center pt-4">
-            <Skeleton className="h-9 w-24" />
-            <Skeleton className="h-8 w-8 rounded-full" />
+          <Skeleton className="w-full h-2" />
+          <div className="flex items-center justify-between pt-4">
+            <Skeleton className="w-24 h-9" />
+            <Skeleton className="w-8 h-8 rounded-full" />
           </div>
         </div>
       </CardContent>
@@ -263,7 +263,7 @@ export default function ProjectsPage() {
 
     if (!myProjects || !collaboratedProjects) {
       return (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3">
           {[...Array(6)].map((_, i) => (
             <div key={i}>{renderSkeletonCard()}</div>
           ))}
@@ -287,7 +287,7 @@ export default function ProjectsPage() {
     }
 
     return (
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3">
         {projectsToShow.map((project) => renderProjectCard(
           project, 
           myProjects.some(p => p.id === project.id)
@@ -296,23 +296,22 @@ export default function ProjectsPage() {
     )
   }, [myProjects, collaboratedProjects, myProjectsError, collaboratedProjectsError, filteredProjects, renderProjectCard, renderEmptyState, renderErrorState, renderSkeletonCard])
 
-
   return (
     <PageContainer scrollable={true}>
       <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
-          <h1 className="text-3xl font-bold tracking-tight">Mis Proyectos</h1>
-          <div className="flex items-center space-x-4">
+        <div className="flex flex-col space-y-4">
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Mis Proyectos</h1>
+          <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:space-x-4 sm:space-y-0">
             <Input 
-              className="w-[300px]" 
+              className="flex-grow"
               placeholder="Buscar proyectos..." 
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) =>   setSearchTerm(e.target.value)}
             />
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                  <Plus className="mr-2 h-4 w-4" />
+              <Button className="w-full px-6 py-6 sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
+                  <Plus className="w-4 h-4 mr-2" />
                   Publicar Proyecto
                 </Button>
               </DialogTrigger>
@@ -322,10 +321,10 @@ export default function ProjectsPage() {
         </div>
 
         <Tabs defaultValue="all" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="all">Todos los Proyectos</TabsTrigger>
-            <TabsTrigger value="leader">Proyectos que Lidero</TabsTrigger>
-            <TabsTrigger value="member">Proyectos en los que Participo</TabsTrigger>
+          <TabsList className="flex w-full overflow-x-auto flex-nowrap">
+            <TabsTrigger value="all" className="flex-1 text-xs sm:text-sm whitespace-nowrap">Todos los Proyectos</TabsTrigger>
+            <TabsTrigger value="leader" className="flex-1 text-xs sm:text-sm whitespace-nowrap">Proyectos que Lidero</TabsTrigger>
+            <TabsTrigger value="member" className="flex-1 text-xs sm:text-sm whitespace-nowrap">Proyectos en los que Participo</TabsTrigger>
           </TabsList>
 
           {(['all', 'leader', 'member'] as const).map((tab) => (

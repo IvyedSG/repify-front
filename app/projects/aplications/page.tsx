@@ -21,6 +21,25 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import useSWR, { mutate } from 'swr'
+import { css } from '@emotion/react'
+
+const customStyles = css`
+  @media (min-width: 720px) and (max-width: 1099px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (min-width: 1150px) and (max-width: 1400px) {
+    .grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1401px) {
+    .grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+`
 
 type Application = {
   id_solicitud: number
@@ -93,18 +112,18 @@ export default function ApplicationsPage() {
   }, [applications, searchTerm])
 
   const ApplicationSkeleton = useMemo(() => () => (
-    <Card>
+    <Card className="bg-card">
       <CardHeader>
-        <Skeleton className="h-6 w-3/4" />
-        <Skeleton className="h-4 w-1/2" />
+        <Skeleton className="w-3/4 h-6 bg-muted" />
+        <Skeleton className="w-1/2 h-4 bg-muted" />
       </CardHeader>
       <CardContent>
-        <div className="flex justify-between items-center mb-4">
-          <Skeleton className="h-6 w-20" />
-          <Skeleton className="h-4 w-32" />
+        <div className="flex items-center justify-between mb-4">
+          <Skeleton className="w-20 h-6 bg-muted" />
+          <Skeleton className="w-32 h-4 bg-muted" />
         </div>
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-10 w-full mt-4" />
+        <Skeleton className="w-full h-4 bg-muted" />
+        <Skeleton className="w-full h-10 mt-4 bg-muted" />
       </CardContent>
     </Card>
   ), [])
@@ -133,7 +152,6 @@ export default function ApplicationsPage() {
         throw new Error('Failed to delete application')
       }
 
-      // Update the local state
       mutate(
         ['http://127.0.0.1:8000/usuario/projects/solicitudes_user/', session.user.accessToken],
         applications?.filter(app => app.id_solicitud !== applicationToDelete),
@@ -163,51 +181,47 @@ export default function ApplicationsPage() {
       return Array(6).fill(0).map((_, index) => <ApplicationSkeleton key={index} />)
     }
     if (error) {
-      return <div className="col-span-full text-center text-red-500">Failed to load applications. Please try again later.</div>
+      return <div className="text-center text-red-500 col-span-full">Failed to load applications. Please try again later.</div>
     }
     const filteredApps = filterApplications(tab)
-    if (applications?.length === 0 || filteredApps.length === 0) {
-      return (
-        <div className="col-span-full text-center text-gray-500">
-          {applications?.length === 0
-            ? 'Aún no has postulado a ningún proyecto.'
-            : 'No hay solicitudes que coincidan con los criterios de búsqueda.'}
-        </div>
-      )
+    if (filteredApps.length === 0) {
+      return <div className="text-center col-span-full text-muted-foreground">No hay solicitudes actuales</div>
     }
     return filteredApps.map((application) => (
-      <Card key={application.id_solicitud}>
+      <Card key={application.id_solicitud} className="bg-card">
         <CardHeader>
-          <CardTitle className="text-xl">{application.name_project}</CardTitle>
+          <CardTitle className="text-xl text-card-foreground">{application.name_project}</CardTitle>
           <p className="text-sm text-muted-foreground">Líder del proyecto: {application.name_lider}</p>
         </CardHeader>
         <CardContent>
-          <div className="flex justify-between items-center mb-4">
-            <Badge className={getStatusColor(application.status)}>
-              {application.status}
-            </Badge>
-            <div className="flex items-center text-sm text-muted-foreground">
-              <CalendarIcon className="mr-1 h-4 w-4" />
-              Postulación realizada el {new Date(application.created_at).toLocaleDateString()}
+          <div className="flex flex-col space-y-4">
+            <div className="flex items-center justify-between">
+              <Badge className={getStatusColor(application.status)}>
+                {application.status}
+              </Badge>
+              <div className="flex items-center text-sm text-muted-foreground">
+                <CalendarIcon className="w-4 h-4 mr-1" />
+                Postulación realizada el {new Date(application.created_at).toLocaleDateString()}
+              </div>
             </div>
+            
+            {application.status.toLowerCase() === 'pendiente' ? (
+              <Button 
+                className="w-full bg-primary text-primary-foreground hover:bg-primary/90" 
+                onClick={() => {
+                  setApplicationToDelete(application.id_solicitud)
+                  setDeleteDialogOpen(true)
+                }}
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Retirar Solicitud
+              </Button>
+            ) : (
+              <Button className="w-full" variant="outline">
+                Ver Proyecto
+              </Button>
+            )}
           </div>
-          
-          {application.status.toLowerCase() === 'pendiente' ? (
-            <Button 
-              className="w-full mt-4" 
-              onClick={() => {
-                setApplicationToDelete(application.id_solicitud)
-                setDeleteDialogOpen(true)
-              }}
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Retirar Solicitud
-            </Button>
-          ) : (
-            <Button className="w-full mt-4" variant="outline">
-              Ver Proyecto
-            </Button>
-          )}
         </CardContent>
       </Card>
     ))
@@ -215,18 +229,18 @@ export default function ApplicationsPage() {
 
   return (
     <PageContainer scrollable={true}>
-      <div className="space-y-4">
-        <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight">Mis Solicitudes</h2>
-          <div className="flex items-center space-x-2">
+      <div css={customStyles} className="space-y-6 max-w-[1400px] mx-auto px-4">
+        <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Mis Solicitudes</h1>
+          <div className="flex flex-col items-start space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-2">
             <Input 
-              className="w-[300px]" 
+              className="w-full sm:w-[300px] bg-input text-input-foreground" 
               placeholder="Buscar solicitudes..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
             <Select value={filter} onValueChange={setFilter}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full sm:w-[180px] bg-input text-input-foreground">
                 <SelectValue placeholder="Filtrar por estado" />
               </SelectTrigger>
               <SelectContent>
@@ -240,16 +254,16 @@ export default function ApplicationsPage() {
         </div>
 
         <Tabs defaultValue="all" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="all">Todos</TabsTrigger>
-            <TabsTrigger value="pendiente">Pendiente</TabsTrigger>
-            <TabsTrigger value="aprobado">Aprobado</TabsTrigger>
-            <TabsTrigger value="rechazado">Rechazado</TabsTrigger>
+          <TabsList className="justify-start w-full bg-muted">
+            <TabsTrigger value="all" className="flex-1 sm:flex-none data-[state=active]:bg-background">Todos</TabsTrigger>
+            <TabsTrigger value="pendiente" className="flex-1 sm:flex-none data-[state=active]:bg-background">Pendiente</TabsTrigger>
+            <TabsTrigger value="aprobado" className="flex-1 sm:flex-none data-[state=active]:bg-background">Aprobado</TabsTrigger>
+            <TabsTrigger value="rechazado" className="flex-1 sm:flex-none data-[state=active]:bg-background">Rechazado</TabsTrigger>
           </TabsList>
 
           {(['all', 'pendiente', 'aprobado', 'rechazado'] as const).map((tab) => (
             <TabsContent key={tab} value={tab}>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3">
                 {renderApplications(tab)}
               </div>
             </TabsContent>
