@@ -1,5 +1,11 @@
 import React from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription
+} from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -38,9 +44,9 @@ export default function DetailedProjectDialog({ project, isOpen, onOpenChange }:
 
   const getStatusIcon = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'en progreso': return <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5" />
-      case 'completado': return <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />
-      default: return <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
+      case 'en progreso': return <AlertCircle className="w-3 h-3 md:w-4 md:h-4" />
+      case 'completado': return <CheckCircle className="w-3 h-3 md:w-4 md:h-4" />
+      default: return <Clock className="w-3 h-3 md:w-4 md:h-4" />
     }
   }
 
@@ -63,83 +69,91 @@ export default function DetailedProjectDialog({ project, isOpen, onOpenChange }:
   }
 
   const themeStyles = {
-    text:'text-gray-500', // Texto blanco en oscuro y gris en claro
-    subtext:'text-gray-500', // Subtexto gris suave en ambos modos
-    icon: 'text-purple-600', // Íconos púrpura para destacar en ambos fondos
-    badge:'text-purple-700 bg-purple-200 border-purple-400', // Fondo y borde púrpura para el badge
-    progressBg: 'bg-gray-300', // Fondo de progreso en gris para contraste
-    progressIndicator:'bg-purple-600', // Indicador de progreso en púrpura más vivo
-    title: 'text-purple-800', // Título en púrpura claro en oscuro y púrpura oscuro en claro
-};
-
+    text: 'text-gray-700',
+    subtext: 'text-gray-500',
+    icon: 'text-purple-600',
+    badge: 'text-purple-700 bg-purple-200 border-purple-400',
+    progressBg: 'bg-gray-300',
+    progressIndicator: 'bg-purple-600',
+    title: 'text-purple-800',
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className={`w-[95vw] max-w-[95vw] h-[90vh] max-h-[90vh] sm:max-w-[90vw] sm:h-[80vh] ${themeStyles.text} p-4 sm:p-6`}>
+      <DialogContent className="w-full max-w-[70vw] md:max-w-[95vw] lg:max-w-[80vw] h-full max-h-[80vh] p-3 md:p-6 overflow-hidden rounded-md">
         <DialogHeader className="mb-4">
-          <DialogTitle className={`text-xl font-bold sm:text-3xl ${themeStyles.text}`}>{project.name}</DialogTitle>
-          <DialogDescription className={`text-sm ${themeStyles.subtext} sm:text-base`}>{project.description}</DialogDescription>
+          <DialogTitle className="text-lg font-bold md:text-2xl lg:text-3xl">{project.name}</DialogTitle>
+          <DialogDescription className="text-sm text-gray-500 lg:text-base">{project.description}</DialogDescription>
         </DialogHeader>
-        <ScrollArea className="h-[calc(100%-6rem)] pr-4">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6">
-            <div className="space-y-4 sm:col-span-2 sm:space-y-6">
-              <div className={`flex flex-col justify-between p-3 rounded-lg sm:flex-row sm:items-center sm:p-4`}>
-                <div className="flex items-center mb-2 space-x-2 sm:mb-0">
+
+        <ScrollArea className="h-[calc(100%-6rem)] md:h-[calc(100%-8rem)] pr-2 overflow-auto">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4 lg:gap-6">
+            
+            {/* Información Principal */}
+            <div className="space-y-3 md:col-span-2">
+              
+              {/* Estado y Prioridad */}
+              <div className="flex flex-col justify-between p-2 rounded-lg md:flex-row md:p-3">
+                <div className="flex items-center mb-2 space-x-2 md:mb-0">
                   {getStatusIcon(project.status)}
-                  <span className="text-base font-medium sm:text-lg">{project.status}</span>
+                  <span className="text-sm font-medium md:text-base">{project.status}</span>
                 </div>
-                <Badge className={`${getPriorityColor(project.priority)} text-xs sm:text-sm px-2 py-1 sm:px-3 sm:py-1`}>
+                <Badge className={`text-xs md:text-sm px-2 py-1 ${getPriorityColor(project.priority)}`}>
                   {project.priority}
                 </Badge>
               </div>
 
-              <div className={`grid grid-cols-1 gap-3 p-3 text-xs rounded-lg sm:grid-cols-2 sm:gap-4 sm:p-4 sm:text-sm`}>
+              {/* Fechas e Información de Universidad */}
+              <div className="grid grid-cols-1 gap-2 p-2 text-xs rounded-lg md:grid-cols-2 md:p-3 md:text-sm">
                 <div className="flex items-center">
-                  <Calendar className="w-4 h-4 mr-2 sm:w-5 sm:h-5" />
+                  <Calendar className="w-3 h-3 mr-1 md:w-4 md:h-4 md:mr-2" />
                   <span>Inicio: {project.start_date}</span>
                 </div>
                 <div className="flex items-center">
-                  <Calendar className="w-4 h-4 mr-2 sm:w-5 sm:h-5" />
+                  <Calendar className="w-3 h-3 mr-1 md:w-4 md:h-4 md:mr-2" />
                   <span>Fin: {project.end_date}</span>
                 </div>
                 <div className="flex items-center">
-                  <Users className="w-4 h-4 mr-2 sm:w-5 sm:h-5" />
+                  <Users className="w-3 h-3 mr-1 md:w-4 md:h-4 md:mr-2" />
                   <span>{project.name_uniuser}</span>
                 </div>
                 <div className="flex items-center">
-                  <Flag className="w-4 h-4 mr-2 sm:w-5 sm:h-5" />
+                  <Flag className="w-3 h-3 mr-1 md:w-4 md:h-4 md:mr-2" />
                   <span>{getUniversityDisplay(project.type_aplyuni)}</span>
                 </div>
               </div>
 
               <Separator className="bg-gray-300" />
 
-              <div className={`p-3 rounded-lg sm:p-4`}>
-                <h3 className={`flex items-center mb-2 text-base font-semibold sm:text-lg ${themeStyles.title}`}>
-                  <FileText className={`w-4 h-4 mr-2 ${themeStyles.icon} sm:w-5 sm:h-5`} />
+              {/* Descripción Detallada */}
+              <div className="p-2 rounded-lg md:p-3">
+                <h3 className="flex items-center mb-2 text-sm font-semibold md:text-base">
+                  <FileText className="w-3 h-3 mr-1 text-purple-600 md:w-4 md:h-4 md:mr-2" />
                   Descripción Detallada
                 </h3>
-                <p className="text-xs sm:text-sm">{project.detailed_description}</p>
+                <p className="text-xs md:text-sm">{project.detailed_description}</p>
               </div>
 
-              <div className={`p-3 rounded-lg sm:p-4`}>
-                <h3 className={`flex items-center mb-2 text-base font-semibold sm:text-lg ${themeStyles.title}`}>
-                  <Target className={`w-4 h-4 mr-2 ${themeStyles.icon} sm:w-5 sm:h-5`} />
+              {/* Objetivos */}
+              <div className="p-2 rounded-lg md:p-3">
+                <h3 className="flex items-center mb-2 text-sm font-semibold md:text-base">
+                  <Target className="w-3 h-3 mr-1 text-purple-600 md:w-4 md:h-4 md:mr-2" />
                   Objetivos
                 </h3>
-                <ul className="text-xs list-disc list-inside sm:text-sm">
+                <ul className="text-xs list-disc list-inside md:text-sm">
                   {project.objectives.map((objective, index) => (
                     <li key={index}>{objective}</li>
                   ))}
                 </ul>
               </div>
 
-              <div className={`p-3 rounded-lg sm:p-4`}>
-                <h3 className={`flex items-center mb-2 text-base font-semibold sm:text-lg ${themeStyles.title}`}>
-                  <List className={`w-4 h-4 mr-2 ${themeStyles.icon} sm:w-5 sm:h-5`} />
+              {/* Requisitos */}
+              <div className="p-2 rounded-lg md:p-3">
+                <h3 className="flex items-center mb-2 text-sm font-semibold md:text-base">
+                  <List className="w-3 h-3 mr-1 text-purple-600 md:w-4 md:h-4 md:mr-2" />
                   Requisitos Necesarios
                 </h3>
-                <ul className="text-xs list-disc list-inside sm:text-sm">
+                <ul className="text-xs list-disc list-inside md:text-sm">
                   {project.necessary_requirements.map((requirement, index) => (
                     <li key={index}>{requirement}</li>
                   ))}
@@ -147,43 +161,47 @@ export default function DetailedProjectDialog({ project, isOpen, onOpenChange }:
               </div>
             </div>
 
-            <div className="space-y-4 sm:space-y-6">
-              <div className={`p-3 rounded-lg sm:p-4`}>
-                <h3 className={`flex items-center mb-2 text-base font-semibold sm:text-lg ${themeStyles.title}`}>
-                  <FileText className={`w-4 h-4 mr-2 ${themeStyles.icon} sm:w-5 sm:h-5`} />
+            {/* Información adicional */}
+            <div className="space-y-3">
+              
+              {/* Tipo de Proyecto */}
+              <div className="p-2 rounded-lg md:p-3">
+                <h3 className="flex items-center mb-2 text-sm font-semibold md:text-base">
+                  <FileText className="w-3 h-3 mr-1 text-purple-600 md:w-4 md:h-4 md:mr-2" />
                   Tipo de Proyecto
                 </h3>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1 md:gap-2">
                   {project.project_type.map((type, index) => (
-                    <Badge key={index} className={`${themeStyles.badge} text-xs sm:text-sm`}>
+                    <Badge key={index} className="text-xs text-purple-700 bg-purple-200 border-purple-400 md:text-sm">
                       {type}
                     </Badge>
                   ))}
                 </div>
               </div>
 
-              <div className={`p-3 rounded-lg sm:p-4`}>
-                <h3 className={`flex items-center mb-2 text-base font-semibold sm:text-lg ${themeStyles.title}`}>
-                  <BarChart className={`w-4 h-4 mr-2 ${themeStyles.icon} sm:w-5 sm:h-5`} />
+              {/* Progreso del Proyecto */}
+              <div className="p-2 rounded-lg md:p-3">
+                <h3 className="flex items-center mb-2 text-sm font-semibold md:text-base">
+                  <BarChart className="w-3 h-3 mr-1 text-purple-600 md:w-4 md:h-4 md:mr-2" />
                   Progreso del Proyecto
                 </h3>
-                <div className="flex items-center space-x-2">
-                  <span className={`text-xs ${themeStyles.subtext} sm:text-sm`}>{project.progress}%</span>
-                </div>
-                <Progress value={project.progress} className={`w-full h-2 mt-2 rounded-full ${themeStyles.progressBg}`}>
-                  <div className={`${themeStyles.progressIndicator}`} style={{ width: `${project.progress}%` }}></div>
+                <Progress value={project.progress} className="w-full h-1 bg-gray-300 rounded-full md:h-2">
+                  <div className="bg-purple-600" style={{ width: `${project.progress}%` }} />
                 </Progress>
+                <p className="mt-1 text-xs md:text-sm">{project.progress}% completado</p>
               </div>
 
-              <div className={`p-3 rounded-lg sm:p-4`}>
-                <h3 className={`flex items-center mb-2 text-base font-semibold sm:text-lg ${themeStyles.title}`}>
-                  <UserPlus className={`w-4 h-4 mr-2 ${themeStyles.icon} sm:w-5 sm:h-5`} />
-                  Solicitudes de Colaboración
+              {/* Colaboradores */}
+              <div className="p-2 rounded-lg md:p-3">
+                <h3 className="flex items-center mb-2 text-sm font-semibold md:text-base">
+                  <UserPlus className="w-3 h-3 mr-1 text-purple-600 md:w-4 md:h-4 md:mr-2" />
+                  Colaboradores ({project.collaboration_count})
                 </h3>
-                <p className={`text-xs ${themeStyles.subtext} sm:text-sm`}>
-                  {project.accepting_applications ? 'Abierto a nuevas solicitudes' : 'No aceptando solicitudes actualmente'}
-                </p>
-                <span className={`text-xs ${themeStyles.subtext} sm:text-sm`}>Número de colaboradores: {project.collaboration_count}</span>
+                <ul className="text-xs list-disc list-inside md:text-sm">
+                  {project.collaborators.map((collaborator, index) => (
+                    <li key={index}>{collaborator}</li>
+                  ))}
+                </ul>
               </div>
             </div>
           </div>
@@ -192,3 +210,7 @@ export default function DetailedProjectDialog({ project, isOpen, onOpenChange }:
     </Dialog>
   )
 }
+
+
+
+

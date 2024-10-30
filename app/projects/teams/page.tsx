@@ -310,7 +310,7 @@ export default function ProjectsPage() {
             />
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
+              <Button className="w-full px-6 py-6 sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
                   <Plus className="w-4 h-4 mr-2" />
                   Publicar Proyecto
                 </Button>
