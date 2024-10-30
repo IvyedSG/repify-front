@@ -24,12 +24,17 @@ interface Form {
   last_name: string
 }
 
-const fetcher = (url: string, token: string) =>
-  fetch(url, {
+const fetcher = async (url: string, token: string) => {
+  const res = await fetch(url, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
-  }).then((res) => res.json())
+  })
+  if (!res.ok) {
+    throw new Error('An error occurred while fetching the data.')
+  }
+  return res.json()
+}
 
 export default function FormsSection() {
   const { data: session } = useSession()
@@ -43,10 +48,15 @@ export default function FormsSection() {
     session?.user?.accessToken
       ? ['http://127.0.0.1:8000/usuario/form/get_all_forms/', session.user.accessToken]
       : null,
-    ([url, token]) => fetcher(url, token)
+    ([url, token]) => fetcher(url, token),
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      errorRetryCount: 3,
+    }
   )
 
-  const userHasForm = forms?.some(form => form.user === session?.user?.id)
+  const userHasForm = Array.isArray(forms) && forms.some(form => form.user === session?.user?.id)
 
   const validateGoogleFormsUrl = (url: string) => {
     const googleFormsRegex = /^https:\/\/(docs\.google\.com\/forms|forms\.gle)\/.+/
@@ -99,14 +109,6 @@ export default function FormsSection() {
     }
   }
 
-  if (error) {
-    toast({
-      title: 'Error',
-      description: 'No se pudieron cargar los formularios. Por favor, intente más tarde.',
-      variant: 'destructive',
-    })
-  }
-
   const FormCardSkeleton = () => (
     <Card className="flex flex-col">
       <CardHeader className="flex flex-row items-center gap-4">
@@ -124,6 +126,18 @@ export default function FormsSection() {
       </div>
     </Card>
   )
+
+  if (error) {
+    return (
+      <PageContainer scrollable={true}>
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>No se pudieron cargar los formularios. Por favor, intente más tarde.</AlertDescription>
+        </Alert>
+      </PageContainer>
+    )
+  }
 
   return (
     <PageContainer scrollable={true}>
@@ -196,12 +210,14 @@ export default function FormsSection() {
       </Dialog>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {!forms && !error ? (
+        {!forms ? (
           Array(6).fill(0).map((_, index) => (
             <FormCardSkeleton key={index} />
           ))
+        ) : forms.length === 0 ? (
+          <p className="col-span-full text-center text-muted-foreground">No hay formularios disponibles.</p>
         ) : (
-          forms?.map((form) => (
+          forms.map((form) => (
             <Card key={form.id} className="flex flex-col">
               <CardHeader className="flex flex-row items-center gap-4">
                 <Link className="h-6 w-6 flex-shrink-0" />
