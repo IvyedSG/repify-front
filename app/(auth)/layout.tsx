@@ -1,60 +1,67 @@
 'use client'
-
 import { ReactNode, useState, useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
+import fondo from '/app/(auth)/fondo.jpg'
 
 const ThreeJsLoader = dynamic(() => import('@/components/loader'), { ssr: false })
 const DynamicContent = dynamic(() => import('@/components/DynamicContent'), { ssr: false })
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
-  const [isLoading, setIsLoading] = useState(true)
-  const [loadDynamicContent, setLoadDynamicContent] = useState(true)
-  const fpsRef = useRef<number[]>([])
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadDynamicContent, setLoadDynamicContent] = useState(true);
+  const fpsRef = useRef<number[]>([]);
 
   useEffect(() => {
     const measurePerformance = () => {
-      let lastTimestamp = performance.now()
+      let lastTimestamp = performance.now();
 
       const updateFPS = (now: number) => {
-        const delta = now - lastTimestamp
-        lastTimestamp = now
+        const delta = now - lastTimestamp;
+        lastTimestamp = now;
 
-        const fps = 1000 / delta
-        fpsRef.current.push(fps)
+        const fps = 1000 / delta;
+        fpsRef.current.push(fps);
 
-        if (fpsRef.current.length > 60) fpsRef.current.shift()
+        if (fpsRef.current.length > 60) fpsRef.current.shift();
 
-        const avgFPS = fpsRef.current.reduce((a, b) => a + b) / fpsRef.current.length
-        if (avgFPS < 30) setLoadDynamicContent(false)
+        const avgFPS = fpsRef.current.reduce((a, b) => a + b) / fpsRef.current.length;
+        if (avgFPS < 30) setLoadDynamicContent(false);
 
-        requestAnimationFrame(updateFPS)
-      }
+        requestAnimationFrame(updateFPS);
+      };
 
-      requestAnimationFrame(updateFPS)
-    }
+      requestAnimationFrame(updateFPS);
+    };
 
-    const timer = setTimeout(() => setIsLoading(false), 3000)
-    measurePerformance()
+    const timer = setTimeout(() => setIsLoading(false), 3000);
+    measurePerformance();
 
-    return () => clearTimeout(timer)
-  }, [])
+    return () => clearTimeout(timer);
+  }, []);
 
   if (isLoading) {
-    return <ThreeJsLoader onLoadComplete={() => setIsLoading(false)} />
+    return <ThreeJsLoader onLoadComplete={() => setIsLoading(false)} />;
   }
 
   if (!loadDynamicContent) {
+    // Cuando el fondo está visible, muestra el formulario alineado a la derecha
     return (
-      <div className="flex h-screen w-full items-center justify-center">
-        {children}
+      <div
+        className="flex h-screen w-full bg-cover bg-center"
+        style={{ backgroundImage: `url(${fondo.src})` }}
+      >
+        <div className="absolute top-1/2 right-10 transform -translate-y-1/2 w-full lg:w-1/2">
+          {children}
+        </div>
       </div>
-    )
+    );
   }
 
+  // Cuando el contenido dinámico está cargado, muestra el formulario en su posición normal
   return (
     <div className="flex h-screen">
-      <div className="relative hidden w-1/2 flex-col bg-black p-10 text-white lg:flex">
+      <div className="relative flex-col hidden w-1/2 p-10 text-white bg-black lg:flex">
         <div className="flex items-center text-lg font-medium">
           <Image
             src="/logo.webp"
@@ -68,9 +75,9 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         </div>
         <DynamicContent />
       </div>
-      <div className="flex w-full items-center justify-center lg:w-1/2">
+      <div className="absolute top-1/3 right-10 w-full lg:w-1/2">
         {children}
       </div>
     </div>
-  )
+  );
 }
