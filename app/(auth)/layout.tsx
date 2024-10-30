@@ -47,8 +47,6 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
   if (!loadDynamicContent) {
     // Cuando el fondo está visible, muestra el formulario alineado a la derecha
     return (
-      <div className="flex items-center justify-center w-full h-screen">
-        {children}
       <div
         className="flex w-full h-screen bg-center bg-cover"
         style={{ backgroundImage: `url(${fondo.src})` }}
@@ -77,7 +75,6 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         </div>
         <DynamicContent />
       </div>
-      <div className="flex items-center justify-center w-full lg:w-1/2">
       <div className="absolute w-full top-1/3 right-10 lg:w-1/2">
         {children}
       </div>
