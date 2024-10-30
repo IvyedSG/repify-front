@@ -10,13 +10,13 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader} from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { toast } from '@/components/ui/use-toast'
-import { Edit2, Save, User, AtSign, Book, GraduationCap } from 'lucide-react'
-import { Progress } from '@/components/ui/progress'
+import { Edit2, Save, User, GraduationCap, Trophy } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
+import Link from 'next/link'
 
 interface UserProfile {
   id?: number
@@ -155,7 +155,7 @@ export default function UserProfilePage({ userId }: { userId?: string }) {
 
   return (
     <PageContainer scrollable={true}>
-      <div className="space-y-6">
+      <div className="space-y-6 mb-10">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <h2 className="text-3xl font-bold tracking-tight">
             {isOwnProfile ? 'Mi Perfil' : `Perfil de ${profile.first_name} ${profile.last_name}`}
@@ -279,36 +279,14 @@ export default function UserProfilePage({ userId }: { userId?: string }) {
             </div>
           </CardContent>
         </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Progreso Académico</CardTitle>
-            <CardDescription>Visualiza tu avance en la carrera</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>Progreso en la Carrera</span>
-                <span>75%</span>
-              </div>
-              <Progress value={75} className="h-2" />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="flex items-center gap-2">
-                <Book className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">24/32 Cursos Completados</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <GraduationCap className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">Promedio: 8.7/10</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <AtSign className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">3 Proyectos de Investigación</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="flex justify-center mt-6">
+          <Link href={`/projects/records/${userId || ''}`}>
+            <Button>
+              <Trophy className="mr-2 h-4 w-4" />
+              Ver logros de {profile.first_name}
+            </Button>
+          </Link>
+        </div>
       </div>
     </PageContainer>
   )
