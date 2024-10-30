@@ -1,9 +1,9 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import useSWR, { mutate } from 'swr'
+import { useRouter, useParams } from 'next/navigation'
+import useSWR from 'swr'
 import PageContainer from '@/components/layout/page-container'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -34,14 +34,25 @@ interface UserProfile {
   date_joined: string
 }
 
-const fetcher = async (url: string, token: string) => {
+const fetchOwnProfile = async (url: string, token: string) => {
   const res = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify({ user_id: url.split('/').pop() })
+    }
+  })
+  if (!res.ok) throw new Error('Failed to fetch own profile')
+  return res.json()
+}
+
+const fetchOtherProfile = async (url: string, token: string) => {
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
   })
   if (!res.ok) throw new Error('Failed to fetch profile')
   return res.json()
@@ -80,67 +91,98 @@ const ProfileSkeleton = () => (
   </Card>
 )
 
-export default function UserProfilePage({ userId }: { userId?: string }) {
+export default function UserProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
   const { data: session } = useSession()
   const router = useRouter()
+  const params = useParams()
+  const [profileUserId, setProfileUserId] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (params.id) {
+      setProfileUserId(params.id as string)
+    } else if (session?.user?.id) {
+      setProfileUserId(session.user.id)
+    }
+  }, [params.id, session])
+
+  const isOwnProfile = !params.id
 
   const { data: profile, error, mutate } = useSWR<UserProfile>(
-    session?.user?.accessToken ? [`http://127.0.0.1:8000/usuario/perfil/profile/${userId || ''}`, session.user.accessToken] : null,
-    ([url, token]) => fetcher(url, token),
+    session?.user?.accessToken && profileUserId
+      ? isOwnProfile
+        ? ['http://127.0.0.1:8000/usuario/perfil/profile/', session.user.accessToken]
+        : [`http://127.0.0.1:8000/usuario/perfil/profile/${profileUserId}`, session.user.accessToken]
+      : null,
+    ([url, token]) => isOwnProfile ? fetchOwnProfile(url, token) : fetchOtherProfile(url, token),
     { revalidateOnFocus: false, revalidateOnReconnect: false }
   )
 
-  const isOwnProfile = !userId || userId === session?.user?.id
-
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    if (profile) {
+    if (profile && isOwnProfile) {
       mutate({ ...profile, [e.target.name]: e.target.value }, false)
     }
   }
 
   const handleInterestsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (profile) {
+    if (profile && isOwnProfile) {
       mutate({ ...profile, interests: e.target.value.split(',').map(item => item.trim()) }, false)
     }
   }
 
   const handleSave = async () => {
-    if (!profile || !session?.user?.accessToken) return
+    if (!profile || !session?.user?.accessToken || !isOwnProfile) return
+
+    const profileData = {
+      id: session.user.id,
+      university: profile.university,
+      career: profile.career,
+      cycle: profile.cycle,
+      biography: profile.biography,
+      interests: profile.interests,
+      photo: profile.photo,
+      achievements: profile.achievements,
+      authuser: session.user.id,
+    }
 
     try {
       const response = await fetch('http://127.0.0.1:8000/usuario/perfil/update-profile/', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.user.accessToken}`
+          'Authorization': `Bearer ${session.user.accessToken}`,
         },
-        body: JSON.stringify({
-          id: profile.id,
-          university: profile.university,
-          career: profile.career,
-          cycle: profile.cycle,
-          biography: profile.biography,
-          interests: profile.interests,
-          photo: profile.photo,
-          achievements: profile.achievements
-        })
+        body: JSON.stringify(profileData),
       })
 
-      if (!response.ok) throw new Error('Failed to update profile')
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.detail || 'Failed to update profile')
+      }
 
-      await mutate()
+      const updatedProfile = await response.json()
+      
+      // Ensure all required fields are present in the updated profile
+      const safeUpdatedProfile = {
+        ...profile, // Keep existing data
+        ...updatedProfile, // Overwrite with new data
+        first_name: updatedProfile.first_name || profile.first_name,
+        last_name: updatedProfile.last_name || profile.last_name,
+        interests: Array.isArray(updatedProfile.interests) ? updatedProfile.interests : profile.interests,
+      }
+
+      await mutate(safeUpdatedProfile, false)
       setIsEditing(false)
       toast({
-        title: "Perfil Actualizado",
-        description: "Tu perfil ha sido actualizado exitosamente.",
+        title: 'Perfil Actualizado',
+        description: 'Tu perfil ha sido actualizado exitosamente.',
       })
     } catch (error) {
       console.error('Error updating profile:', error)
       toast({
-        title: "Error",
-        description: "Failed to update profile. Please try again.",
-        variant: "destructive"
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Failed to update profile. Please try again.',
+        variant: 'destructive',
       })
     }
   }
@@ -180,7 +222,7 @@ export default function UserProfilePage({ userId }: { userId?: string }) {
             <div className="flex flex-col sm:flex-row items-center gap-4">
               <Avatar className="h-24 w-24">
                 <AvatarImage src={profile.photo || "/placeholder-user.png"} alt={`${profile.first_name} ${profile.last_name}`} />
-                <AvatarFallback>{profile.first_name[0]}{profile.last_name[0]}</AvatarFallback>
+                <AvatarFallback>{profile.first_name?.[0] || ''}{profile.last_name?.[0] || ''}</AvatarFallback>
               </Avatar>
               <div className="space-y-1 text-center sm:text-left">
                 <h3 className="text-2xl font-semibold">{profile.first_name} {profile.last_name}</h3>
@@ -280,7 +322,7 @@ export default function UserProfilePage({ userId }: { userId?: string }) {
           </CardContent>
         </Card>
         <div className="flex justify-center mt-6">
-          <Link href={`/projects/records/${userId || ''}`}>
+          <Link href={`/projects/records/${profileUserId || ''}`}>
             <Button>
               <Trophy className="mr-2 h-4 w-4" />
               Ver logros de {profile.first_name}
