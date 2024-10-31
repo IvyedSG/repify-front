@@ -1,7 +1,7 @@
 import React from 'react'
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
 import { Textarea } from '@/components/ui/textarea'
-import { FileText, Award } from 'lucide-react'
+import { FileText, Award, Tag } from 'lucide-react'
 
 interface ProfileInfoStepProps {
   form: any;
@@ -29,6 +29,27 @@ export function ProfileInfoStep({ form, loading }: ProfileInfoStepProps) {
               />
             </FormControl>
             <FormMessage id="biography-description" />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="interests"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="flex items-center mb-4 mt-4">
+              <Tag className="mr-2 h-4 w-4" aria-hidden="true" />
+              Intereses
+            </FormLabel>
+            <FormControl>
+              <Textarea 
+                placeholder="Ingresa tus intereses separados por comas (ej: Tecnología, Libros, Religión)" 
+                disabled={loading} 
+                {...field} 
+                aria-describedby="interests-description"
+              />
+            </FormControl>
+            <FormMessage id="interests-description" />
           </FormItem>
         )}
       />

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { CalendarIcon, Users, GraduationCap, Briefcase, AlertTriangle } from 'lucide-react'
+import Link from 'next/link'
 
 interface Project {
   id: number
@@ -19,6 +20,7 @@ interface Project {
   creator_name: string | null
   collaboration_count: number
   type_aplyuni: string
+  responsible: number
 }
 
 interface ProjectCardProps {
@@ -125,7 +127,9 @@ const ProjectCard = memo(({ project, onViewDetails }: ProjectCardProps) => {
             <AvatarFallback>{getInitials(project.creator_name)}</AvatarFallback>
           </Avatar>
           <div>
-            <p className="text-sm font-medium dark:text-white text-gray-900">{project.creator_name || 'Sin líder asignado'}</p>
+            <Link href={`/projects/profiles/${project.responsible}`} className="text-sm font-medium dark:text-white text-gray-900 hover:underline">
+              {project.creator_name || 'Sin líder asignado'}
+            </Link>
             <p className="text-xs dark:text-gray-400 text-gray-500">Líder del Proyecto</p>
           </div>
         </div>

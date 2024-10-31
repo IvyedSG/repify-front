@@ -143,7 +143,7 @@ export default function TeamSection({ project, onCollaboratorRemoved }: TeamSect
               </div>
             ))
           ) : (
-            <p className="text-sm text-gray-500">No hay colaboradores en este proyecto.</p>
+            <p className="text-sm text-gray-500">No hay miembros en este proyecto.</p>
           )}
         </div>
       </div>

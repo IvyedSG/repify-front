@@ -27,7 +27,8 @@ const formSchema = z.object({
   last_name: z.string().min(1, { message: 'El apellido es requerido' }),
   biography: z.string().optional(),
   achievements: z.string().optional(),
-  photo: z.string().optional()
+  photo: z.string().optional(),
+  interests: z.string().optional()
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Las contraseñas no coinciden",
   path: ["confirmPassword"],
@@ -52,19 +53,24 @@ export default function UserRegisterForm() {
       last_name: '',
       biography: '',
       achievements: '',
-      photo: ''
+      photo: '',
+      interests: ''
     }
   })
 
   const onSubmit = useCallback(async (data: UserFormValue) => {
     setLoading(true)
     try {
-      const response = await fetch('https://repo-s7h0.onrender.com/usuario/login/Register/', {
+      const formattedData = {
+        ...data,
+        interests: data.interests ? data.interests.split(',').map(i => i.trim()).join(', ') : '',
+      }
+      const response = await fetch('http://127.0.0.1:8000/usuario/login/Register/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(formattedData),
       })
 
       if (response.ok) {
@@ -86,7 +92,7 @@ export default function UserRegisterForm() {
     const fields = step === 1 ? ['email', 'password', 'confirmPassword'] :
                    step === 2 ? ['first_name', 'last_name'] :
                    step === 3 ? ['university', 'career', 'cycle'] :
-                   ['biography', 'achievements']
+                   ['biography', 'achievements', 'interests']
   
     const isValid = await form.trigger(fields)
     if (isValid && step < 4) {

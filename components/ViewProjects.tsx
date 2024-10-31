@@ -28,20 +28,21 @@ const colorSchemes: ColorScheme[] = [
 ]
 
 interface Project {
-  id: number
-  name: string
-  description: string
-  start_date: string
-  end_date: string
-  status: string
-  project_type: string
-  priority: string
-  detailed_description: string
-  progress: number
-  accepting_applications: boolean
-  creator_name: string
-  collaboration_count: number
-  colorScheme: ColorScheme
+  id: number;
+  name: string;
+  description: string;
+  start_date: string;
+  end_date: string;
+  status: string;
+  project_type: string;
+  priority: string;
+  detailed_description: string;
+  progress: number;
+  accepting_applications: boolean;
+  creator_name: string;
+  collaboration_count: number;
+  colorScheme: ColorScheme;
+  responsible: number; //id del creador del proyecto
 }
 
 const projectTypes = [

@@ -1,13 +1,15 @@
 import React from 'react'
+import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 
 interface ProjectLeaderProps {
   creator: string;
   university: string;
+  responsible: number;
 }
 
-export default function ProjectLeader({ creator, university }: ProjectLeaderProps) {
+export default function ProjectLeader({ creator, university, responsible }: ProjectLeaderProps) {
   return (
     <Card>
       <CardHeader>
@@ -20,7 +22,9 @@ export default function ProjectLeader({ creator, university }: ProjectLeaderProp
           </AvatarFallback>
         </Avatar>
         <div>
-          <p className="font-semibold">{creator}</p>
+          <Link href={`/projects/profiles/${responsible}`} className="font-semibold hover:underline">
+            {creator}
+          </Link>
           <p className="text-sm text-muted-foreground">{university}</p>
         </div>
       </CardContent>

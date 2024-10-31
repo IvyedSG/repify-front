@@ -40,7 +40,7 @@ export default function ProjectDetails({ project }: ProjectDetailsProps) {
           </div>
           <div className="flex items-center text-muted-foreground">
             <Users className="mr-2 h-5 w-5" />
-            <span>{project.collaboration_count} Colaboradores</span>
+            <span>{project.collaboration_count} Miembros</span>
           </div>
         </div>
         <p className="text-foreground">{project.detailed_description}</p>
