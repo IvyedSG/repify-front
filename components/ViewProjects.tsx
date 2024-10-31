@@ -92,7 +92,6 @@ export default function ViewProjects() {
     rootMargin: '200px 0px',
   })
 
-  // Fetch initial 3 projects
   const { data: initialProjects, error: initialError } = useSWR(
     status === 'authenticated'
       ? ['http://127.0.0.1:8000/usuario/projects/view_recent_projects/', session.user.accessToken]

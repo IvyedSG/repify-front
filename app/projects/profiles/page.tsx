@@ -1,21 +1,18 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useSession } from 'next-auth/react'
-import { useRouter, useParams } from 'next/navigation'
 import useSWR from 'swr'
-import PageContainer from '@/components/layout/page-container'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Card, CardContent, CardHeader} from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { toast } from '@/components/ui/use-toast'
 import { Edit2, Save, User, GraduationCap, Trophy } from 'lucide-react'
-import { Skeleton } from '@/components/ui/skeleton'
 import Link from 'next/link'
 
 interface UserProfile {
@@ -46,30 +43,18 @@ const fetchOwnProfile = async (url: string, token: string) => {
   return res.json()
 }
 
-const fetchOtherProfile = async (url: string, token: string) => {
-  const res = await fetch(url, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    }
-  })
-  if (!res.ok) throw new Error('Failed to fetch profile')
-  return res.json()
-}
-
 const ProfileSkeleton = () => (
   <Card>
     <CardHeader>
       <div className="flex flex-col sm:flex-row items-center gap-4">
-        <Skeleton className="h-24 w-24 rounded-full" />
+        <div className="h-24 w-24 rounded-full bg-gray-200 animate-pulse" />
         <div className="space-y-2 w-full">
-          <Skeleton className="h-8 w-3/4" />
-          <Skeleton className="h-4 w-1/2" />
+          <div className="h-8 w-3/4 bg-gray-200 animate-pulse" />
+          <div className="h-4 w-1/2 bg-gray-200 animate-pulse" />
           <div className="flex flex-wrap gap-2">
-            <Skeleton className="h-6 w-20" />
-            <Skeleton className="h-6 w-24" />
-            <Skeleton className="h-6 w-16" />
+            <div className="h-6 w-20 bg-gray-200 animate-pulse" />
+            <div className="h-6 w-24 bg-gray-200 animate-pulse" />
+            <div className="h-6 w-16 bg-gray-200 animate-pulse" />
           </div>
         </div>
       </div>
@@ -78,13 +63,13 @@ const ProfileSkeleton = () => (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {[...Array(4)].map((_, i) => (
           <div key={i} className="space-y-2">
-            <Skeleton className="h-4 w-1/4" />
-            <Skeleton className="h-10 w-full" />
+            <div className="h-4 w-1/4 bg-gray-200 animate-pulse" />
+            <div className="h-10 w-full bg-gray-200 animate-pulse" />
           </div>
         ))}
         <div className="space-y-2 md:col-span-2">
-          <Skeleton className="h-4 w-1/4" />
-          <Skeleton className="h-24 w-full" />
+          <div className="h-4 w-1/4 bg-gray-200 animate-pulse" />
+          <div className="h-24 w-full bg-gray-200 animate-pulse" />
         </div>
       </div>
     </CardContent>
@@ -94,44 +79,26 @@ const ProfileSkeleton = () => (
 export default function UserProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
   const { data: session } = useSession()
-  const router = useRouter()
-  const params = useParams()
-  const [profileUserId, setProfileUserId] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (params.id) {
-      setProfileUserId(params.id as string)
-    } else if (session?.user?.id) {
-      setProfileUserId(session.user.id)
-    }
-  }, [params.id, session])
-
-  const isOwnProfile = !params.id
-
   const { data: profile, error, mutate } = useSWR<UserProfile>(
-    session?.user?.accessToken && profileUserId
-      ? isOwnProfile
-        ? ['http://127.0.0.1:8000/usuario/perfil/profile/', session.user.accessToken]
-        : [`http://127.0.0.1:8000/usuario/perfil/profile/${profileUserId}`, session.user.accessToken]
-      : null,
-    ([url, token]) => isOwnProfile ? fetchOwnProfile(url, token) : fetchOtherProfile(url, token),
+    session?.user?.accessToken ? ['http://127.0.0.1:8000/usuario/perfil/profile/', session.user.accessToken] : null,
+    ([url, token]) => fetchOwnProfile(url, token),
     { revalidateOnFocus: false, revalidateOnReconnect: false }
   )
 
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    if (profile && isOwnProfile) {
+    if (profile) {
       mutate({ ...profile, [e.target.name]: e.target.value }, false)
     }
   }
 
   const handleInterestsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (profile && isOwnProfile) {
+    if (profile) {
       mutate({ ...profile, interests: e.target.value.split(',').map(item => item.trim()) }, false)
     }
   }
 
   const handleSave = async () => {
-    if (!profile || !session?.user?.accessToken || !isOwnProfile) return
+    if (!profile || !session?.user?.accessToken) return
 
     const profileData = {
       id: session.user.id,
@@ -162,10 +129,9 @@ export default function UserProfilePage() {
 
       const updatedProfile = await response.json()
       
-      // Ensure all required fields are present in the updated profile
       const safeUpdatedProfile = {
-        ...profile, // Keep existing data
-        ...updatedProfile, // Overwrite with new data
+        ...profile,
+        ...updatedProfile,
         first_name: updatedProfile.first_name || profile.first_name,
         last_name: updatedProfile.last_name || profile.last_name,
         interests: Array.isArray(updatedProfile.interests) ? updatedProfile.interests : profile.interests,
@@ -187,34 +153,25 @@ export default function UserProfilePage() {
     }
   }
 
-  if (error) {
-    return <div>Error loading profile. Please try again later.</div>
-  }
-
-  if (!profile) {
-    return <ProfileSkeleton />
-  }
+  if (error) return <div>Error loading profile. Please try again later.</div>
+  if (!profile) return <ProfileSkeleton />
 
   return (
-    <PageContainer scrollable={true}>
+    <div className="container mx-auto px-4 py-8">
       <div className="space-y-6 mb-10">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <h2 className="text-3xl font-bold tracking-tight">
-            {isOwnProfile ? 'Mi Perfil' : `Perfil de ${profile.first_name} ${profile.last_name}`}
-          </h2>
-          {isOwnProfile && (
-            <Button onClick={() => isEditing ? handleSave() : setIsEditing(true)}>
-              {isEditing ? (
-                <>
-                  <Save className="mr-2 h-4 w-4" /> Guardar Cambios
-                </>
-              ) : (
-                <>
-                  <Edit2 className="mr-2 h-4 w-4" /> Editar Perfil
-                </>
-              )}
-            </Button>
-          )}
+          <h2 className="text-3xl font-bold tracking-tight">Mi Perfil</h2>
+          <Button onClick={() => isEditing ? handleSave() : setIsEditing(true)}>
+            {isEditing ? (
+              <>
+                <Save className="mr-2 h-4 w-4" /> Guardar Cambios
+              </>
+            ) : (
+              <>
+                <Edit2 className="mr-2 h-4 w-4" /> Editar Perfil
+              </>
+            )}
+          </Button>
         </div>
 
         <Card>
@@ -322,14 +279,14 @@ export default function UserProfilePage() {
           </CardContent>
         </Card>
         <div className="flex justify-center mt-6">
-          <Link href={`/projects/records/${profileUserId || ''}`}>
+          <Link href={`/projects/records/${session?.user?.id || ''}`}>
             <Button>
               <Trophy className="mr-2 h-4 w-4" />
-              Ver logros de {profile.first_name}
+              Ver mis logros
             </Button>
           </Link>
         </div>
       </div>
-    </PageContainer>
+    </div>
   )
 }

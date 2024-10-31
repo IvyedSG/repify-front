@@ -13,7 +13,7 @@ export default function NotFound() {
         404
       </span>
       <h2 className="font-heading my-2 text-2xl font-bold">
-      Este proyecto está más perdido que un cachimbo en su primer día 😿
+      Este sitio está más perdido que un cachimbo en su primer día 😿
       </h2>
       <p>
         Lo siento, la página a la que intentas ingresar no existe.
