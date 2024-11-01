@@ -1,18 +1,21 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
+import { useRouter, useParams } from 'next/navigation'
 import useSWR from 'swr'
+import PageContainer from '@/components/layout/page-container'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Card, CardContent, CardHeader} from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { toast } from '@/components/ui/use-toast'
 import { Edit2, Save, User, GraduationCap, Trophy } from 'lucide-react'
+import { Skeleton } from '@/components/ui/skeleton'
 import Link from 'next/link'
 
 interface UserProfile {
@@ -40,6 +43,18 @@ const fetchOwnProfile = async (url: string, token: string) => {
     }
   })
   if (!res.ok) throw new Error('Failed to fetch own profile')
+  return res.json()
+}
+
+const fetchOtherProfile = async (url: string, token: string) => {
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  })
+  if (!res.ok) throw new Error('Failed to fetch profile')
   return res.json()
 }
 
@@ -79,26 +94,44 @@ const ProfileSkeleton = () => (
 export default function UserProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
   const { data: session } = useSession()
+  const router = useRouter()
+  const params = useParams()
+  const [profileUserId, setProfileUserId] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (params.id) {
+      setProfileUserId(params.id as string)
+    } else if (session?.user?.id) {
+      setProfileUserId(session.user.id)
+    }
+  }, [params.id, session])
+
+  const isOwnProfile = !params.id
+
   const { data: profile, error, mutate } = useSWR<UserProfile>(
-    session?.user?.accessToken ? ['http://127.0.0.1:8000/usuario/perfil/profile/', session.user.accessToken] : null,
-    ([url, token]) => fetchOwnProfile(url, token),
+    session?.user?.accessToken && profileUserId
+      ? isOwnProfile
+        ? ['http://127.0.0.1:8000/usuario/perfil/profile/', session.user.accessToken]
+        : [`http://127.0.0.1:8000/usuario/perfil/profile/${profileUserId}`, session.user.accessToken]
+      : null,
+    ([url, token]) => isOwnProfile ? fetchOwnProfile(url, token) : fetchOtherProfile(url, token),
     { revalidateOnFocus: false, revalidateOnReconnect: false }
   )
 
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    if (profile) {
+    if (profile && isOwnProfile) {
       mutate({ ...profile, [e.target.name]: e.target.value }, false)
     }
   }
 
   const handleInterestsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (profile) {
+    if (profile && isOwnProfile) {
       mutate({ ...profile, interests: e.target.value.split(',').map(item => item.trim()) }, false)
     }
   }
 
   const handleSave = async () => {
-    if (!profile || !session?.user?.accessToken) return
+    if (!profile || !session?.user?.accessToken || !isOwnProfile) return
 
     const profileData = {
       id: session.user.id,
@@ -129,9 +162,10 @@ export default function UserProfilePage() {
 
       const updatedProfile = await response.json()
       
+      // Ensure all required fields are present in the updated profile
       const safeUpdatedProfile = {
-        ...profile,
-        ...updatedProfile,
+        ...profile, // Keep existing data
+        ...updatedProfile, // Overwrite with new data
         first_name: updatedProfile.first_name || profile.first_name,
         last_name: updatedProfile.last_name || profile.last_name,
         interests: Array.isArray(updatedProfile.interests) ? updatedProfile.interests : profile.interests,
@@ -153,8 +187,13 @@ export default function UserProfilePage() {
     }
   }
 
-  if (error) return <div>Error loading profile. Please try again later.</div>
-  if (!profile) return <ProfileSkeleton />
+  if (error) {
+    return <div>Error loading profile. Please try again later.</div>
+  }
+
+  if (!profile) {
+    return <ProfileSkeleton />
+  }
 
   return (
     <PageContainer scrollable={true}>
@@ -283,7 +322,7 @@ export default function UserProfilePage() {
           </CardContent>
         </Card>
         <div className="flex justify-center mt-6">
-          <Link href={`/projects/records/${session?.user?.id || ''}`}>
+          <Link href={`/projects/records/${profileUserId || ''}`}>
             <Button>
               <Trophy className="w-4 h-4 mr-2" />
               Ver logros de {profile.first_name}
