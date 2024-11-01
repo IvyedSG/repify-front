@@ -305,12 +305,27 @@ export default function LogrosPage() {
           </div>
         </TabsContent>
         <TabsContent value="unlocked" className="mt-6">
-          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {achievements.filter(a => a.unlocked).map((achievement) => (
-              <AchievementCard key={achievement.id} achievement={achievement} />
-            ))}
-          </div>
-        </TabsContent>
+  <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+    {achievements.filter(a => a.unlocked).length > 0 ? (
+      achievements.filter(a => a.unlocked).map((achievement) => (
+        <AchievementCard key={achievement.id} achievement={achievement} />
+      ))
+    ) : (
+      <div className="col-span-full text-center p-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Aún no has desbloqueado ningún logro</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">
+              ¡Sigue participando en proyectos y completando tareas para desbloquear logros!
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    )}
+  </div>
+</TabsContent>
         <TabsContent value="locked" className="mt-6">
           <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {achievements.filter(a => !a.unlocked).map((achievement) => (

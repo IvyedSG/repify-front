@@ -34,7 +34,7 @@ interface Project {
   start_date: string;
   end_date: string;
   status: string;
-  project_type: string;
+  project_type: string[];
   priority: string;
   detailed_description: string;
   progress: number;
@@ -42,7 +42,8 @@ interface Project {
   creator_name: string;
   collaboration_count: number;
   colorScheme: ColorScheme;
-  responsible: number; //id del creador del proyecto
+  responsible: number;
+  type_aplyuni: string;
 }
 
 const projectTypes = [
@@ -141,7 +142,7 @@ export default function ViewProjects() {
       }))
       .filter(project => 
         project.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        (filterType === 'all' || project.project_type === filterType)
+        (filterType === 'all' || project.project_type.includes(filterType))
       ), 
     [projects, searchTerm, filterType]
   )
@@ -166,7 +167,7 @@ export default function ViewProjects() {
             <SelectTrigger className="w-[200px]">
               <SelectValue placeholder="Filtrar por tipo de proyecto" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="max-h-[200px] overflow-y-auto">
               <SelectItem value="all">Todos los tipos</SelectItem>
               {projectTypes.map((type) => (
                 <SelectItem key={type} value={type}>{type}</SelectItem>

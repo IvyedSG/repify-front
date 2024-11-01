@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/dialog"
 import useSWR, { mutate } from 'swr'
 import { css } from '@emotion/react'
+
 const customStyles = css`
   @media (min-width: 720px) and (max-width: 1099px) {
     .grid {
@@ -76,6 +77,7 @@ export default function ApplicationsPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [applicationToDelete, setApplicationToDelete] = useState<number | null>(null)
+  const [activeTab, setActiveTab] = useState('all')
 
   const { data: applications, error } = useSWR<Application[]>(
     session?.user?.accessToken ? ['http://127.0.0.1:8000/usuario/projects/solicitudes_user/', session.user.accessToken] : null,
@@ -109,9 +111,10 @@ export default function ApplicationsPage() {
     return applications?.filter(app => 
       (status === 'all' || app.status.toLowerCase() === status.toLowerCase()) &&
       (app.name_project.toLowerCase().includes(searchTerm.toLowerCase()) ||
-       app.name_lider.toLowerCase().includes(searchTerm.toLowerCase()))
+       app.name_lider.toLowerCase().includes(searchTerm.toLowerCase())) &&
+      (filter === 'all' || app.status.toLowerCase() === filter.toLowerCase())
     ) || []
-  }, [applications, searchTerm])
+  }, [applications, searchTerm, filter])
 
   const ApplicationSkeleton = useMemo(() => () => (
     <Card className="bg-card">
@@ -253,7 +256,7 @@ export default function ApplicationsPage() {
 
   return (
     <PageContainer scrollable={true}>
-      <div css={customStyles} className="space-y-6 max-w-[1400px] mx-auto px-4">
+      <div css={customStyles} className="space-y-6 max-w-[1400px] mx-auto px-4 mb-10">
         <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">Mis Solicitudes</h1>
           <div className="flex flex-col items-start space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-2">
@@ -263,7 +266,10 @@ export default function ApplicationsPage() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <Select value={filter} onValueChange={setFilter}>
+            <Select value={filter} onValueChange={(value) => {
+              setFilter(value)
+              setActiveTab(value)
+            }}>
               <SelectTrigger className="w-full sm:w-[180px] bg-input text-input-foreground">
                 <SelectValue placeholder="Filtrar por estado" />
               </SelectTrigger>
@@ -277,7 +283,7 @@ export default function ApplicationsPage() {
           </div>
         </div>
   
-        <Tabs defaultValue="all" className="space-y-4">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <TabsList className="inline-flex justify-start bg-muted">
             <TabsTrigger value="all" className="flex-1 sm:flex-none data-[state=active]:bg-background">Todos</TabsTrigger>
             <TabsTrigger value="pendiente" className="flex-1 sm:flex-none data-[state=active]:bg-background">Pendiente</TabsTrigger>
