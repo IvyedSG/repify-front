@@ -7,7 +7,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
-  DropdownMenuItem,
 } from '@/components/ui/dropdown-menu'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -20,6 +19,7 @@ import { Card } from '@/components/ui/card'
 interface Notification {
   id: number
   message: string
+  is_read: number
 }
 
 const fetcher = (url: string, token: string) =>
@@ -32,7 +32,6 @@ const fetcher = (url: string, token: string) =>
 export function NotificationButton() {
   const { data: session } = useSession()
   const [showAllNotifications, setShowAllNotifications] = useState(false)
-  const [hasUnread, setHasUnread] = useState(false)
 
   const { data: notifications, error, mutate } = useSWR<Notification[]>(
     session?.user?.accessToken
@@ -53,23 +52,40 @@ export function NotificationButton() {
     }
   )
 
-  useEffect(() => {
-    if (notifications && notifications.length > 0) {
-      setHasUnread(true)
-    }
-  }, [notifications])
+  const hasUnread = notifications?.some(notification => notification.is_read === 0) ?? false
 
   const handleOpenDropdown = () => {
-    setHasUnread(false)
+    // No need to set hasUnread to false here, it's now derived from the notifications data
   }
 
-  const handleViewAll = () => {
+  const handleViewAll = async () => {
     setShowAllNotifications(true)
-    setHasUnread(false)
+    if (session?.user?.accessToken) {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/usuario/projects/isread_notificaciones/', {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${session.user.accessToken}`,
+          },
+        })
+        if (response.ok) {
+          mutate(notifications?.map(notification => ({ ...notification, is_read: 1 })))
+        } else {
+          throw new Error('Failed to update notifications')
+        }
+      } catch (error) {
+        console.error('Error updating notifications:', error)
+        toast({
+          title: "Error",
+          description: "Failed to mark notifications as read. Please try again later.",
+          variant: "destructive"
+        })
+      }
+    }
   }
 
   const NotificationItem = ({ notification }: { notification: Notification }) => (
-    <Card className="mb-2 p-3 hover:bg-accent transition-colors">
+    <Card className={`mb-2 p-3 hover:bg-accent transition-colors ${notification.is_read === 0 ? 'bg-accent/50' : ''}`}>
       <p className="text-sm">{notification.message}</p>
     </Card>
   )

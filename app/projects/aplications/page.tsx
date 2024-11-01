@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useMemo } from 'react'
 import { useSession } from 'next-auth/react'
+import Link from 'next/link'
 import PageContainer from '@/components/layout/page-container'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -97,7 +98,7 @@ export default function ApplicationsPage() {
   const getStatusColor = useCallback((status: string) => {
     switch (status.toLowerCase()) {
       case 'pendiente': return 'bg-yellow-100 text-yellow-800'
-      case 'aprobado': return 'bg-green-100 text-green-800'
+      case 'aceptada': return 'bg-green-100 text-green-800'
       case 'rechazado': return 'bg-red-100 text-red-800'
       default: return 'bg-gray-100 text-gray-800'
     }
@@ -217,15 +218,17 @@ export default function ApplicationsPage() {
                 Retirar Solicitud
               </Button>
             ) : (
-              <Button className="w-full" variant="outline">
-                Ver Proyecto
-              </Button>
+              <Link href={`/projects/${application.id_project}`} passHref>
+                <Button className="w-full" variant="outline">
+                  Ver Proyecto
+                </Button>
+              </Link>
             )}
           </div>
         </CardContent>
       </Card>
     ))
-  }, [loading, error, filterApplications, getStatusColor, ApplicationSkeleton, applications])
+  }, [loading, error, filterApplications, getStatusColor, ApplicationSkeleton, applications, setApplicationToDelete, setDeleteDialogOpen])
 
   return (
     <PageContainer scrollable={true}>
@@ -246,7 +249,7 @@ export default function ApplicationsPage() {
               <SelectContent>
                 <SelectItem value="all">Todos</SelectItem>
                 <SelectItem value="pendiente">Pendiente</SelectItem>
-                <SelectItem value="aprobado">Aprobado</SelectItem>
+                <SelectItem value="aceptada">Aceptada</SelectItem>
                 <SelectItem value="rechazado">Rechazado</SelectItem>
               </SelectContent>
             </Select>
@@ -257,11 +260,11 @@ export default function ApplicationsPage() {
           <TabsList className="inline-flex justify-start bg-muted">
             <TabsTrigger value="all" className="flex-1 sm:flex-none data-[state=active]:bg-background">Todos</TabsTrigger>
             <TabsTrigger value="pendiente" className="flex-1 sm:flex-none data-[state=active]:bg-background">Pendiente</TabsTrigger>
-            <TabsTrigger value="aprobado" className="flex-1 sm:flex-none data-[state=active]:bg-background">Aprobado</TabsTrigger>
+            <TabsTrigger value="aceptada" className="flex-1 sm:flex-none data-[state=active]:bg-background">Aceptada</TabsTrigger>
             <TabsTrigger value="rechazado" className="flex-1 sm:flex-none data-[state=active]:bg-background">Rechazado</TabsTrigger>
           </TabsList>
   
-          {(['all', 'pendiente', 'aprobado', 'rechazado'] as const).map((tab) => (
+          {(['all', 'pendiente', 'aceptada', 'rechazado'] as const).map((tab) => (
             <TabsContent key={tab} value={tab}>
               <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3">
                 {renderApplications(tab)}

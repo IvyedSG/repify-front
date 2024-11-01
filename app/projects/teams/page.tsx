@@ -157,7 +157,7 @@ export default function ProjectsPage() {
             </div>
             <div className="flex items-center">
               <Users className="w-4 h-4 text-gray-500" />
-              <span className="ml-2 text-sm">{project.collaboration_count} miembros</span>
+              <span className="ml-2 text-sm">{project.collaboration_count} Miembros</span>
             </div>
           </div>
           <div>

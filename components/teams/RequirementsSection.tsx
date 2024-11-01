@@ -68,7 +68,7 @@ export default function RequirementsSection({ project, setProject, isEditing }: 
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
           <List className="inline-block w-4 h-4 mr-2" />
-          Requisitos Necesarios
+          Requisitos del Proyecto
         </label>
         {project.necessary_requirements.map((requirement, index) => (
           <div key={index} className="flex items-center mt-2">

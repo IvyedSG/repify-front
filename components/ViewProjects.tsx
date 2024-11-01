@@ -28,20 +28,21 @@ const colorSchemes: ColorScheme[] = [
 ]
 
 interface Project {
-  id: number
-  name: string
-  description: string
-  start_date: string
-  end_date: string
-  status: string
-  project_type: string
-  priority: string
-  detailed_description: string
-  progress: number
-  accepting_applications: boolean
-  creator_name: string
-  collaboration_count: number
-  colorScheme: ColorScheme
+  id: number;
+  name: string;
+  description: string;
+  start_date: string;
+  end_date: string;
+  status: string;
+  project_type: string;
+  priority: string;
+  detailed_description: string;
+  progress: number;
+  accepting_applications: boolean;
+  creator_name: string;
+  collaboration_count: number;
+  colorScheme: ColorScheme;
+  responsible: number; //id del creador del proyecto
 }
 
 const projectTypes = [
@@ -92,7 +93,6 @@ export default function ViewProjects() {
     rootMargin: '200px 0px',
   })
 
-  // Fetch initial 3 projects
   const { data: initialProjects, error: initialError } = useSWR(
     status === 'authenticated'
       ? ['http://127.0.0.1:8000/usuario/projects/view_recent_projects/', session.user.accessToken]

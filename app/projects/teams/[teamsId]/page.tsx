@@ -83,7 +83,6 @@ export default function ProjectConfigPage() {
           type_aplyuni: project.type_aplyuni
         };
   
-        console.log('Payload enviado al endpoint PUT:', payload);
   
         const response = await fetch('http://127.0.0.1:8000/usuario/projects/update-project/', {
           method: 'PUT',

@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { toast } from '@/components/ui/use-toast'
 import { Users, UserMinus } from 'lucide-react'
+import Link from 'next/link'
 
 interface Collaborator {
   id: number;
@@ -88,7 +89,9 @@ export default function TeamSection({ project, onCollaboratorRemoved }: TeamSect
             <AvatarFallback>{(project.name_responsible || 'PL').charAt(0)}</AvatarFallback>
           </Avatar>
           <span className="ml-2 text-gray-800 dark:text-gray-200">
-            {project.name_responsible || 'No name provided'}
+            <Link href={`/profiles/${project.id}`} className="hover:underline">
+              {project.name_responsible || 'No name provided'}
+            </Link>
           </span>
         </div>
       </div>
@@ -107,7 +110,9 @@ export default function TeamSection({ project, onCollaboratorRemoved }: TeamSect
                     <AvatarFallback>{(collaborator.name || 'C').charAt(0)}</AvatarFallback>
                   </Avatar>
                   <span className="ml-2 text-gray-800 dark:text-gray-200">
-                    {collaborator.name || 'No name provided'}
+                    <Link href={`/projects/profiles/${collaborator.id}`} className="hover:underline">
+                      {collaborator.name || 'No name provided'}
+                    </Link>
                   </span>
                 </div>
                 <AlertDialog>
@@ -138,7 +143,7 @@ export default function TeamSection({ project, onCollaboratorRemoved }: TeamSect
               </div>
             ))
           ) : (
-            <p className="text-sm text-gray-500">No hay colaboradores en este proyecto.</p>
+            <p className="text-sm text-gray-500">No hay miembros en este proyecto.</p>
           )}
         </div>
       </div>

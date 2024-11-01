@@ -169,8 +169,13 @@ export default function ProjectDetailsPage() {
               </Suspense>
 
               <Suspense fallback={<ProjectSkeleton />}>
-                <ProjectLeader creator={project.creator_name} university={project.name_uniuser} />
+                <ProjectLeader 
+                  creator={project.creator_name} 
+                  university={project.name_uniuser} 
+                  responsible={project.responsible} 
+                />
               </Suspense>
+
 
               <Button 
                 onClick={handleApply} 
