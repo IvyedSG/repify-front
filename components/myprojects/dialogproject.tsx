@@ -134,7 +134,7 @@ export default function DetailedProjectDialog({ project, isOpen, onOpenChange }:
               <div className="p-3 rounded-lg sm:p-4">
                 <h3 className="flex items-center mb-2 text-base font-semibold sm:text-lg">
                   <List className="w-4 h-4 mr-2 sm:w-5 sm:h-5" />
-                  Requisitos Necesarios
+                  Requisitos del Proyecto
                 </h3>
                 <ul className="text-xs list-disc list-inside sm:text-sm">
                   {project.necessary_requirements.map((requirement, index) => (
@@ -173,7 +173,7 @@ export default function DetailedProjectDialog({ project, isOpen, onOpenChange }:
               <div className="p-3 rounded-lg sm:p-4">
                 <h3 className="flex items-center mb-2 text-base font-semibold sm:text-lg">
                   <Users className="w-4 h-4 mr-2 sm:w-5 sm:h-5" />
-                  Colaboradores ({project.collaboration_count})
+                  Miembros ({project.collaboration_count})
                 </h3>
                 {project.collaborators.length > 0 ? (
                   <ul className="text-xs list-disc list-inside sm:text-sm">

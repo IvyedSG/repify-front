@@ -9,7 +9,7 @@ export default function ProjectRequirements({ requirements }: ProjectRequirement
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-xl font-bold">Requisitos Necesarios</CardTitle>
+        <CardTitle className="text-xl font-bold">Requisitos del Proyecto</CardTitle>
       </CardHeader>
       <CardContent>
         <ul className="list-disc list-inside space-y-2 text-foreground">

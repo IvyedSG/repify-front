@@ -137,7 +137,7 @@ export default function OtherUserProfilePage() {
             </div>
             <Separator />
             <div>
-              <h4 className="font-semibold mb-2">Logros</h4>
+              <h4 className="font-semibold mb-2">Experiencias Académicas</h4>
               <p>{profile.achievements}</p>
             </div>
             <Separator />

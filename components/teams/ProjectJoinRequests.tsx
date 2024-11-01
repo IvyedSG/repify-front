@@ -90,7 +90,6 @@ export default function ProjectJoinRequests({ projectId }: ProjectJoinRequestsPr
         throw new Error(`Failed to ${action} request`)
       }
 
-      // Update the local state to reflect the change
       setJoinRequests(prevRequests =>
         prevRequests.map(request =>
           request.id_solicitud === requestId

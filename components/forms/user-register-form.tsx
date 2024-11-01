@@ -28,7 +28,7 @@ const formSchema = z.object({
   biography: z.string().optional(),
   achievements: z.string().optional(),
   photo: z.string().optional(),
-  interests: z.string().optional()
+  interests: z.array(z.string()).optional()
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Las contraseñas no coinciden",
   path: ["confirmPassword"],
@@ -54,7 +54,7 @@ export default function UserRegisterForm() {
       biography: '',
       achievements: '',
       photo: '',
-      interests: ''
+      interests: []
     }
   })
 
@@ -63,8 +63,10 @@ export default function UserRegisterForm() {
     try {
       const formattedData = {
         ...data,
-        interests: data.interests ? data.interests.split(',').map(i => i.trim()).join(', ') : '',
+        interests: Array.isArray(data.interests) ? data.interests : data.interests ? data.interests.split(',').map(i => i.trim()) : [],
       }
+      delete formattedData.confirmPassword;
+
       const response = await fetch('http://127.0.0.1:8000/usuario/login/Register/', {
         method: 'POST',
         headers: {
@@ -78,7 +80,7 @@ export default function UserRegisterForm() {
         setTimeout(() => router.push('/'), 2000)
       } else {
         const errorData = await response.json()
-        toast.error(`Ups, algo salió mal: ${errorData.message || 'Intenta nuevamente'}`)
+        toast.error(`Ups, algo salió mal: ${errorData.detail || 'Intenta nuevamente'}`)
       }
     } catch (error) {
       console.error('Error durante el registro:', error)

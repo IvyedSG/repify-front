@@ -299,7 +299,7 @@ export default function UserProfilePage() {
             </div>
             <Separator />
             <div>
-              <h4 className="mb-2 font-semibold">Logros</h4>
+              <h4 className="mb-2 font-semibold">Experiencias Académicas</h4>
               <Textarea
                 id="achievements"
                 name="achievements"
