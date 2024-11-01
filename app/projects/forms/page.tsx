@@ -191,7 +191,7 @@ export default function FormsSection() {
           </DialogContent>
         </Dialog>
       </div>
-
+  
       <Dialog open={isConfirmDialogOpen} onOpenChange={setIsConfirmDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogTitle>Confirmar Publicación</DialogTitle>
@@ -212,8 +212,8 @@ export default function FormsSection() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 [min-width:770px]:grid-cols-1 [min-width:900px]:grid-cols-2 xl:grid-cols-3">
+  
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
         {!forms ? (
           Array(6).fill(0).map((_, index) => (
             <FormCardSkeleton key={index} />
@@ -254,5 +254,5 @@ export default function FormsSection() {
         )}
       </div>
     </PageContainer>
-  )
+  );  
 }

@@ -215,56 +215,76 @@ export default function LogrosPage() {
       </div>
   
       <Tabs defaultValue="all" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4">
-          <TabsTrigger value="all">Todos los Logros</TabsTrigger>
-          <TabsTrigger value="unlocked">Desbloqueados</TabsTrigger>
-          <TabsTrigger value="locked">Por Desbloquear</TabsTrigger>
-          <TabsTrigger value="progress">Progreso</TabsTrigger>
-        </TabsList>
-        <TabsContent value="all" className="mt-6">
-          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {achievements.map((achievement) => (
-              <AchievementCard key={achievement.id} achievement={achievement} />
-            ))}
-          </div>
-        </TabsContent>
-        <TabsContent value="unlocked" className="mt-6">
-          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {achievements.filter(a => a.unlocked).map((achievement) => (
-              <AchievementCard key={achievement.id} achievement={achievement} />
-            ))}
-          </div>
-        </TabsContent>
-        <TabsContent value="locked" className="mt-6">
-          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {achievements.filter(a => !a.unlocked).map((achievement) => (
-              <AchievementCard key={achievement.id} achievement={achievement} />
-            ))}
-          </div>
-        </TabsContent>
-        <TabsContent value="progress" className="mt-6">
-          <div className="space-y-6">
-            <ProgressCard
-              title="Proyectos Completados"
-              current={userMetrics.projectsCompleted}
-              target={10}
-              description="Completa 10 proyectos para alcanzar el siguiente nivel"
-            />
-            <ProgressCard
-              title="Proyectos Liderados"
-              current={userMetrics.projectsAsLeader}
-              target={5}
-              description="Lidera 5 proyectos para desbloquear el logro 'Líder Experto'"
-            />
-            <ProgressCard
-              title="Logros Desbloqueados"
-              current={userMetrics.achievementsUnlocked}
-              target={achievements.length}
-              description="Desbloquea todos los logros para convertirte en un Maestro Académico"
-            />
-          </div>
-        </TabsContent>
-      </Tabs>
+      <TabsList className="grid w-full h-auto grid-cols-2 p-1 rounded-lg lg:grid-cols-4 bg-muted">
+        <TabsTrigger 
+          value="all" 
+          className="data-[state=active]:bg-background data-[state=active]:text-foreground rounded px-3 py-1.5 text-sm font-medium transition-all"
+        >
+          Todos los Logros
+        </TabsTrigger>
+        <TabsTrigger 
+          value="unlocked"
+          className="data-[state=active]:bg-background data-[state=active]:text-foreground rounded px-3 py-1.5 text-sm font-medium transition-all"
+        >
+          Desbloqueados
+        </TabsTrigger>
+        <TabsTrigger 
+          value="locked"
+          className="data-[state=active]:bg-background data-[state=active]:text-foreground rounded px-3 py-1.5 text-sm font-medium transition-all"
+        >
+          Por Desbloquear
+        </TabsTrigger>
+        <TabsTrigger 
+          value="progress"
+          className="data-[state=active]:bg-background data-[state=active]:text-foreground rounded px-3 py-1.5 text-sm font-medium transition-all"
+        >
+          Progreso
+        </TabsTrigger>
+      </TabsList>
+      <TabsContent value="all" className="mt-6">
+        <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          {achievements.map((achievement) => (
+            <AchievementCard key={achievement.id} achievement={achievement} />
+          ))}
+        </div>
+      </TabsContent>
+      <TabsContent value="unlocked" className="mt-6">
+        <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          {achievements.filter(a => a.unlocked).map((achievement) => (
+            <AchievementCard key={achievement.id} achievement={achievement} />
+          ))}
+        </div>
+      </TabsContent>
+      <TabsContent value="locked" className="mt-6">
+        <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          {achievements.filter(a => !a.unlocked).map((achievement) => (
+            <AchievementCard key={achievement.id} achievement={achievement} />
+          ))}
+        </div>
+      </TabsContent>
+      <TabsContent value="progress" className="mt-6">
+        <div className="space-y-6">
+          <ProgressCard
+            title="Proyectos Completados"
+            current={userMetrics.projectsCompleted}
+            target={10}
+            description="Completa 10 proyectos para alcanzar el siguiente nivel"
+          />
+          <ProgressCard
+            title="Proyectos Liderados"
+            current={userMetrics.projectsAsLeader}
+            target={5}
+            description="Lidera 5 proyectos para desbloquear el logro 'Líder Experto'"
+          />
+          <ProgressCard
+            title="Logros Desbloqueados"
+            current={userMetrics.achievementsUnlocked}
+            target={achievements.length}
+            description="Desbloquea todos los logros para convertirte en un Maestro Académico"
+          />
+        </div>
+      </TabsContent>
+    </Tabs>
     </div>
   );  
 }
