@@ -8,7 +8,8 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { toast } from '@/components/ui/use-toast'
 import { useTheme } from "next-themes"
 import { ProjectSkeleton } from '@/components/skeletons/ProjectSkeleton'
-import { Share2 } from 'lucide-react';
+import { Share2 } from 'lucide-react'
+import { ApplicationDialog } from '@/components/projectid/application-dialog'
 
 const ProjectDetails = lazy(() => import('@/components/projectid/ProjectDetails'))
 const ProjectObjectives = lazy(() => import('@/components/projectid/ProjectObjectives'))
@@ -46,6 +47,7 @@ export default function ProjectDetailsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [applying, setApplying] = useState(false)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
@@ -66,12 +68,10 @@ export default function ProjectDetailsPage() {
           const data = await response.json();
           setProject(data);
         } else {
-          
           router.push('/not-found');
         }
       } catch (error) {
         console.error('Error fetching project details:', error);
-
         router.push('/not-found');
       } finally {
         setLoading(false);
@@ -83,7 +83,7 @@ export default function ProjectDetailsPage() {
     }
   }, [session, router]);
 
-  const handleApply = async () => {
+  const handleApply = async (message: string) => {
     if (!project || project.has_applied) return
 
     setApplying(true)
@@ -94,7 +94,10 @@ export default function ProjectDetailsPage() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session?.user.accessToken}`
         },
-        body: JSON.stringify({ project_id: project.id })
+        body: JSON.stringify({ 
+          project_id: project.id,
+          message: message
+        })
       })
 
       if (response.ok) {
@@ -116,6 +119,7 @@ export default function ProjectDetailsPage() {
       })
     } finally {
       setApplying(false)
+      setIsDialogOpen(false)
     }
   }
 
@@ -176,9 +180,8 @@ export default function ProjectDetailsPage() {
                 />
               </Suspense>
 
-
               <Button 
-                onClick={handleApply} 
+                onClick={() => setIsDialogOpen(true)} 
                 disabled={!project.accepting_applications || applying || project.has_applied}
                 className="w-full py-6 text-lg"
               >
@@ -197,6 +200,13 @@ export default function ProjectDetailsPage() {
           </div>
         </div>
       </ScrollArea>
+
+      <ApplicationDialog 
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onSubmit={handleApply}
+        projectName={project.name}
+      />
     </div>
   )
 }

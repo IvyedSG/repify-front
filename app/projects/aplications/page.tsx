@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
-import { CalendarIcon, Trash2 } from 'lucide-react'
+import { CalendarIcon, Trash2, MessageCircle } from 'lucide-react'
 import { toast } from '@/components/ui/use-toast'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
@@ -20,10 +20,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog"
 import useSWR, { mutate } from 'swr'
 import { css } from '@emotion/react'
-
 const customStyles = css`
   @media (min-width: 720px) and (max-width: 1099px) {
     .grid {
@@ -51,6 +51,7 @@ type Application = {
   name_lider: string
   name_project: string
   created_at: string
+  message: string
 }
 
 const fetcher = async (url: string, token: string) => {
@@ -205,6 +206,26 @@ export default function ApplicationsPage() {
                 Postulación realizada el {new Date(application.created_at).toLocaleDateString()}
               </div>
             </div>
+            
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="w-full">
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  Ver mensaje enviado
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Mensaje de aplicación</DialogTitle>
+                  <DialogDescription>
+                    Este es el mensaje que enviaste al aplicar al proyecto.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="mt-4 p-4 bg-muted rounded-md">
+                  <p>{application.message}</p>
+                </div>
+              </DialogContent>
+            </Dialog>
             
             {application.status.toLowerCase() === 'pendiente' ? (
               <Button 

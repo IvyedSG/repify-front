@@ -8,7 +8,15 @@ import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { toast } from '@/components/ui/use-toast'
 import { Skeleton } from '@/components/ui/skeleton'
-import { CheckCircle, XCircle, Clock } from 'lucide-react'
+import { CheckCircle, XCircle, MessageCircle } from 'lucide-react'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
 interface JoinRequest {
   id_solicitud: number
@@ -19,6 +27,7 @@ interface JoinRequest {
   name_lider: string
   name_project: string
   created_at: string
+  message: string
 }
 
 interface ProjectJoinRequestsProps {
@@ -169,6 +178,25 @@ export default function ProjectJoinRequests({ projectId }: ProjectJoinRequestsPr
                 </div>
               </div>
               <div className="flex items-center space-x-2">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <MessageCircle className="w-4 h-4 mr-2" />
+                      Ver mensaje
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Mensaje de {request.name_user}</DialogTitle>
+                      <DialogDescription>
+                        Mensaje enviado con la solicitud de unión al proyecto.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="mt-4 p-4 bg-muted rounded-md">
+                      <p>{request.message}</p>
+                    </div>
+                  </DialogContent>
+                </Dialog>
                 {request.status === 'Pendiente' ? (
                   <>
                     <Button

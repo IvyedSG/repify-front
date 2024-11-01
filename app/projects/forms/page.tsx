@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react'
 import useSWR from 'swr'
 import PageContainer from '@/components/layout/page-container'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Link, AlertCircle } from 'lucide-react'
+import { Link, AlertCircle, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
@@ -40,9 +40,11 @@ export default function FormsSection() {
   const { data: session } = useSession()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [newFormTitle, setNewFormTitle] = useState('')
   const [newFormUrl, setNewFormUrl] = useState('')
   const [formError, setFormError] = useState('')
+  const [formToDelete, setFormToDelete] = useState<number | null>(null)
 
   const { data: forms, error, mutate } = useSWR<Form[]>(
     session?.user?.accessToken
@@ -109,6 +111,43 @@ export default function FormsSection() {
     }
   }
 
+  const handleDeleteForm = (formId: number) => {
+    setFormToDelete(formId)
+    setIsDeleteDialogOpen(true)
+  }
+
+  const confirmDeleteForm = async () => {
+    if (!session?.user?.accessToken || formToDelete === null) return
+
+    try {
+      const response = await fetch('http://127.0.0.1:8000/usuario/form/delete_form/', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.user.accessToken}`,
+        },
+        body: JSON.stringify({ id: formToDelete }),
+      })
+
+      if (!response.ok) throw new Error('Failed to delete form')
+
+      await mutate()
+      setIsDeleteDialogOpen(false)
+      setFormToDelete(null)
+      toast({
+        title: 'Éxito',
+        description: 'Formulario eliminado exitosamente',
+      })
+    } catch (error) {
+      console.error('Error deleting form:', error)
+      toast({
+        title: 'Error',
+        description: 'No se pudo eliminar el formulario. Por favor, intente de nuevo.',
+        variant: 'destructive',
+      })
+    }
+  }
+
   const FormCardSkeleton = () => (
     <Card className="flex flex-col">
       <CardHeader className="flex flex-row items-center gap-4">
@@ -157,7 +196,7 @@ export default function FormsSection() {
           <DialogContent className="sm:max-w-[425px]">
             <DialogTitle>Publicar un formulario</DialogTitle>
             <DialogDescription className="text-sm">
-              Solo puede publicar un formulario por cuenta. El formulario se mantendrá durante 15 días y luego se eliminará, podrá publicar otro cuando éste sea borrado.
+              Solo puede publicar un formulario por cuenta. Para publicar otro formulario, primero debe eliminar el existente.
             </DialogDescription>
             <form onSubmit={handleCreateForm} className="space-y-4">
               <div>
@@ -196,11 +235,7 @@ export default function FormsSection() {
         <DialogContent className="sm:max-w-[425px]">
           <DialogTitle>Confirmar Publicación</DialogTitle>
           <DialogDescription>
-            ¿Está seguro de que desea publicar este formulario? Recuerde que:
-            <ul className="mt-2 list-disc list-inside">
-              <li>Solo puede publicar un formulario por cuenta.</li>
-              <li>No podrá eliminar el formulario hasta que pasen 15 días desde su publicación.</li>
-            </ul>
+            ¿Está seguro de que desea publicar este formulario? Recuerde que solo puede tener un formulario publicado a la vez.
           </DialogDescription>
           <DialogFooter className="flex-col gap-2 sm:flex-row">
             <Button variant="outline" onClick={() => setIsConfirmDialogOpen(false)} className="w-full sm:w-auto">
@@ -208,6 +243,23 @@ export default function FormsSection() {
             </Button>
             <Button onClick={confirmCreateForm} className="w-full sm:w-auto">
               Confirmar Publicación
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogTitle>Confirmar Eliminación</DialogTitle>
+          <DialogDescription>
+            ¿Está seguro de que desea eliminar este formulario? Esta acción no se puede deshacer.
+          </DialogDescription>
+          <DialogFooter className="flex-col gap-2 sm:flex-row">
+            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)} className="w-full sm:w-auto">
+              Cancelar
+            </Button>
+            <Button variant="destructive" onClick={confirmDeleteForm} className="w-full sm:w-auto">
+              Eliminar Formulario
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -240,6 +292,16 @@ export default function FormsSection() {
                     </a>
                   </p>
                 </div>
+                {form.user === session?.user?.id && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleDeleteForm(form.id)}
+                    className="flex-shrink-0"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                )}
               </CardHeader>
               <CardContent className="flex-grow">
                 <p className="text-sm text-muted-foreground">

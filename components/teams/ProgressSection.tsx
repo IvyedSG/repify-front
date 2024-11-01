@@ -38,6 +38,10 @@ export default function ProgressSection({ project, setProject, isEditing }: Prog
           <Layers className="inline-block w-5 h-5 mr-2" />
           Hitos del Proyecto
         </h3>
+        <h5 className="text-lg text-gray-800 dark:text-gray-200 mb-4">
+          
+          Te recomendamos seguir estas fases para un excelente proyecto!
+        </h5>
         <div className="space-y-4">
           <div className="flex items-center">
             <CheckCircle className="text-green-500 mr-2" />
