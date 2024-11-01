@@ -46,30 +46,30 @@ const fetchOwnProfile = async (url: string, token: string) => {
 const ProfileSkeleton = () => (
   <Card>
     <CardHeader>
-      <div className="flex flex-col sm:flex-row items-center gap-4">
-        <div className="h-24 w-24 rounded-full bg-gray-200 animate-pulse" />
-        <div className="space-y-2 w-full">
-          <div className="h-8 w-3/4 bg-gray-200 animate-pulse" />
-          <div className="h-4 w-1/2 bg-gray-200 animate-pulse" />
+      <div className="flex flex-col items-center gap-4 sm:flex-row">
+        <Skeleton className="w-24 h-24 rounded-full" />
+        <div className="w-full space-y-2">
+          <Skeleton className="w-3/4 h-8" />
+          <Skeleton className="w-1/2 h-4" />
           <div className="flex flex-wrap gap-2">
-            <div className="h-6 w-20 bg-gray-200 animate-pulse" />
-            <div className="h-6 w-24 bg-gray-200 animate-pulse" />
-            <div className="h-6 w-16 bg-gray-200 animate-pulse" />
+            <Skeleton className="w-20 h-6" />
+            <Skeleton className="w-24 h-6" />
+            <Skeleton className="w-16 h-6" />
           </div>
         </div>
       </div>
     </CardHeader>
     <CardContent className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {[...Array(4)].map((_, i) => (
           <div key={i} className="space-y-2">
-            <div className="h-4 w-1/4 bg-gray-200 animate-pulse" />
-            <div className="h-10 w-full bg-gray-200 animate-pulse" />
+            <Skeleton className="w-1/4 h-4" />
+            <Skeleton className="w-full h-10" />
           </div>
         ))}
         <div className="space-y-2 md:col-span-2">
-          <div className="h-4 w-1/4 bg-gray-200 animate-pulse" />
-          <div className="h-24 w-full bg-gray-200 animate-pulse" />
+          <Skeleton className="w-1/4 h-4" />
+          <Skeleton className="w-full h-24" />
         </div>
       </div>
     </CardContent>
@@ -157,34 +157,38 @@ export default function UserProfilePage() {
   if (!profile) return <ProfileSkeleton />
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="space-y-6 mb-10">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <h2 className="text-3xl font-bold tracking-tight">Mi Perfil</h2>
-          <Button onClick={() => isEditing ? handleSave() : setIsEditing(true)}>
-            {isEditing ? (
-              <>
-                <Save className="mr-2 h-4 w-4" /> Guardar Cambios
-              </>
-            ) : (
-              <>
-                <Edit2 className="mr-2 h-4 w-4" /> Editar Perfil
-              </>
-            )}
-          </Button>
+    <PageContainer scrollable={true}>
+      <div className="mb-10 space-y-6">
+        <div className="flex flex-wrap items-center justify-between gap-4 sm:flex-nowrap">
+          <h2 className="text-3xl font-bold tracking-tight">
+            {isOwnProfile ? 'Mi Perfil' : `Perfil de ${profile.first_name} ${profile.last_name}`}
+          </h2>
+          {isOwnProfile && (
+            <Button onClick={() => (isEditing ? handleSave() : setIsEditing(true))} className="ml-auto">
+              {isEditing ? (
+                <>
+                  <Save className="w-4 h-4 mr-2" /> Guardar Cambios
+                </>
+              ) : (
+                <>
+                  <Edit2 className="w-4 h-4 mr-2" /> Editar Perfil
+                </>
+              )}
+            </Button>
+          )}
         </div>
-
+  
         <Card>
           <CardHeader>
-            <div className="flex flex-col sm:flex-row items-center gap-4">
-              <Avatar className="h-24 w-24">
+            <div className="flex flex-col items-center gap-4 sm:flex-row">
+              <Avatar className="w-24 h-24">
                 <AvatarImage src={profile.photo || "/placeholder-user.png"} alt={`${profile.first_name} ${profile.last_name}`} />
                 <AvatarFallback>{profile.first_name?.[0] || ''}{profile.last_name?.[0] || ''}</AvatarFallback>
               </Avatar>
               <div className="space-y-1 text-center sm:text-left">
                 <h3 className="text-2xl font-semibold">{profile.first_name} {profile.last_name}</h3>
                 <p className="text-sm text-muted-foreground">{profile.career} - {profile.cycle} Ciclo</p>
-                <div className="flex flex-wrap justify-center sm:justify-start gap-2">
+                <div className="flex flex-wrap justify-center gap-2 sm:justify-start">
                   {profile.interests.map((interest, index) => (
                     <Badge key={index} variant="secondary">{interest}</Badge>
                   ))}
@@ -193,7 +197,7 @@ export default function UserProfilePage() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="university">Universidad</Label>
                 <Input
@@ -256,7 +260,7 @@ export default function UserProfilePage() {
             </div>
             <Separator />
             <div>
-              <h4 className="font-semibold mb-2">Logros</h4>
+              <h4 className="mb-2 font-semibold">Logros</h4>
               <Textarea
                 id="achievements"
                 name="achievements"
@@ -266,13 +270,13 @@ export default function UserProfilePage() {
               />
             </div>
             <Separator />
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+            <div className="flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
               <div className="flex items-center gap-2">
-                <User className="h-4 w-4 text-muted-foreground" />
+                <User className="w-4 h-4 text-muted-foreground" />
                 <span className="text-sm text-muted-foreground">Miembro desde {new Date(profile.date_joined).toLocaleDateString()}</span>
               </div>
               <div className="flex items-center gap-2">
-                <GraduationCap className="h-4 w-4 text-muted-foreground" />
+                <GraduationCap className="w-4 h-4 text-muted-foreground" />
                 <span className="text-sm text-muted-foreground">{profile.cycle} Ciclo</span>
               </div>
             </div>
@@ -281,12 +285,12 @@ export default function UserProfilePage() {
         <div className="flex justify-center mt-6">
           <Link href={`/projects/records/${session?.user?.id || ''}`}>
             <Button>
-              <Trophy className="mr-2 h-4 w-4" />
-              Ver mis logros
+              <Trophy className="w-4 h-4 mr-2" />
+              Ver logros de {profile.first_name}
             </Button>
           </Link>
         </div>
       </div>
-    </div>
-  )
+    </PageContainer>
+  )  
 }
