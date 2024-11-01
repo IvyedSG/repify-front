@@ -230,7 +230,7 @@ export default function FormsSection() {
           </DialogContent>
         </Dialog>
       </div>
-
+  
       <Dialog open={isConfirmDialogOpen} onOpenChange={setIsConfirmDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogTitle>Confirmar Publicación</DialogTitle>
@@ -316,5 +316,5 @@ export default function FormsSection() {
         )}
       </div>
     </PageContainer>
-  )
+  );  
 }
