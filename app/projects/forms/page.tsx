@@ -131,7 +131,7 @@ export default function FormsSection() {
     return (
       <PageContainer scrollable={true}>
         <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
+          <AlertCircle className="w-4 h-4" />
           <AlertTitle>Error</AlertTitle>
           <AlertDescription>No se pudieron cargar los formularios. Por favor, intente más tarde.</AlertDescription>
         </Alert>
@@ -141,22 +141,22 @@ export default function FormsSection() {
 
   return (
     <PageContainer scrollable={true}>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col justify-between gap-4 mb-6 sm:flex-row sm:items-center">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">FORMULARIOS</h2>
-          <p className="text-muted-foreground">
+          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">FORMULARIOS</h2>
+          <p className="text-sm sm:text-base text-muted-foreground">
             ¡Siéntete libre de apoyar a otros resolviendo encuestas!
           </p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button disabled={userHasForm}>
-              {userHasForm ? 'Límite de publicación alcanzado' : '+ Publicar Formulario'}
+            <Button className="text-sm whitespace-normal sm:whitespace-nowrap sm:text-base" disabled={userHasForm}>
+              {userHasForm ? 'Límite alcanzado' : '+ Publicar'}
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="sm:max-w-[425px]">
             <DialogTitle>Publicar un formulario</DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-sm">
               Solo puede publicar un formulario por cuenta. El formulario se mantendrá durante 15 días y luego se eliminará, podrá publicar otro cuando éste sea borrado.
             </DialogDescription>
             <form onSubmit={handleCreateForm} className="space-y-4">
@@ -186,14 +186,14 @@ export default function FormsSection() {
                   <AlertDescription>{formError}</AlertDescription>
                 </Alert>
               )}
-              <Button type="submit">Crear Formulario</Button>
+              <Button type="submit" className="w-full sm:w-auto">Crear Formulario</Button>
             </form>
           </DialogContent>
         </Dialog>
       </div>
 
       <Dialog open={isConfirmDialogOpen} onOpenChange={setIsConfirmDialogOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[425px]">
           <DialogTitle>Confirmar Publicación</DialogTitle>
           <DialogDescription>
             ¿Está seguro de que desea publicar este formulario? Recuerde que:
@@ -202,29 +202,40 @@ export default function FormsSection() {
               <li>No podrá eliminar el formulario hasta que pasen 15 días desde su publicación.</li>
             </ul>
           </DialogDescription>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsConfirmDialogOpen(false)}>Cancelar</Button>
-            <Button onClick={confirmCreateForm}>Confirmar Publicación</Button>
+          <DialogFooter className="flex-col gap-2 sm:flex-row">
+            <Button variant="outline" onClick={() => setIsConfirmDialogOpen(false)} className="w-full sm:w-auto">
+              Cancelar
+            </Button>
+            <Button onClick={confirmCreateForm} className="w-full sm:w-auto">
+              Confirmar Publicación
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 [min-width:770px]:grid-cols-1 [min-width:900px]:grid-cols-2 xl:grid-cols-3">
         {!forms ? (
           Array(6).fill(0).map((_, index) => (
             <FormCardSkeleton key={index} />
           ))
         ) : forms.length === 0 ? (
-          <p className="col-span-full text-center text-muted-foreground">No hay formularios disponibles.</p>
+          <p className="text-center col-span-full text-muted-foreground">
+            No hay formularios disponibles.
+          </p>
         ) : (
           forms.map((form) => (
             <Card key={form.id} className="flex flex-col">
-              <CardHeader className="flex flex-row items-center gap-4">
-                <Link className="flex-shrink-0 w-6 h-6" />
-                <div className="flex-grow overflow-hidden">
-                  <CardTitle className="truncate">{form.title}</CardTitle>
+              <CardHeader className="flex flex-row items-start gap-4">
+                <Link className="flex-shrink-0 w-6 h-6 mt-1" />
+                <div className="flex-grow min-w-0">
+                  <CardTitle className="text-lg truncate">{form.title}</CardTitle>
                   <p className="text-sm truncate text-muted-foreground">
-                    <a href={form.url} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                    <a 
+                      href={form.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="hover:underline"
+                    >
                       {form.url}
                     </a>
                   </p>
@@ -235,13 +246,7 @@ export default function FormsSection() {
                   Creado por: {form.first_name} {form.last_name}
                 </p>
               </CardContent>
-              <div
-                className="p-2 text-sm text-center bg-muted text-muted-foreground"
-                style={{
-                  borderBottomLeftRadius: '0.5rem',
-                  borderBottomRightRadius: '0.5rem',
-                }}
-              >
+              <div className="p-2 text-sm text-center rounded-b-lg bg-muted text-muted-foreground">
                 Publicado el {new Date(form.created_at).toLocaleDateString()}
               </div>
             </Card>

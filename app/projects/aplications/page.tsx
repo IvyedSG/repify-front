@@ -252,15 +252,15 @@ export default function ApplicationsPage() {
             </Select>
           </div>
         </div>
-
+  
         <Tabs defaultValue="all" className="space-y-4">
-          <TabsList className="justify-start w-full bg-muted">
+          <TabsList className="inline-flex justify-start bg-muted">
             <TabsTrigger value="all" className="flex-1 sm:flex-none data-[state=active]:bg-background">Todos</TabsTrigger>
             <TabsTrigger value="pendiente" className="flex-1 sm:flex-none data-[state=active]:bg-background">Pendiente</TabsTrigger>
             <TabsTrigger value="aprobado" className="flex-1 sm:flex-none data-[state=active]:bg-background">Aprobado</TabsTrigger>
             <TabsTrigger value="rechazado" className="flex-1 sm:flex-none data-[state=active]:bg-background">Rechazado</TabsTrigger>
           </TabsList>
-
+  
           {(['all', 'pendiente', 'aprobado', 'rechazado'] as const).map((tab) => (
             <TabsContent key={tab} value={tab}>
               <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3">
@@ -270,7 +270,7 @@ export default function ApplicationsPage() {
           ))}
         </Tabs>
       </div>
-
+  
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -286,5 +286,5 @@ export default function ApplicationsPage() {
         </DialogContent>
       </Dialog>
     </PageContainer>
-  )
+  )  
 }

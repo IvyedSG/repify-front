@@ -158,30 +158,30 @@ export default function LogrosPage() {
 
   return (
     <div className="container p-4 mx-auto mb-10 space-y-8">
-      <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-2xl lg:text-3xl xl:text-4xl">
             Logros y Métricas Académicas
           </h1>
-          <p className="mt-2 text-base sm:text-xl text-muted-foreground">
+          <p className="mt-2 text-base text-muted-foreground sm:text-lg md:text-xl">
             Seguimiento de tu progreso académico y celebración de tus éxitos
           </p>
         </div>
-        <div className="flex flex-col items-center gap-2 sm:flex-row sm:gap-4">
-          <Avatar className="w-16 h-16 sm:w-20 sm:h-20">
+        <div className="flex flex-col items-center gap-2 text-center sm:flex-row sm:gap-4 sm:text-left">
+          <Avatar className="w-12 h-12 mx-auto sm:w-16 sm:h-16 md:w-14 md:h-14 lg:w-20 lg:h-20 sm:mx-0">
             <AvatarImage src="/placeholder-user.png" alt="Estudiante" />
             <AvatarFallback>ES</AvatarFallback>
           </Avatar>
           <div className="text-center sm:text-left">
-            <p className="text-xl font-semibold sm:text-2xl">Estudiante</p>
-            <Badge variant="secondary" className="mt-1 text-sm sm:text-lg">
+            <p className="text-lg font-semibold sm:text-xl md:text-lg lg:text-xl">Estudiante</p>
+            <Badge variant="secondary" className="mt-1 text-xs sm:text-sm md:text-xs lg:text-sm">
               Nivel: Intermedio
             </Badge>
           </div>
         </div>
       </div>
   
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         <MetricCard
           title="Proyectos en Progreso"
           value={userMetrics.projectsInProgress}
@@ -222,21 +222,21 @@ export default function LogrosPage() {
           <TabsTrigger value="progress">Progreso</TabsTrigger>
         </TabsList>
         <TabsContent value="all" className="mt-6">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {achievements.map((achievement) => (
               <AchievementCard key={achievement.id} achievement={achievement} />
             ))}
           </div>
         </TabsContent>
         <TabsContent value="unlocked" className="mt-6">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {achievements.filter(a => a.unlocked).map((achievement) => (
               <AchievementCard key={achievement.id} achievement={achievement} />
             ))}
           </div>
         </TabsContent>
         <TabsContent value="locked" className="mt-6">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {achievements.filter(a => !a.unlocked).map((achievement) => (
               <AchievementCard key={achievement.id} achievement={achievement} />
             ))}
@@ -266,7 +266,7 @@ export default function LogrosPage() {
         </TabsContent>
       </Tabs>
     </div>
-  );
+  );  
 }
 
 function MetricCard({ title, value, description, icon }) {
