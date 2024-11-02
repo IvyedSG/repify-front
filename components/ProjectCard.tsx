@@ -6,26 +6,32 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { CalendarIcon, Users, GraduationCap, Briefcase, AlertTriangle } from 'lucide-react'
 import Link from 'next/link'
 
-interface Project {
-  id: number
-  name: string
-  description: string
-  start_date: string
-  end_date: string
-  status: string
-  project_type: string[]
-  priority: string
-  progress: number
-  accepting_applications: boolean
-  creator_name: string | null
-  collaboration_count: number
-  type_aplyuni: string
-  responsible: number
+export interface Project {
+  id: number;
+  name: string;
+  description: string;
+  start_date: string;
+  end_date: string;
+  status: string;
+  project_type: string[];
+  priority: string;
+  detailed_description: string;
+  progress: number;
+  accepting_applications: boolean;
+  creator_name: string | null;
+  collaboration_count: number;
+  colorScheme?: {
+    primary: string;
+    secondary: string;
+    text: string;
+  };
+  responsible: number;
+  type_aplyuni: string;
 }
 
 interface ProjectCardProps {
-  project: Project
-  onViewDetails: (project: Project) => void
+  project: Project;
+  onViewDetails: (project: Project) => void;
 }
 
 const universityColors: { [key: string]: { main: string, text: string } } = {

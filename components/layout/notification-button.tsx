@@ -37,20 +37,25 @@ export function NotificationButton() {
     session?.user?.accessToken
       ? ['http://127.0.0.1:8000/usuario/projects/GetNotifications/', session.user.accessToken]
       : null,
-    ([url, token]) => fetcher(url, token),
+    ([url, token]) => {
+      if (typeof token === 'string') {
+        return fetcher(url, token);
+      }
+      throw new Error('Token is not a string');
+    },
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
       onError: (err) => {
-        console.error('Error fetching notifications:', err)
+        console.error('Error fetching notifications:', err);
         toast({
           title: "Error",
           description: "Failed to load notifications. Please try again later.",
           variant: "destructive"
-        })
+        });
       }
     }
-  )
+  );
 
   const hasUnread = notifications?.some(notification => notification.is_read === 0) ?? false
 

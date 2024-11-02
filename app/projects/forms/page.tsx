@@ -48,17 +48,18 @@ export default function FormsSection() {
 
   const { data: forms, error, mutate } = useSWR<Form[]>(
     session?.user?.accessToken
-      ? ['http://127.0.0.1:8000/usuario/form/get_all_forms/', session.user.accessToken]
+      ? ['http://127.0.0.1:8000/usuario/form/get_all_forms/', session.user.accessToken as string]
       : null,
-    ([url, token]) => fetcher(url, token),
+    ([url, token]: [string, string]) => fetcher(url, token),
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
       errorRetryCount: 3,
     }
   )
+  
 
-  const userHasForm = Array.isArray(forms) && forms.some(form => form.user === session?.user?.id)
+  const userHasForm = Array.isArray(forms) && forms.some(form => form.user === Number(session?.user?.id))
 
   const validateGoogleFormsUrl = (url: string) => {
     const googleFormsRegex = /^https:\/\/(docs\.google\.com\/forms|forms\.gle)\/.+/
@@ -292,7 +293,7 @@ export default function FormsSection() {
                     </a>
                   </p>
                 </div>
-                {form.user === session?.user?.id && (
+                {form.user === Number(session?.user?.id) && (
                   <Button
                     variant="ghost"
                     size="icon"

@@ -27,7 +27,7 @@ const colorSchemes: ColorScheme[] = [
   { primary: 'bg-yellow-600', secondary: 'bg-yellow-100', text: 'text-yellow-700' },
 ]
 
-interface Project {
+export interface Project {
   id: number;
   name: string;
   description: string;
@@ -39,9 +39,9 @@ interface Project {
   detailed_description: string;
   progress: number;
   accepting_applications: boolean;
-  creator_name: string;
+  creator_name: string | null;
   collaboration_count: number;
-  colorScheme: ColorScheme;
+  colorScheme?: ColorScheme;
   responsible: number;
   type_aplyuni: string;
 }
@@ -94,11 +94,11 @@ export default function ViewProjects() {
     rootMargin: '200px 0px',
   })
 
-  const { data: initialProjects, error: initialError } = useSWR(
+  const { data: initialProjects, error: initialError } = useSWR<Project[]>(
     status === 'authenticated'
-      ? ['http://127.0.0.1:8000/usuario/projects/view_recent_projects/', session.user.accessToken]
+      ? ['http://127.0.0.1:8000/usuario/projects/view_recent_projects/', session?.user?.accessToken]
       : null,
-    ([url, token]) => fetcher(url, token),
+    ([url, token]) => fetcher(url, token as string),
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
@@ -106,11 +106,11 @@ export default function ViewProjects() {
   )
 
   // Fetch all projects in the background
-  const { data: allProjects, error: allError } = useSWR(
+  const { data: allProjects, error: allError } = useSWR<Project[]>(
     status === 'authenticated' && initialProjects
-      ? ['http://127.0.0.1:8000/usuario/projects/view_project_all/', session.user.accessToken]
+      ? ['http://127.0.0.1:8000/usuario/projects/view_project_all/', session?.user?.accessToken]
       : null,
-    ([url, token]) => fetcher(url, token),
+    ([url, token]) => fetcher(url, token as string),
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
@@ -140,7 +140,7 @@ export default function ViewProjects() {
         ...project,
         colorScheme: colorSchemes[index % colorSchemes.length]
       }))
-      .filter(project => 
+      .filter((project: Project) => 
         project.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
         (filterType === 'all' || project.project_type.includes(filterType))
       ), 
@@ -177,16 +177,16 @@ export default function ViewProjects() {
         </div>
 
         <div ref={ref} className="grid gap-6 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3">
-          {loading ? (
-            Array.from({ length: 3 }).map((_, index) => (
-              <SkeletonProjectCard key={`skeleton-${index}`} />
-            ))
-          ) : (
-            filteredProjects.map((project) => (
-              <ProjectCard key={project.id} project={project} onViewDetails={handleViewDetails} />
-            ))
-          )}
-        </div>
+        {loading ? (
+          Array.from({ length: 3 }).map((_, index) => (
+            <SkeletonProjectCard key={`skeleton-${index}`} />
+          ))
+        ) : (
+          filteredProjects.map((project: Project) => (
+            <ProjectCard key={project.id} project={project} onViewDetails={handleViewDetails} />
+          ))
+        )}
+      </div>
 
         {!loading && filteredProjects.length === 0 && (
           <div className="text-center text-gray-500">
@@ -200,7 +200,7 @@ export default function ViewProjects() {
             onClick={handleBackToTop}
             aria-label="Volver arriba"
           >
-            <ChevronUp className="w-6 w-6" />
+            <ChevronUp className=" w-6" />
           </Button>
         )}
       </div>

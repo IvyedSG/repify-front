@@ -22,9 +22,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import useSWR, { mutate } from 'swr'
-import { css } from '@emotion/react'
+import styled from '@emotion/styled'
 
-const customStyles = css`
+const StyledDiv = styled.div`
   @media (min-width: 720px) and (max-width: 1099px) {
     .grid {
       grid-template-columns: 1fr;
@@ -41,7 +41,6 @@ const customStyles = css`
     }
   }
 `
-
 type Application = {
   id_solicitud: number
   id_user: number
@@ -54,10 +53,7 @@ type Application = {
   message: string
 }
 
-const fetcher = async (url: string, token: string | undefined) => {
-  if (!token) {
-    throw new Error('No token provided')
-  }
+const fetcher = async (url: string, token: string) => {
   const res = await fetch(url, {
     headers: {
       'Content-Type': 'application/json',
@@ -65,7 +61,7 @@ const fetcher = async (url: string, token: string | undefined) => {
     }
   })
   if (res.status === 404) {
-    return []
+    return [] // Return an empty array for 404 responses
   }
   if (!res.ok) {
     throw new Error('Failed to fetch applications')
@@ -82,8 +78,8 @@ export default function ApplicationsPage() {
   const [activeTab, setActiveTab] = useState('all')
 
   const { data: applications, error } = useSWR<Application[]>(
-    session?.user?.accessToken ? ['http://127.0.0.1:8000/usuario/projects/solicitudes_user/', session.user.accessToken] : null,
-    ([url, token]) => fetcher(url, token),
+    session?.user?.accessToken ? ['http://127.0.0.1:8000/usuario/projects/solicitudes_user/', session.user.accessToken as string] : null,
+    ([url, token]: [string, string]) => fetcher(url, token),
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
@@ -258,7 +254,7 @@ export default function ApplicationsPage() {
 
   return (
     <PageContainer scrollable={true}>
-      <div className="space-y-6 max-w-[1400px] mx-auto px-4 mb-10" style={customStyles}>
+      <StyledDiv className="space-y-6 max-w-[1400px] mx-auto px-4 mb-10">
         <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">Mis Solicitudes</h1>
           <div className="flex flex-col items-start space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-2">
@@ -287,7 +283,7 @@ export default function ApplicationsPage() {
             </TabsContent>
           ))}
         </Tabs>
-      </div>
+        </StyledDiv>
   
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>

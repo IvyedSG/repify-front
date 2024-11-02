@@ -220,7 +220,7 @@ export default function ProjectJoinRequests({ projectId }: ProjectJoinRequestsPr
                   </>
                 ) : (
                   <Badge
-                    variant={request.status === 'Aprobado' ? 'success' : 'destructive'}
+                    variant={request.status === 'Aprobado' ? 'secondary' : 'destructive'}
                   >
                     {request.status === 'Aprobado' ? (
                       <CheckCircle className="w-4 h-4 mr-2" />

@@ -111,12 +111,13 @@ export default function UserProfilePage() {
   const { data: profile, error, mutate } = useSWR<UserProfile>(
     session?.user?.accessToken && profileUserId
       ? isOwnProfile
-        ? ['http://127.0.0.1:8000/usuario/perfil/profile/', session.user.accessToken]
-        : [`http://127.0.0.1:8000/usuario/perfil/profile/${profileUserId}`, session.user.accessToken]
+        ? ['http://127.0.0.1:8000/usuario/perfil/profile/', String(session.user.accessToken)]
+        : [`http://127.0.0.1:8000/usuario/perfil/profile/${profileUserId}`, String(session.user.accessToken)]
       : null,
-    ([url, token]) => isOwnProfile ? fetchOwnProfile(url, token) : fetchOtherProfile(url, token),
+    ([url, token]) => isOwnProfile ? fetchOwnProfile(url, token as string) : fetchOtherProfile(url, token as string),
     { revalidateOnFocus: false, revalidateOnReconnect: false }
   )
+  
 
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (profile && isOwnProfile) {

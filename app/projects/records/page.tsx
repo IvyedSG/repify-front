@@ -35,6 +35,10 @@ type Achievement = {
   unlocked: boolean
 }
 
+type AchievementCardProps = {
+  achievement: Achievement;
+};
+
 type Metrics = {
   proyectos_en_progreso: number
   logros_desbloqueados: number
@@ -42,6 +46,20 @@ type Metrics = {
   proyectos_en_los_que_eres_miembro: number
   proyectos_como_líder: number
 }
+
+type MetricCardProps = {
+  title: string;
+  value: number; // Asumiendo que el valor es un número
+  description: string;
+  icon: React.ReactNode; // Para permitir que se pase un componente de icono
+};
+
+type ProgressCardProps = {
+  title: string;
+  current: number; // Asumiendo que este es un número
+  target: number;  // Asumiendo que este es un número
+  description: string;
+};
 
 type UserData = {
   user: number
@@ -179,11 +197,11 @@ const staticAchievements: Achievement[] = [
 ]
 
 export default function LogrosPage() {
-  const { data: session } = useSession()
-  const [userData, setUserData] = useState<UserData | null>(null)
-  const [metrics, setMetrics] = useState<Metrics | null>(null)
-  const [achievements, setAchievements] = useState<Achievement[]>(staticAchievements)
-  const [loading, setLoading] = useState(true)
+  const { data: session } = useSession();
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [metrics, setMetrics] = useState<Metrics | null>(null);
+  const [achievements, setAchievements] = useState<Achievement[]>(staticAchievements);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -191,40 +209,40 @@ export default function LogrosPage() {
         try {
           const headers = {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session.user.accessToken}`
-          }
+            'Authorization': `Bearer ${session.user.accessToken}`,
+          };
 
           const [achievementsResponse, metricsResponse] = await Promise.all([
             fetch('http://127.0.0.1:8000/usuario/achievement/list_user_achievements/', { headers }),
-            fetch('http://127.0.0.1:8000/usuario/achievement/metrics/', { headers })
-          ])
+            fetch('http://127.0.0.1:8000/usuario/achievement/metrics/', { headers }),
+          ]);
 
           if (!achievementsResponse.ok || !metricsResponse.ok) {
-            throw new Error('Failed to fetch data')
+            throw new Error('Failed to fetch data');
           }
 
-          const achievementsData: UserData = await achievementsResponse.json()
-          const metricsData: Metrics = await metricsResponse.json()
+          const achievementsData: UserData = await achievementsResponse.json();
+          const metricsData: Metrics= await metricsResponse.json();
 
-          setUserData(achievementsData)
-          setMetrics(metricsData)
+          setUserData(achievementsData);
+          setMetrics(metricsData);
 
-          // Update static achievements with unlocked status from backend
-          const updatedAchievements = staticAchievements.map(achievement => {
-            const backendAchievement = achievementsData.achievements.find(a => a.name === achievement.title)
-            return backendAchievement ? { ...achievement, unlocked: backendAchievement.unlocked } : achievement
-          })
-          setAchievements(updatedAchievements)
+          // Actualiza los logros estáticos con el estado de desbloqueo del backend
+          const updatedAchievements = staticAchievements.map((achievement) => {
+            const backendAchievement = achievementsData.achievements.find(a => a.name === achievement.title);
+            return backendAchievement ? { ...achievement, unlocked: backendAchievement.unlocked } : achievement;
+          });
+          setAchievements(updatedAchievements);
         } catch (error) {
-          console.error('Error fetching data:', error)
+          console.error('Error fetching data:', error);
         } finally {
-          setLoading(false)
+          setLoading(false);
         }
       }
-    }
+    };
 
-    fetchData()
-  }, [session])
+    fetchData();
+  }, [session]);
 
   if (loading) {
     return <SkeletonLoader />
@@ -361,7 +379,7 @@ export default function LogrosPage() {
   )
 }
 
-function MetricCard({ title, value, description, icon }) {
+function MetricCard({ title, value, description, icon }: MetricCardProps) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
@@ -373,10 +391,10 @@ function MetricCard({ title, value, description, icon }) {
         <p className="text-xs text-muted-foreground">{description}</p>
       </CardContent>
     </Card>
-  )
+  );
 }
 
-function AchievementCard({ achievement }) {
+function AchievementCard({ achievement }: AchievementCardProps) {
   return (
     <Card className={achievement.unlocked ? 'bg-secondary' : 'opacity-75'}>
       <CardHeader className="flex flex-row items-center gap-4">
@@ -393,12 +411,12 @@ function AchievementCard({ achievement }) {
         </Badge>
       </CardContent>
     </Card>
-  )
+  );
 }
 
-function ProgressCard({ title, current, target, description }) {
-  const percentage = Math.min((current / target) * 100, 100)
-  
+function ProgressCard({ title, current, target, description }: ProgressCardProps) {
+  const percentage = Math.min((current / target) * 100, 100);
+
   return (
     <Card>
       <CardHeader>
@@ -412,7 +430,7 @@ function ProgressCard({ title, current, target, description }) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 function SkeletonLoader() {

@@ -11,22 +11,55 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import type {} from '@mui/x-date-pickers/themeAugmentation';
 import dayjs from 'dayjs';
 
 const projectStatuses = ["Planificando", "En progreso", "En pausa"];
 
-// Crear tema personalizado
+// Extend the theme to include custom components and nested selectors
+declare module '@mui/material/styles' {
+  interface ComponentNameToClassKey {
+    MuiPickersDay: 'root';
+    MuiCalendarPicker: 'root';
+  }
+
+  interface Components<Theme = unknown> {
+    MuiPickersDay?: {
+      styleOverrides?: {
+        root?: {
+          color?: string;
+          '&.Mui-selected'?: {
+            backgroundColor?: string;
+          };
+          '&:hover'?: {
+            backgroundColor?: string;
+          };
+        };
+      };
+    };
+    MuiCalendarPicker?: {
+      styleOverrides?: {
+        root?: {
+          backgroundColor?: string;
+          color?: string;
+        };
+      };
+    };
+  }
+}
+
+// Create custom theme
 const theme = createTheme({
   components: {
     MuiPickersDay: {
       styleOverrides: {
         root: {
-          color: 'white', // Color de los números
+          color: 'white',
           '&.Mui-selected': {
-            backgroundColor: '#6366F1', // Color cuando está seleccionado
+            backgroundColor: '#6366F1',
           },
           '&:hover': {
-            backgroundColor: '#4F46E5', // Color cuando pasas el mouse
+            backgroundColor: '#4F46E5',
           },
         },
       },
@@ -34,24 +67,24 @@ const theme = createTheme({
     MuiCalendarPicker: {
       styleOverrides: {
         root: {
-          backgroundColor: 'black', // Fondo del calendario
-          color: 'white', // Color del texto (mes, días, etc.)
+          backgroundColor: 'black',
+          color: 'white',
         },
       },
     },
     MuiTypography: {
       styleOverrides: {
         root: {
-          color: 'white', // Texto del mes y año en blanco
+          color: 'white',
         },
       },
     },
     MuiIconButton: {
       styleOverrides: {
         root: {
-          color: 'white', // Flechas de navegación blancas
+          color: 'white',
           '&:hover': {
-            backgroundColor: '#4F46E5', // Color de fondo cuando pasas el mouse sobre las flechas
+            backgroundColor: '#4F46E5',
           },
         },
       },
@@ -187,9 +220,3 @@ export function ProjectDetails({ newProject, handleInputChange }: ProjectDetails
     </div>
   );
 }
-
-
-
-
-
-

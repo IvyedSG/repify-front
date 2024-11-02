@@ -30,7 +30,6 @@ export default function ProjectConfigPage() {
   const [activeSection, setActiveSection] = useState('general')
   const [isEditing, setIsEditing] = useState(false)
 
-  
   useEffect(() => {
     const fetchProjectDetails = async () => {
       if (session?.user?.accessToken) {
@@ -45,13 +44,14 @@ export default function ProjectConfigPage() {
           })
           if (response.ok) {
             const projectData = await response.json();
-            setProject(projectData);
+            setProject({
+              ...projectData,
+              name_responsible: projectData.name_responsible || 'Unknown'
+            });
           } else {
-
             router.push('/not-found');
           }
         } catch (error) {
-
           router.push('/not-found');
         } finally {
           setLoading(false);
@@ -75,6 +75,7 @@ export default function ProjectConfigPage() {
           project_type: project.project_type,
           priority: project.priority,
           responsible: project.responsible,
+          name_responsible: project.name_responsible,
           detailed_description: project.detailed_description,
           objectives: project.objectives,
           necessary_requirements: project.necessary_requirements,
@@ -229,7 +230,7 @@ export default function ProjectConfigPage() {
                   {activeSection === 'detalles' && (
                     <DetailsSection project={project} setProject={setProject} isEditing={isEditing} />
                   )}
-                  {activeSection === 'equipo' && (
+                  {activeSection === 'equipo' && project && (
                     <TeamSection project={project} />
                   )}
                   {activeSection === 'progreso' && (

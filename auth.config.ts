@@ -1,14 +1,14 @@
-import { NextAuthConfig } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { signOut } from 'next-auth/react';
+import { signOut } from 'next-auth/react'
+import type { NextAuthOptions } from 'next-auth' 
 
-const authConfig: NextAuthConfig = {
+const authConfig: NextAuthOptions = { 
   providers: [
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
         email: { label: 'Email', type: 'email', placeholder: 'junior@help.me' },
-        password: { label: 'Password', type: 'password', placeholder: '**********' }
+        password: { label: 'Password', type: 'password', placeholder: '**********' },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
@@ -21,8 +21,8 @@ const authConfig: NextAuthConfig = {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               email: credentials.email,
-              password: credentials.password
-            })
+              password: credentials.password,
+            }),
           })
 
           const data = await res.json()
@@ -34,7 +34,7 @@ const authConfig: NextAuthConfig = {
               university: data.university,
               career: data.career,
               accessToken: data.access,
-              refreshToken: data.refresh
+              refreshToken: data.refresh,
             }
           }
         } catch (error) {
@@ -42,14 +42,12 @@ const authConfig: NextAuthConfig = {
         }
 
         return null
-      }
-    })
+      },
+    }),
   ],
-  pages: {
-    signIn: '/'
-  },
+  pages: { signIn: '/' },
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account }: { token: any; user?: any; account?: any }) {
       if (user && account) {
         return {
           ...token,
@@ -59,8 +57,8 @@ const authConfig: NextAuthConfig = {
           career: user.career,
           accessToken: user.accessToken,
           refreshToken: user.refreshToken,
-          accessTokenExpires: Date.now() + 10 * 60 * 1000,
-          refreshTokenExpires: Date.now() + 24 * 60 * 60 * 1000,
+          accessTokenExpires: Date.now() + 10 * 60 * 1000, // 10 minutos
+          refreshTokenExpires: Date.now() + 24 * 60 * 60 * 1000, // 24 horas
         }
       }
 
@@ -74,28 +72,29 @@ const authConfig: NextAuthConfig = {
 
       return refreshAccessToken(token)
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: any; token: any }) {
       session.user = {
         ...session.user,
-        id: token.id,
-        email: token.email,
-        university: token.university,
-        career: token.career,
-        accessToken: token.accessToken,
-        refreshToken: token.refreshToken,
+        id: token.id as string,
+        email: token.email as string,
+        university: token.university as string,
+        career: token.career as string,
+        accessToken: token.accessToken as string,
+        refreshToken: token.refreshToken as string,
       }
-      session.error = token.error
+      session.error = token.error as string | undefined
       return session
-    }
+    },
   },
   events: {
     async signOut({ token }) {
       signOut({ callbackUrl: '/' })
-    }
-  }
+    },
+  },
 }
 
-async function refreshAccessToken(token: JWT): Promise<JWT> {
+// Función para refrescar el token de acceso
+async function refreshAccessToken(token: any) {
   try {
     const response = await fetch('http://127.0.0.1:8000/token/refresh/', {
       method: 'POST',
@@ -110,15 +109,12 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
     return {
       ...token,
       accessToken: refreshedTokens.access,
-      accessTokenExpires: Date.now() + 10 * 60 * 1000,
+      accessTokenExpires: Date.now() + 10 * 60 * 1000, // 10 minutos
       refreshToken: refreshedTokens.refresh ?? token.refreshToken,
     }
   } catch (error) {
     console.error('Error refreshing access token', error)
-    return {
-      ...token,
-      error: 'RefreshAccessTokenError',
-    }
+    return { ...token, error: 'RefreshAccessTokenError' }
   }
 }
 

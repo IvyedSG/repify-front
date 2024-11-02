@@ -80,11 +80,16 @@ export default function OtherUserProfilePage() {
 
   const { data: profile, error } = useSWR<UserProfile>(
     session?.user?.accessToken && profileId
-      ? ['http://127.0.0.1:8000/usuario/perfil/profile_id/', session.user.accessToken, profileId]
+      ? [
+          'http://127.0.0.1:8000/usuario/perfil/profile_id/',
+          String(session.user.accessToken),
+          String(profileId)
+        ]
       : null,
-    ([url, token, userId]) => fetchOtherProfile(url, token, userId),
+    ([url, token, userId]) => fetchOtherProfile(url, token as string, userId as string), 
     { revalidateOnFocus: false, revalidateOnReconnect: false }
   )
+  
 
   if (error) return <div>Error loading profile. Please try again later.</div>
   if (!profile) return <ProfileSkeleton />

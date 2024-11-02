@@ -19,6 +19,7 @@ import { toast } from '@/components/ui/use-toast'
 import { Users, UserMinus } from 'lucide-react'
 import Link from 'next/link'
 
+
 interface Collaborator {
   id: number;
   name: string;
