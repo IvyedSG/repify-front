@@ -117,6 +117,29 @@ export default function ViewProjects() {
     }
   )
 
+  useEffect(() => {
+    const validateAchievements = async () => {
+      if (status === 'authenticated' && allProjects) {
+        try {
+          const res = await fetch('http://127.0.0.1:8000/usuario/achievement/validate_achievements/', {
+            method: 'POST',
+            headers: {
+              'Accept': '*/*',
+              'Authorization': `Bearer ${session?.user?.accessToken}`
+            }
+          })
+          if (!res.ok) {
+            console.error('Failed to validate achievements')
+          }
+        } catch (error) {
+          console.error('Error validating achievements:', error)
+        }
+      }
+    }
+
+    validateAchievements()
+  }, [status, allProjects, session?.user?.accessToken])
+
   const loading = !initialProjects && !initialError && status === 'authenticated'
 
   useEffect(() => {
