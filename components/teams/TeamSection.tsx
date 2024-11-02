@@ -89,9 +89,8 @@ export default function TeamSection({ project, onCollaboratorRemoved }: TeamSect
             <AvatarFallback>{(project.name_responsible || 'PL').charAt(0)}</AvatarFallback>
           </Avatar>
           <span className="ml-2 text-gray-800 dark:text-gray-200">
-            <Link href={`/profiles/${project.id}`} className="hover:underline">
               {project.name_responsible || 'No name provided'}
-            </Link>
+           
           </span>
         </div>
       </div>

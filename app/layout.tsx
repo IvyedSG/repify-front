@@ -13,7 +13,7 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Repify',
-  description: 'Unique platform',
+  description: 'Plataforma para estudiantes',
   icons: {
     icon: '/favicon.ico',
   },

@@ -7,7 +7,6 @@ import PageContainer from '@/components/layout/page-container'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { CalendarIcon, Trash2, MessageCircle } from 'lucide-react'
@@ -55,7 +54,10 @@ type Application = {
   message: string
 }
 
-const fetcher = async (url: string, token: string) => {
+const fetcher = async (url: string, token: string | undefined) => {
+  if (!token) {
+    throw new Error('No token provided')
+  }
   const res = await fetch(url, {
     headers: {
       'Content-Type': 'application/json',
@@ -63,7 +65,7 @@ const fetcher = async (url: string, token: string) => {
     }
   })
   if (res.status === 404) {
-    return [] // Return an empty array for 404 responses
+    return []
   }
   if (!res.ok) {
     throw new Error('Failed to fetch applications')
@@ -256,7 +258,7 @@ export default function ApplicationsPage() {
 
   return (
     <PageContainer scrollable={true}>
-      <div css={customStyles} className="space-y-6 max-w-[1400px] mx-auto px-4 mb-10">
+      <div className="space-y-6 max-w-[1400px] mx-auto px-4 mb-10" style={customStyles}>
         <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">Mis Solicitudes</h1>
           <div className="flex flex-col items-start space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-2">
@@ -266,20 +268,6 @@ export default function ApplicationsPage() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <Select value={filter} onValueChange={(value) => {
-              setFilter(value)
-              setActiveTab(value)
-            }}>
-              <SelectTrigger className="w-full sm:w-[180px] bg-input text-input-foreground">
-                <SelectValue placeholder="Filtrar por estado" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="pendiente">Pendiente</SelectItem>
-                <SelectItem value="aceptada">Aceptada</SelectItem>
-                <SelectItem value="rechazado">Rechazado</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
         </div>
   

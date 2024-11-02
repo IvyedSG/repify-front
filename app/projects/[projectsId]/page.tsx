@@ -189,13 +189,6 @@ export default function ProjectDetailsPage() {
                  project.has_applied ? 'Ya has aplicado' :
                  project.accepting_applications ? 'Aplicar al Proyecto' : 'No se aceptan aplicaciones'}
               </Button>
-
-              <div className="flex justify-end">
-                <Button variant="outline" size="icon">
-                  <Share2 className="h-4 w-4" />
-                  <span className="sr-only">Compartir proyecto</span>
-                </Button>
-              </div>
             </div>
           </div>
         </div>

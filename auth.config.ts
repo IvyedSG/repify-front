@@ -64,11 +64,11 @@ const authConfig: NextAuthConfig = {
         }
       }
 
-      if (Date.now() < (token.accessTokenExpires as number)) {
+      if (Date.now() < token.accessTokenExpires) {
         return token
       }
 
-      if (Date.now() > (token.refreshTokenExpires as number)) {
+      if (Date.now() > token.refreshTokenExpires) {
         return { ...token, error: 'RefreshTokenExpired' }
       }
 
@@ -77,14 +77,14 @@ const authConfig: NextAuthConfig = {
     async session({ session, token }) {
       session.user = {
         ...session.user,
-        id: token.id as string,
-        email: token.email as string,
-        university: token.university as string,
-        career: token.career as string,
-        accessToken: token.accessToken as string,
-        refreshToken: token.refreshToken as string,
+        id: token.id,
+        email: token.email,
+        university: token.university,
+        career: token.career,
+        accessToken: token.accessToken,
+        refreshToken: token.refreshToken,
       }
-      session.error = token.error as string | undefined
+      session.error = token.error
       return session
     }
   },
@@ -95,7 +95,7 @@ const authConfig: NextAuthConfig = {
   }
 }
 
-async function refreshAccessToken(token: any) {
+async function refreshAccessToken(token: JWT): Promise<JWT> {
   try {
     const response = await fetch('http://127.0.0.1:8000/token/refresh/', {
       method: 'POST',

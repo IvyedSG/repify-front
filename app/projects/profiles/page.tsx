@@ -162,10 +162,9 @@ export default function UserProfilePage() {
 
       const updatedProfile = await response.json()
       
-      // Ensure all required fields are present in the updated profile
       const safeUpdatedProfile = {
-        ...profile, // Keep existing data
-        ...updatedProfile, // Overwrite with new data
+        ...profile, 
+        ...updatedProfile, 
         first_name: updatedProfile.first_name || profile.first_name,
         last_name: updatedProfile.last_name || profile.last_name,
         interests: Array.isArray(updatedProfile.interests) ? updatedProfile.interests : profile.interests,
@@ -244,7 +243,7 @@ export default function UserProfilePage() {
                   name="university"
                   value={profile.university}
                   onChange={handleProfileChange}
-                  disabled={!isEditing}
+                  disabled={true}
                 />
               </div>
               <div className="space-y-2">
@@ -254,7 +253,7 @@ export default function UserProfilePage() {
                   name="career"
                   value={profile.career}
                   onChange={handleProfileChange}
-                  disabled={!isEditing}
+                  disabled={true}
                 />
               </div>
               <div className="space-y-2">
