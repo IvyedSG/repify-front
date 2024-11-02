@@ -45,6 +45,8 @@ export default function FormsSection() {
   const [newFormUrl, setNewFormUrl] = useState('')
   const [formError, setFormError] = useState('')
   const [formToDelete, setFormToDelete] = useState<number | null>(null)
+  const [isCreating, setIsCreating] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const { data: forms, error, mutate } = useSWR<Form[]>(
     session?.user?.accessToken
@@ -58,7 +60,6 @@ export default function FormsSection() {
     }
   )
   
-
   const userHasForm = Array.isArray(forms) && forms.some(form => form.user === Number(session?.user?.id))
 
   const validateGoogleFormsUrl = (url: string) => {
@@ -80,7 +81,8 @@ export default function FormsSection() {
   }
 
   const confirmCreateForm = async () => {
-    if (!session?.user?.accessToken) return
+    if (!session?.user?.accessToken || isCreating) return
+    setIsCreating(true)
 
     try {
       const response = await fetch('http://127.0.0.1:8000/usuario/form/create_form/', {
@@ -109,6 +111,8 @@ export default function FormsSection() {
         description: 'No se pudo crear el formulario. Por favor, intente de nuevo.',
         variant: 'destructive',
       })
+    } finally {
+      setIsCreating(false)
     }
   }
 
@@ -118,7 +122,8 @@ export default function FormsSection() {
   }
 
   const confirmDeleteForm = async () => {
-    if (!session?.user?.accessToken || formToDelete === null) return
+    if (!session?.user?.accessToken || formToDelete === null || isDeleting) return
+    setIsDeleting(true)
 
     try {
       const response = await fetch('http://127.0.0.1:8000/usuario/form/delete_form/', {
@@ -146,6 +151,8 @@ export default function FormsSection() {
         description: 'No se pudo eliminar el formulario. Por favor, intente de nuevo.',
         variant: 'destructive',
       })
+    } finally {
+      setIsDeleting(false)
     }
   }
 
@@ -242,8 +249,8 @@ export default function FormsSection() {
             <Button variant="outline" onClick={() => setIsConfirmDialogOpen(false)} className="w-full sm:w-auto">
               Cancelar
             </Button>
-            <Button onClick={confirmCreateForm} className="w-full sm:w-auto">
-              Confirmar Publicación
+            <Button onClick={confirmCreateForm} disabled={isCreating} className="w-full sm:w-auto">
+              {isCreating ? 'Publicando...' : 'Confirmar Publicación'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -259,8 +266,8 @@ export default function FormsSection() {
             <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)} className="w-full sm:w-auto">
               Cancelar
             </Button>
-            <Button variant="destructive" onClick={confirmDeleteForm} className="w-full sm:w-auto">
-              Eliminar Formulario
+            <Button variant="destructive" onClick={confirmDeleteForm} disabled={isDeleting} className="w-full sm:w-auto">
+              {isDeleting ? 'Eliminando...' : 'Eliminar Formulario'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -317,5 +324,5 @@ export default function FormsSection() {
         )}
       </div>
     </PageContainer>
-  );  
+  )
 }
