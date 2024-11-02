@@ -48,13 +48,13 @@ export function ProjectBasicInfo({ newProject, handleInputChange }: ProjectBasic
           id="name"
           name="name"
           value={newProject.name}
-          onChange={(e) => handleInputChange('name', e.target.value.slice(0, 40))}
+          onChange={(e) => handleInputChange('name', e.target.value.slice(0, 60))}
           required
-          maxLength={40}
+          maxLength={60}
           className="mt-2"
           placeholder="Ingrese un nombre conciso y descriptivo"
         />
-        <p className="mt-1 text-sm text-gray-500">{newProject.name.length}/40 caracteres</p>
+        <p className="mt-1 text-sm text-gray-500">{newProject.name.length}/60 caracteres</p>
       </div>
       <div>
         <Label htmlFor="description">Descripción Breve</Label>

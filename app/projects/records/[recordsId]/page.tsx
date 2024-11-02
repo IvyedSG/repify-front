@@ -247,12 +247,13 @@ export default function LogrosPage() {
           setUserData(achievementsData)
           setMetrics(metricsData)
 
-          // Update static achievements with unlocked status from backend
           const updatedAchievements = staticAchievements.map(achievement => {
             const backendAchievement = achievementsData.achievements.find(a => a.name === achievement.title)
             return backendAchievement ? { ...achievement, unlocked: backendAchievement.unlocked } : achievement
           })
           setAchievements(updatedAchievements)
+
+          await validateAchievements(session?.user?.accessToken)
         } catch (error) {
           console.error('Error fetching data:', error)
         } finally {
@@ -263,6 +264,26 @@ export default function LogrosPage() {
 
     fetchData()
   }, [session, recordsId])
+
+  const validateAchievements = async (accessToken: string | undefined) => {
+    if (!accessToken) return
+
+    try {
+      const response = await fetch('http://127.0.0.1:8000/usuario/achievement/validate_achievements/', {
+        method: 'POST',
+        headers: {
+          'Accept': '*/*',
+          'Authorization': `Bearer ${accessToken}`
+        }
+      })
+      if (!response.ok) {
+        throw new Error('Failed to validate achievements')
+      }
+
+    } catch (error) {
+      console.error('Error validating achievements:', error)
+    }
+  }
 
   if (loading) {
     return <SkeletonLoader />

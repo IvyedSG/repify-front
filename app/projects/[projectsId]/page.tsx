@@ -83,6 +83,23 @@ export default function ProjectDetailsPage() {
     }
   }, [session, router]);
 
+  const validateAchievements = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/usuario/achievement/validate_achievements/', {
+        method: 'POST',
+        headers: {
+          'Accept': '*/*',
+          'Authorization': `Bearer ${session?.user.accessToken}`
+        }
+      })
+      if (!response.ok) {
+        throw new Error('Failed to validate achievements')
+      }
+    } catch (error) {
+      console.error('Error validating achievements:', error)
+    }
+  }
+
   const handleApply = async (message: string) => {
     if (!project || project.has_applied) return
 
@@ -106,6 +123,9 @@ export default function ProjectDetailsPage() {
           description: "Tu solicitud ha sido enviada exitosamente.",
         })
         setProject({ ...project, has_applied: true })
+        
+       
+        await validateAchievements()
       } else {
         const errorData = await response.json()
         throw new Error(errorData.detail || 'Failed to apply to the project')

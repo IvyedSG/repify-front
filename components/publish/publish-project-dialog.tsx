@@ -40,8 +40,39 @@ export function PublishProjectDialog({ setIsDialogOpen }: PublishProjectDialogPr
     setNewProject(prev => ({ ...prev, [name]: value }))
   }
 
+  const validateAchievements = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/usuario/achievement/validate_achievements/', {
+        method: 'POST',
+        headers: {
+          'Accept': '*/*',
+          'Authorization': `Bearer ${session?.user.accessToken}`
+        }
+      })
+      if (!response.ok) {
+        throw new Error('Failed to validate achievements')
+      }
+    } catch (error) {
+      console.error('Error validating achievements:', error)
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Validate required fields
+    const requiredFields = ['name', 'description', 'end_date', 'status', 'project_type', 'priority', 'detailed_description']
+    const missingFields = requiredFields.filter(field => !newProject[field as keyof typeof newProject])
+
+    if (missingFields.length > 0 || newProject.objectives.length === 0 || newProject.necessary_requirements.length === 0) {
+      toast({
+        title: "Error",
+        description: "Por favor, complete todos los campos requeridos y asegúrese de incluir al menos un objetivo y un requisito.",
+        variant: "destructive",
+      })
+      return
+    }
+
     setIsLoading(true)
     
     const projectData = {
@@ -81,6 +112,8 @@ export function PublishProjectDialog({ setIsDialogOpen }: PublishProjectDialogPr
         // Refresh the current route
         router.refresh()
 
+        // Validate achievements after successful project creation
+        await validateAchievements()
       } else {
         const errorData = await response.json()
         throw new Error(errorData.detail || 'Failed to create project')
@@ -97,7 +130,29 @@ export function PublishProjectDialog({ setIsDialogOpen }: PublishProjectDialogPr
     }
   }
 
-  const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 3))
+  const nextStep = () => {
+    if (currentStep === 1) {
+      if (!newProject.name || !newProject.description || newProject.project_type.length === 0) {
+        toast({
+          title: "Error",
+          description: "Por favor, complete todos los campos antes de continuar.",
+          variant: "destructive",
+        })
+        return
+      }
+    } else if (currentStep === 2) {
+      if (!newProject.status || !newProject.priority || !newProject.end_date) {
+        toast({
+          title: "Error",
+          description: "Por favor, complete todos los campos antes de continuar.",
+          variant: "destructive",
+        })
+        return
+      }
+    }
+    setCurrentStep(prev => Math.min(prev + 1, 3))
+  }
+
   const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1))
 
   return (

@@ -222,17 +222,18 @@ export default function LogrosPage() {
           }
 
           const achievementsData: UserData = await achievementsResponse.json();
-          const metricsData: Metrics= await metricsResponse.json();
+          const metricsData: Metrics = await metricsResponse.json();
 
           setUserData(achievementsData);
           setMetrics(metricsData);
 
-          // Actualiza los logros estáticos con el estado de desbloqueo del backend
           const updatedAchievements = staticAchievements.map((achievement) => {
             const backendAchievement = achievementsData.achievements.find(a => a.name === achievement.title);
             return backendAchievement ? { ...achievement, unlocked: backendAchievement.unlocked } : achievement;
           });
           setAchievements(updatedAchievements);
+
+          await validateAchievements(session.user.accessToken);
         } catch (error) {
           console.error('Error fetching data:', error);
         } finally {
@@ -243,6 +244,23 @@ export default function LogrosPage() {
 
     fetchData();
   }, [session]);
+
+  const validateAchievements = async (accessToken: string) => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/usuario/achievement/validate_achievements/', {
+        method: 'POST',
+        headers: {
+          'Accept': '*/*',
+          'Authorization': `Bearer ${accessToken}`
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Failed to validate achievements');
+      }
+    } catch (error) {
+      console.error('Error validating achievements:', error);
+    }
+  };
 
   if (loading) {
     return <SkeletonLoader />
