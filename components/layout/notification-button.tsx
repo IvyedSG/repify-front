@@ -46,6 +46,7 @@ export function NotificationButton() {
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
+      refreshInterval: 30000, // Actualiza cada 30 segundos
       onError: (err) => {
         console.error('Error fetching notifications:', err);
         toast({
