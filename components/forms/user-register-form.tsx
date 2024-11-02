@@ -61,11 +61,14 @@ export default function UserRegisterForm() {
   const onSubmit = useCallback(async (data: UserFormValue) => {
     setLoading(true)
     try {
-      const formattedData = {
+      const { confirmPassword, ...formattedData } = {
         ...data,
-        interests: Array.isArray(data.interests) ? data.interests : data.interests ? data.interests.split(',').map(i => i.trim()) : [],
+        interests: Array.isArray(data.interests) 
+          ? data.interests 
+          : data.interests 
+            ? (data.interests as string).split(',').map((i: string) => i.trim()) 
+            : [],
       }
-      delete formattedData.confirmPassword;
 
       const response = await fetch('http://127.0.0.1:8000/usuario/login/Register/', {
         method: 'POST',
@@ -91,11 +94,10 @@ export default function UserRegisterForm() {
   }, [router])
 
   const nextStep = useCallback(async () => {
-    const fields = step === 1 ? ['email', 'password', 'confirmPassword'] :
-                   step === 2 ? ['first_name', 'last_name'] :
-                   step === 3 ? ['university', 'career', 'cycle'] :
-                   ['biography', 'achievements', 'interests']
-  
+    const fields: (keyof UserFormValue)[] = step === 1 ? ['email', 'password', 'confirmPassword'] :
+                                             step === 2 ? ['first_name', 'last_name'] :
+                                             step === 3 ? ['university', 'career', 'cycle'] :
+                                             ['biography', 'achievements', 'interests']
     const isValid = await form.trigger(fields)
     if (isValid && step < 4) {
       setStep(prevStep => prevStep + 1)
@@ -162,14 +164,7 @@ export default function UserRegisterForm() {
             </div>
             {step === 4 && (
               <Button type="submit" disabled={loading} className="w-full mt-4">
-                {loading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creando tu perfil...
-                  </>
-                ) : (
-                  '¡Unirme a la comunidad!'
-                )}
+                {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Finalizar registro'}
               </Button>
             )}
           </form>

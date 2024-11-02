@@ -57,7 +57,8 @@ export function NotificationButton() {
     }
   );
 
-  const hasUnread = notifications?.some(notification => notification.is_read === 0) ?? false
+  const hasUnread = Array.isArray(notifications) && notifications.some(notification => notification.is_read === 0);
+
 
   const handleOpenDropdown = () => {
     // No need to set hasUnread to false here, it's now derived from the notifications data

@@ -27,7 +27,7 @@ export default function LoginPage() {
           Ingresa
         </h1>
         <p className="text-base text-muted-foreground">
-          ¡Prepárate para una experiencia única aprendiendo!
+          ¡Prepárate para una experiencia única!
         </p>
       </div>
       <Suspense fallback={<LoadingPlaceholder />}>

@@ -60,7 +60,7 @@ export default function DynamicContent() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentReason((prev) => (prev + 1) % reasons.length)
-    }, 6000)
+    }, 5000)
     return () => clearInterval(interval)
   }, [])
 
