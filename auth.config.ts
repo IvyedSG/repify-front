@@ -109,7 +109,7 @@ async function refreshAccessToken(token: any) {
     return {
       ...token,
       accessToken: refreshedTokens.access,
-      accessTokenExpires: Date.now() + 10 * 60 * 1000, // 10 minutos
+      accessTokenExpires: Date.now() + 30 * 60 * 1000, // 10 minutos
       refreshToken: refreshedTokens.refresh ?? token.refreshToken,
     }
   } catch (error) {
