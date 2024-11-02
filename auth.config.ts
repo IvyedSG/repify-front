@@ -47,7 +47,7 @@ const authConfig: NextAuthOptions = {
   ],
   pages: { signIn: '/' },
   callbacks: {
-    async jwt({ token, user, account }: { token: any; user?: any; account?: any }) {
+    async jwt({ token, user, account }) {
       if (user && account) {
         return {
           ...token,
@@ -72,20 +72,28 @@ const authConfig: NextAuthOptions = {
 
       return refreshAccessToken(token)
     },
-    async session({ session, token }: { session: any; token: any }) {
+    async session({ session, token }) {
       session.user = {
         ...session.user,
-        id: token.id as string,
-        email: token.email as string,
-        university: token.university as string,
-        career: token.career as string,
-        accessToken: token.accessToken as string,
-        refreshToken: token.refreshToken as string,
+        id: token.id,
+        email: token.email,
+        university: token.university,
+        career: token.career,
+        accessToken: token.accessToken,
+        refreshToken: token.refreshToken,
       }
-      session.error = token.error as string | undefined
+      session.error = token.error
+
+      if (token.error) {
+        if (typeof window !== 'undefined') {
+          window.location.reload()
+        }
+      }
+
       return session
     },
   },
+  
   events: {
     async signOut({ token }) {
       signOut({ callbackUrl: '/' })
@@ -93,7 +101,6 @@ const authConfig: NextAuthOptions = {
   },
 }
 
-// Función para refrescar el token de acceso
 async function refreshAccessToken(token: any) {
   try {
     const response = await fetch('http://127.0.0.1:8000/token/refresh/', {
@@ -109,7 +116,7 @@ async function refreshAccessToken(token: any) {
     return {
       ...token,
       accessToken: refreshedTokens.access,
-      accessTokenExpires: Date.now() + 30 * 60 * 1000, // 10 minutos
+      accessTokenExpires: Date.now() + 30 * 60 * 1000, 
       refreshToken: refreshedTokens.refresh ?? token.refreshToken,
     }
   } catch (error) {
