@@ -19,7 +19,6 @@ import { toast } from '@/components/ui/use-toast'
 import { Users, UserMinus } from 'lucide-react'
 import Link from 'next/link'
 
-
 interface Collaborator {
   id: number;
   name: string;
@@ -40,12 +39,14 @@ interface TeamSectionProps {
 export default function TeamSection({ project, onCollaboratorRemoved }: TeamSectionProps) {
   const { data: session } = useSession()
   const [collaborators, setCollaborators] = useState<Collaborator[]>(project.collaborators || [])
-  const [isRemoving, setIsRemoving] = useState(false)
+  const [removingCollaborators, setRemovingCollaborators] = useState<Set<number>>(new Set())
 
   const handleRemoveCollaborator = async (userId: number) => {
     if (!session?.user?.accessToken) return
     console.log("Enviando DELETE para:", { userId, projectId: project.id });
-    setIsRemoving(true)
+    
+    setRemovingCollaborators(prev => new Set(prev).add(userId))
+    
     try {
       const response = await fetch('http://127.0.0.1:8000/usuario/projects/delete_collaborator/', {
         method: 'DELETE',
@@ -69,13 +70,29 @@ export default function TeamSection({ project, onCollaboratorRemoved }: TeamSect
         }
       } else {
         console.error('Unexpected response status:', response.status)
+        toast({
+          title: "Error",
+          description: "No se pudo eliminar al colaborador. Por favor, inténtalo de nuevo.",
+          variant: "destructive",
+        })
       }
     } catch (error) {
       console.error('Error removing collaborator:', error)
+      toast({
+        title: "Error",
+        description: "Ocurrió un error al eliminar al colaborador. Por favor, inténtalo de nuevo.",
+        variant: "destructive",
+      })
     } finally {
-      setIsRemoving(false)
+      setRemovingCollaborators(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(userId)
+        return newSet
+      })
     }
   }
+
+  const isAnyCollaboratorBeingRemoved = removingCollaborators.size > 0
 
   return (
     <div className="space-y-6">
@@ -90,8 +107,7 @@ export default function TeamSection({ project, onCollaboratorRemoved }: TeamSect
             <AvatarFallback>{(project.name_responsible || 'PL').charAt(0)}</AvatarFallback>
           </Avatar>
           <span className="ml-2 text-gray-800 dark:text-gray-200">
-              {project.name_responsible || 'No name provided'}
-           
+            {project.name_responsible || 'No name provided'}
           </span>
         </div>
       </div>
@@ -117,7 +133,11 @@ export default function TeamSection({ project, onCollaboratorRemoved }: TeamSect
                 </div>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="destructive" size="sm" disabled={isRemoving}>
+                    <Button 
+                      variant="destructive" 
+                      size="sm" 
+                      disabled={isAnyCollaboratorBeingRemoved}
+                    >
                       <UserMinus className="w-4 h-4 mr-2" />
                       Eliminar
                     </Button>
@@ -133,9 +153,9 @@ export default function TeamSection({ project, onCollaboratorRemoved }: TeamSect
                       <AlertDialogCancel>Cancelar</AlertDialogCancel>
                       <AlertDialogAction 
                         onClick={() => handleRemoveCollaborator(collaborator.id)} 
-                        disabled={isRemoving}
+                        disabled={removingCollaborators.has(collaborator.id)}
                       >
-                        {isRemoving ? 'Eliminando...' : 'Eliminar'}
+                        {removingCollaborators.has(collaborator.id) ? 'Eliminando...' : 'Eliminar'}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>

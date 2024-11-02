@@ -39,6 +39,7 @@ export default function ProjectJoinRequests({ projectId }: ProjectJoinRequestsPr
   const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [processingRequests, setProcessingRequests] = useState<Set<number>>(new Set())
 
   useEffect(() => {
     const fetchJoinRequests = async () => {
@@ -81,6 +82,12 @@ export default function ProjectJoinRequests({ projectId }: ProjectJoinRequestsPr
       return
     }
 
+    if (processingRequests.has(requestId)) {
+      return // Prevent multiple clicks
+    }
+
+    setProcessingRequests(prev => new Set(prev).add(requestId))
+
     const endpoint = action === 'approve' 
       ? 'http://127.0.0.1:8000/usuario/projects/AcceptProject/'
       : 'http://127.0.0.1:8000/usuario/projects/Denyproject/'
@@ -118,6 +125,12 @@ export default function ProjectJoinRequests({ projectId }: ProjectJoinRequestsPr
         title: 'Error',
         description: `No se pudo ${action === 'approve' ? 'aprobar' : 'rechazar'} la solicitud. Por favor, intente de nuevo.`,
         variant: 'destructive',
+      })
+      // Remove the request from processing set to allow retry
+      setProcessingRequests(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(requestId)
+        return newSet
       })
     }
   }
@@ -204,6 +217,7 @@ export default function ProjectJoinRequests({ projectId }: ProjectJoinRequestsPr
                       variant="outline"
                       className="bg-green-100 text-green-600 hover:bg-green-200"
                       onClick={() => handleRequestAction(request.id_solicitud, 'approve')}
+                      disabled={processingRequests.has(request.id_solicitud)}
                     >
                       <CheckCircle className="w-4 h-4 mr-2" />
                       Aprobar
@@ -213,6 +227,7 @@ export default function ProjectJoinRequests({ projectId }: ProjectJoinRequestsPr
                       variant="outline"
                       className="bg-red-100 text-red-600 hover:bg-red-200"
                       onClick={() => handleRequestAction(request.id_solicitud, 'reject')}
+                      disabled={processingRequests.has(request.id_solicitud)}
                     >
                       <XCircle className="w-4 h-4 mr-2" />
                       Rechazar
