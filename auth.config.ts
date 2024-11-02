@@ -57,8 +57,8 @@ const authConfig: NextAuthOptions = {
           career: user.career,
           accessToken: user.accessToken,
           refreshToken: user.refreshToken,
-          accessTokenExpires: Date.now() + 30 * 60 * 1000, // 10 minutos
-          refreshTokenExpires: Date.now() + 24 * 60 * 60 * 1000, // 24 horas
+          accessTokenExpires: Date.now() + 30 * 60 * 1000, 
+          refreshTokenExpires: Date.now() + 24 * 60 * 60 * 1000, 
         }
       }
 
