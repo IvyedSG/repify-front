@@ -1,11 +1,10 @@
 import * as React from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons';
-import { DayPicker } from 'react-day-picker';
-
+import { DayPicker, DayPickerProps } from 'react-day-picker';
 import { cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
 
-export type CalendarProps = React.ComponentProps<typeof DayPicker>;
+export type CalendarProps = DayPickerProps;
 
 function Calendar({
   className,
@@ -13,15 +12,16 @@ function Calendar({
   showOutsideDays = true,
   ...props
 }: CalendarProps) {
+
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
-      className={cn('p-3 bg-gray-900 text-gray-100', className)} // Keeping the dark background for now
+      className={cn('p-3 bg-gray-900 text-gray-100', className)}
       classNames={{
         months: 'flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0',
         month: 'space-y-4',
         caption: 'flex justify-center pt-1 relative items-center',
-        caption_label: 'text-sm font-medium text-gray-300', // More subtle caption styling
+        caption_label: 'text-sm font-medium text-gray-300',
         nav: 'space-x-1 flex items-center',
         nav_button: cn(
           buttonVariants({ variant: 'outline' }),
@@ -31,7 +31,7 @@ function Calendar({
         nav_button_next: 'absolute right-1',
         table: 'w-full border-collapse space-y-1',
         head_row: 'flex',
-        head_cell: 'text-gray-500 rounded-md w-8 font-normal text-[0.8rem]', // Weekday header styling
+        head_cell: 'text-gray-500 rounded-md w-8 font-normal text-[0.8rem]',
         row: 'flex w-full mt-2',
         cell: cn(
           'relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-gray-700 rounded-md',
@@ -54,15 +54,23 @@ function Calendar({
         ...classNames
       }}
       components={{
-        IconLeft: ({ ...props }) => <ChevronLeftIcon className="w-4 h-4 text-gray-200" />,
-        IconRight: ({ ...props }) => <ChevronRightIcon className="w-4 h-4 text-gray-200" />
+        PreviousMonthButton: (props) => (
+          <button {...props} className={cn(buttonVariants({ variant: 'outline' }), 'h-7 w-7')}>
+            <ChevronLeftIcon className="w-4 h-4 text-gray-200" />
+          </button>
+        ),
+        NextMonthButton: (props) => (
+          <button {...props} className={cn(buttonVariants({ variant: 'outline' }), 'h-7 w-7')}>
+            <ChevronRightIcon className="w-4 h-4 text-gray-200" />
+          </button>
+        ),
       }}
       {...props}
     />
   );
 }
+
 Calendar.displayName = 'Calendar';
 
 export { Calendar };
-
 
