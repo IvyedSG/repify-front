@@ -41,17 +41,7 @@ export function UserNav() {
             
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem>
-              Perfil
-              <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              Configuración
-              <DropdownMenuShortcut>⌘C</DropdownMenuShortcut>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
+          
           <DropdownMenuItem onClick={() => signOut()}>
             Salir
             <DropdownMenuShortcut>⇧⌘S</DropdownMenuShortcut>
