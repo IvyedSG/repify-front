@@ -41,7 +41,7 @@ export function UserNav() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           
-          <DropdownMenuItem onClick={() => signOut({ callbackUrl: `${window.location.origin}/` })}>
+          <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/', redirect:true })}>
             Salir
             <DropdownMenuShortcut>⇧⌘S</DropdownMenuShortcut>
           </DropdownMenuItem>
