@@ -16,7 +16,7 @@ const authConfig: NextAuthOptions = {
         }
 
         try {
-          const res = await fetch('http://127.0.0.1:8000/usuario/login/Login/', {
+          const res = await fetch(`${process.env.API_URL}/usuario/login/Login/`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -103,7 +103,7 @@ const authConfig: NextAuthOptions = {
 
 async function refreshAccessToken(token: any) {
   try {
-    const response = await fetch('http://127.0.0.1:8000/token/refresh/', {
+    const response = await fetch(`${process.env.API_URL}/token/refresh/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refresh: token.refreshToken }),

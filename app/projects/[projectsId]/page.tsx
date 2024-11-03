@@ -55,7 +55,7 @@ export default function ProjectDetailsPage() {
       if (!projectId) return
 
       try {
-        const response = await fetch('http://127.0.0.1:8000/usuario/projects/view_project_id/', {
+        const response = await fetch(`${process.env.API_URL}/usuario/projects/view_project_id/`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -85,7 +85,7 @@ export default function ProjectDetailsPage() {
 
   const validateAchievements = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/usuario/achievement/validate_achievements/', {
+      const response = await fetch(`${process.env.API_URL}/usuario/achievement/validate_achievements/`, {
         method: 'POST',
         headers: {
           'Accept': '*/*',
@@ -105,7 +105,7 @@ export default function ProjectDetailsPage() {
 
     setApplying(true)
     try {
-      const response = await fetch('http://127.0.0.1:8000/usuario/projects/ApplyProject/', {
+      const response = await fetch(`${process.env.API_URL}/usuario/projects/ApplyProject/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

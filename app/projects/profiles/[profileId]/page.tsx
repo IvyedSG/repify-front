@@ -81,7 +81,7 @@ export default function OtherUserProfilePage() {
   const { data: profile, error } = useSWR<UserProfile>(
     session?.user?.accessToken && profileId
       ? [
-          'http://127.0.0.1:8000/usuario/perfil/profile_id/',
+          `${process.env.API_URL}/usuario/perfil/profile_id/`,
           String(session.user.accessToken),
           String(profileId)
         ]

@@ -48,7 +48,7 @@ export default function TeamSection({ project, onCollaboratorRemoved }: TeamSect
     setRemovingCollaborators(prev => new Set(prev).add(userId))
     
     try {
-      const response = await fetch('http://127.0.0.1:8000/usuario/projects/delete_collaborator/', {
+      const response = await fetch(`${process.env.API_URL}/usuario/projects/delete_collaborator/`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${session.user.accessToken}`,

@@ -83,14 +83,14 @@ export default function ProjectsPage() {
 
   const { data: myProjects, error: myProjectsError } = useSWR<Project[]>(
     session?.user?.accessToken 
-      ? ['http://127.0.0.1:8000/usuario/projects/my-projects/', session.user.accessToken]
+      ? [`${process.env.API_URL}/usuario/projects/my-projects/`, session.user.accessToken]
       : null,
     ([url, token]) => fetcher(url, token as string) 
   );
   
   const { data: collaboratedProjects, error: collaboratedProjectsError } = useSWR<Project[]>(
     session?.user?.accessToken 
-      ? ['http://127.0.0.1:8000/usuario/projects/my-collaborated-projects/', session.user.accessToken]
+      ? [`${process.env.API_URL}/usuario/projects/my-collaborated-projects/`, session.user.accessToken]
       : null,
     ([url, token]) => fetcher(url, token as string) 
   );
