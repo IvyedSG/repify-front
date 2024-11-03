@@ -34,7 +34,7 @@ export default function ProjectConfigPage() {
     const fetchProjectDetails = async () => {
       if (session?.user?.accessToken) {
         try {
-          const response = await fetch(`${process.env.API_URL}/usuario/projects/get-project-id/`, {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/projects/get-project-id/`, {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${session.user.accessToken}`,
@@ -85,7 +85,7 @@ export default function ProjectConfigPage() {
         };
   
   
-        const response = await fetch(`${process.env.API_URL}/usuario/projects/update-project/`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/projects/update-project/`, {
           method: 'PUT',
           headers: {
             'Authorization': `Bearer ${session.user.accessToken}`,
@@ -118,7 +118,7 @@ export default function ProjectConfigPage() {
   const handleDelete = async () => {
     if (session?.user?.accessToken && project) {
       try {
-        const response = await fetch(`${process.env.API_URL}/usuario/projects/delete_project/`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/projects/delete_project/`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${session.user.accessToken}`,

@@ -50,7 +50,7 @@ export default function FormsSection() {
 
   const { data: forms, error, mutate } = useSWR<Form[]>(
     session?.user?.accessToken
-      ? [`${process.env.API_URL}/usuario/form/get_all_forms/`, session.user.accessToken as string]
+      ? [`${process.env.NEXT_PUBLIC_API_URL}/usuario/form/get_all_forms/`, session.user.accessToken as string]
       : null,
     ([url, token]: [string, string]) => fetcher(url, token),
     {
@@ -85,7 +85,7 @@ export default function FormsSection() {
     setIsCreating(true)
 
     try {
-      const response = await fetch(`${process.env.API_URL}/usuario/form/create_form/`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/form/create_form/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -126,7 +126,7 @@ export default function FormsSection() {
     setIsDeleting(true)
 
     try {
-      const response = await fetch(`${process.env.API_URL}/usuario/form/delete_form/`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/form/delete_form/`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

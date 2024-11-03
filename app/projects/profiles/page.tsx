@@ -111,8 +111,8 @@ export default function UserProfilePage() {
   const { data: profile, error, mutate } = useSWR<UserProfile>(
     session?.user?.accessToken && profileUserId
       ? isOwnProfile
-        ? [`${process.env.API_URL}/usuario/perfil/profile/`, String(session.user.accessToken)]
-        : [`${process.env.API_URL}/usuario/perfil/profile/${profileUserId}`, String(session.user.accessToken)]
+        ? [`${process.env.NEXT_PUBLIC_API_URL}/usuario/perfil/profile/`, String(session.user.accessToken)]
+        : [`${process.env.NEXT_PUBLIC_API_URL}/usuario/perfil/profile/${profileUserId}`, String(session.user.accessToken)]
       : null,
     ([url, token]) => isOwnProfile ? fetchOwnProfile(url, token as string) : fetchOtherProfile(url, token as string),
     { revalidateOnFocus: false, revalidateOnReconnect: false }
@@ -147,7 +147,7 @@ export default function UserProfilePage() {
     }
 
     try {
-      const response = await fetch(`${process.env.API_URL}/usuario/perfil/update-profile/`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/perfil/update-profile/`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
