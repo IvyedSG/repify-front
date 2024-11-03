@@ -45,7 +45,7 @@ const authConfig: NextAuthOptions = {
       },
     }),
   ],
-  pages: { signIn: '/' },
+  pages: { signIn: 'https://main.d15i3gj3zymvi2.amplifyapp.com/' },
   callbacks: {
     async jwt({ token, user, account }) {
       if (user && account) {
@@ -96,7 +96,7 @@ const authConfig: NextAuthOptions = {
   
   events: {
     async signOut({ token }) {
-      signOut({ callbackUrl: '/' })
+      signOut({ callbackUrl: 'https://main.d15i3gj3zymvi2.amplifyapp.com/' })
     },
   },
 }

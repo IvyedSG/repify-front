@@ -41,7 +41,7 @@ export function UserNav() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           
-          <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/', redirect:true })}>
+          <DropdownMenuItem onClick={() => signOut({ callbackUrl: 'https://main.d15i3gj3zymvi2.amplifyapp.com/', redirect:true })}>
             Salir
             <DropdownMenuShortcut>⇧⌘S</DropdownMenuShortcut>
           </DropdownMenuItem>
