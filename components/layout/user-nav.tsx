@@ -11,8 +11,17 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { signOut, useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+
 export function UserNav() {
   const { data: session } = useSession();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    await signOut({ redirect: false });
+    router.push('/');
+  };
+
   if (session) {
     return (
       <DropdownMenu>
@@ -37,11 +46,9 @@ export function UserNav() {
                 {session.user?.email}
               </p>
             </div>
-            
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          
-          <DropdownMenuItem onClick={() => signOut({ callbackUrl: 'https://main.d15i3gj3zymvi2.amplifyapp.com/', redirect:true })}>
+          <DropdownMenuItem onClick={handleSignOut}>
             Salir
             <DropdownMenuShortcut>⇧⌘S</DropdownMenuShortcut>
           </DropdownMenuItem>
@@ -49,4 +56,6 @@ export function UserNav() {
       </DropdownMenu>
     );
   }
+
+  return null;
 }
