@@ -1,8 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
-import { useRouter, useParams } from 'next/navigation'
+import { useSession, signOut } from 'next-auth/react'
 import useSWR from 'swr'
 import PageContainer from '@/components/layout/page-container'
 import { Button } from '@/components/ui/button'
@@ -10,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Card, CardContent, CardHeader} from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { toast } from '@/components/ui/use-toast'
@@ -27,28 +26,11 @@ interface UserProfile {
   interests: string[]
   photo: string
   achievements: string
-  created_at: string
-  email: string
-  first_name: string
-  last_name: string
-  date_joined: string
 }
 
-const fetchOwnProfile = async (url: string, token: string) => {
+const fetchProfile = async (url: string, token: string) => {
   const res = await fetch(url, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    }
-  })
-  if (!res.ok) throw new Error('Failed to fetch own profile')
-  return res.json()
-}
-
-const fetchOtherProfile = async (url: string, token: string) => {
-  const res = await fetch(url, {
-    method: 'GET',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
@@ -93,58 +75,64 @@ const ProfileSkeleton = () => (
 
 export default function UserProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
-  const { data: session } = useSession()
-  const router = useRouter()
-  const params = useParams()
-  const [profileUserId, setProfileUserId] = useState<string | null>(null)
+  const { data: session, status } = useSession()
+
+  console.log('Session data:', session);
 
   useEffect(() => {
-    if (params.id) {
-      setProfileUserId(params.id as string)
-    } else if (session?.user?.id) {
-      setProfileUserId(session.user.id)
+    if (session?.error === "RefreshAccessTokenError") {
+      signOut(); // Force sign out to fix the session
     }
-  }, [params.id, session])
+  }, [session]);
 
-  const isOwnProfile = !params.id
+  if (!session) {
+    return <div>Loading...</div>;
+  }
 
-  const { data: profile, error, mutate } = useSWR<UserProfile>(
-    session?.user?.accessToken && profileUserId
-      ? isOwnProfile
-        ? [`${process.env.NEXT_PUBLIC_API_URL}/usuario/perfil/profile/`, String(session.user.accessToken)]
-        : [`${process.env.NEXT_PUBLIC_API_URL}/usuario/perfil/profile/${profileUserId}`, String(session.user.accessToken)]
+  const { data: profile, error, mutate } = useSWR<UserProfile, Error>(
+    session?.user?.accessToken
+      ? [`${process.env.NEXT_PUBLIC_API_URL}/usuario/perfil/profile/`, session.user.accessToken] as [string, string]
       : null,
-    ([url, token]) => isOwnProfile ? fetchOwnProfile(url, token as string) : fetchOtherProfile(url, token as string),
+    ([url, token]: [string, string]) => fetchProfile(url, token),
     { revalidateOnFocus: false, revalidateOnReconnect: false }
   )
-  
 
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    if (profile && isOwnProfile) {
+    if (profile) {
       mutate({ ...profile, [e.target.name]: e.target.value }, false)
     }
   }
 
   const handleInterestsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (profile && isOwnProfile) {
+    if (profile) {
       mutate({ ...profile, interests: e.target.value.split(',').map(item => item.trim()) }, false)
     }
   }
 
   const handleSave = async () => {
-    if (!profile || !session?.user?.accessToken || !isOwnProfile) return
+    if (!profile || !session?.user?.accessToken || !session?.user?.id) {
+      console.error('Missing required data for profile update');
+      toast({
+        title: 'Error',
+        description: 'Unable to update profile due to missing data. Please try logging in again.',
+        variant: 'destructive',
+      });
+      return;
+    }
 
     const profileData = {
-      id: session.user.id,
+      id: parseInt(session.user.id),
+      authuser: parseInt(session.user.id),
       university: profile.university,
       career: profile.career,
       cycle: profile.cycle,
       biography: profile.biography,
       interests: profile.interests,
       photo: profile.photo,
-      achievements: profile.achievements,
-      authuser: session.user.id,
+      achievements: profile.achievements
     }
+
+    console.log('Profile data being sent:', profileData);
 
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/perfil/update-profile/`, {
@@ -163,15 +151,7 @@ export default function UserProfilePage() {
 
       const updatedProfile = await response.json()
       
-      const safeUpdatedProfile = {
-        ...profile, 
-        ...updatedProfile, 
-        first_name: updatedProfile.first_name || profile.first_name,
-        last_name: updatedProfile.last_name || profile.last_name,
-        interests: Array.isArray(updatedProfile.interests) ? updatedProfile.interests : profile.interests,
-      }
-
-      await mutate(safeUpdatedProfile, false)
+      await mutate(updatedProfile, false)
       setIsEditing(false)
       toast({
         title: 'Perfil Actualizado',
@@ -199,33 +179,31 @@ export default function UserProfilePage() {
     <PageContainer scrollable={true}>
       <div className="mb-10 space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-4 sm:flex-nowrap">
-          <h2 className="text-3xl font-bold tracking-tight">
-            {isOwnProfile ? 'Mi Perfil' : `Perfil de ${profile.first_name} ${profile.last_name}`}
-          </h2>
-          {isOwnProfile && (
-            <Button onClick={() => (isEditing ? handleSave() : setIsEditing(true))} className="ml-auto">
-              {isEditing ? (
-                <>
-                  <Save className="w-4 h-4 mr-2" /> Guardar Cambios
-                </>
-              ) : (
-                <>
-                  <Edit2 className="w-4 h-4 mr-2" /> Editar Perfil
-                </>
-              )}
-            </Button>
-          )}
+          <h2 className="text-3xl font-bold tracking-tight">Mi Perfil</h2>
+          <Button onClick={() => (isEditing ? handleSave() : setIsEditing(true))} className="ml-auto">
+            {isEditing ? (
+              <>
+                <Save className="w-4 h-4 mr-2" /> Guardar Cambios
+              </>
+            ) : (
+              <>
+                <Edit2 className="w-4 h-4 mr-2" /> Editar Perfil
+              </>
+            )}
+          </Button>
         </div>
   
         <Card>
           <CardHeader>
             <div className="flex flex-col items-center gap-4 sm:flex-row">
               <Avatar className="w-24 h-24">
-                <AvatarImage src={profile.photo || "/placeholder-user.png"} alt={`${profile.first_name} ${profile.last_name}`} />
-                <AvatarFallback>{profile.first_name?.[0] || ''}{profile.last_name?.[0] || ''}</AvatarFallback>
+                <AvatarImage src={profile.photo || "/placeholder-user.png"} alt="Foto de perfil" />
+                <AvatarFallback>
+                  {profile.university ? profile.university.charAt(0).toUpperCase() : 'U'}
+                </AvatarFallback>
               </Avatar>
               <div className="space-y-1 text-center sm:text-left">
-                <h3 className="text-2xl font-semibold">{profile.first_name} {profile.last_name}</h3>
+                <h3 className="text-2xl font-semibold">{profile.university}</h3>
                 <p className="text-sm text-muted-foreground">{profile.career} - {profile.cycle} Ciclo</p>
                 <div className="flex flex-wrap justify-center gap-2 sm:justify-start">
                   {profile.interests.map((interest, index) => (
@@ -244,7 +222,7 @@ export default function UserProfilePage() {
                   name="university"
                   value={profile.university}
                   onChange={handleProfileChange}
-                  disabled={true}
+                  disabled={!isEditing}
                 />
               </div>
               <div className="space-y-2">
@@ -254,7 +232,7 @@ export default function UserProfilePage() {
                   name="career"
                   value={profile.career}
                   onChange={handleProfileChange}
-                  disabled={true}
+                  disabled={!isEditing}
                 />
               </div>
               <div className="space-y-2">
@@ -268,12 +246,14 @@ export default function UserProfilePage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Correo Electrónico</Label>
+                <Label htmlFor="photo">URL de la foto</Label>
                 <Input
-                  id="email"
-                  name="email"
-                  value={profile.email}
-                  disabled={true}
+                  id="photo"
+                  name="photo"
+                  value={profile.photo}
+                  onChange={handleProfileChange}
+                  disabled={!isEditing}
+                  placeholder="https://ejemplo.com/mi-foto.jpg"
                 />
               </div>
               <div className="space-y-2 md:col-span-2">
@@ -312,7 +292,7 @@ export default function UserProfilePage() {
             <div className="flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
               <div className="flex items-center gap-2">
                 <User className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">Miembro desde {new Date(profile.date_joined).toLocaleDateString()}</span>
+                <span className="text-sm text-muted-foreground">Perfil de usuario</span>
               </div>
               <div className="flex items-center gap-2">
                 <GraduationCap className="w-4 h-4 text-muted-foreground" />
@@ -322,10 +302,10 @@ export default function UserProfilePage() {
           </CardContent>
         </Card>
         <div className="flex justify-center mt-6">
-          <Link href={`/projects/records/${profileUserId || ''}`}>
+          <Link href={`/projects/records/${session?.user?.id || ''}`}>
             <Button>
               <Trophy className="w-4 h-4 mr-2" />
-              Ver logros de {profile.first_name}
+              Ver mis logros
             </Button>
           </Link>
         </div>
