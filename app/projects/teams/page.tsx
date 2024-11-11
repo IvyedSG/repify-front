@@ -303,7 +303,7 @@ export default function ProjectsPage() {
   }, [myProjects, collaboratedProjects, myProjectsError, collaboratedProjectsError, filteredProjects, renderProjectCard, renderEmptyState, renderErrorState, renderSkeletonCard])
 
   return (
-    <PageContainer scrollable={true}>
+    <PageContainer>
       <div className="space-y-6">
         <div className="flex flex-col space-y-4">
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Mis Proyectos</h1>

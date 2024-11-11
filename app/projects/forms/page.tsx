@@ -176,7 +176,7 @@ export default function FormsSection() {
 
   if (error) {
     return (
-      <PageContainer scrollable={true}>
+      <PageContainer>
         <Alert variant="destructive">
           <AlertCircle className="w-4 h-4" />
           <AlertTitle>Error</AlertTitle>
@@ -187,7 +187,7 @@ export default function FormsSection() {
   }
 
   return (
-    <PageContainer scrollable={true}>
+    <PageContainer>
       <div className="flex flex-col justify-between gap-4 mb-6 sm:flex-row sm:items-center">
         <div>
           <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">FORMULARIOS</h2>

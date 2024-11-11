@@ -16,6 +16,7 @@ import { toast } from '@/components/ui/use-toast'
 import { Edit2, Save, User, GraduationCap, Trophy } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import Link from 'next/link'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 interface UserProfile {
   id?: number
@@ -32,6 +33,8 @@ interface UserProfile {
   last_name: string
   date_joined: string
 }
+
+const cycles = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"]
 
 const fetchProfile = async (url: string, token: string) => {
   const res = await fetch(url, {
@@ -108,6 +111,12 @@ export default function UserProfilePage() {
     }
   }
 
+  const handleCycleChange = (value: string) => {
+    if (profile) {
+      mutate({ ...profile, cycle: value }, false)
+    }
+  }
+
   const handleInterestsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (profile) {
       mutate({ ...profile, interests: e.target.value.split(',').map(item => item.trim()) }, false)
@@ -181,7 +190,7 @@ export default function UserProfilePage() {
   }
 
   return (
-    <PageContainer scrollable={true}>
+    <PageContainer>
       <div className="mb-10 space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-4 sm:flex-nowrap">
           <h2 className="text-3xl font-bold tracking-tight">Mi Perfil</h2>
@@ -224,8 +233,7 @@ export default function UserProfilePage() {
                   id="university"
                   name="university"
                   value={profile.university}
-                  onChange={handleProfileChange}
-                  disabled={!isEditing}
+                  disabled={true}
                 />
               </div>
               <div className="space-y-2">
@@ -234,19 +242,27 @@ export default function UserProfilePage() {
                   id="career"
                   name="career"
                   value={profile.career}
-                  onChange={handleProfileChange}
-                  disabled={!isEditing}
+                  disabled={true}
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="cycle">Ciclo</Label>
-                <Input
-                  id="cycle"
-                  name="cycle"
-                  value={profile.cycle}
-                  onChange={handleProfileChange}
+                <Select
                   disabled={!isEditing}
-                />
+                  value={profile.cycle}
+                  onValueChange={handleCycleChange}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona un ciclo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {cycles.map((cycle) => (
+                      <SelectItem key={cycle} value={cycle}>
+                        {cycle}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="photo">URL de la foto</Label>
