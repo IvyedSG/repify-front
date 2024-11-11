@@ -253,7 +253,7 @@ export default function ApplicationsPage() {
   }, [loading, error, filterApplications, getStatusColor, ApplicationSkeleton, applications, setApplicationToDelete, setDeleteDialogOpen])
 
   return (
-    <PageContainer scrollable={true}>
+    <PageContainer>
       <StyledDiv className="space-y-6 max-w-[1400px] mx-auto px-4 mb-10">
         <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">Mis Solicitudes</h1>

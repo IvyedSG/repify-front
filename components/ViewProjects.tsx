@@ -199,32 +199,32 @@ export default function ViewProjects() {
             </SelectContent>
           </Select>
         </div>
-
+  
         <div ref={ref} className="grid gap-6 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3">
-        {loading ? (
-          Array.from({ length: 3 }).map((_, index) => (
-            <SkeletonProjectCard key={`skeleton-${index}`} />
-          ))
-        ) : (
-          filteredProjects.map((project: Project) => (
-            <ProjectCard key={project.id} project={project} onViewDetails={handleViewDetails} />
-          ))
-        )}
-      </div>
-
+          {loading ? (
+            Array.from({ length: 3 }).map((_, index) => (
+              <SkeletonProjectCard key={`skeleton-${index}`} />
+            ))
+          ) : (
+            filteredProjects.map((project: Project) => (
+              <ProjectCard key={project.id} project={project} onViewDetails={handleViewDetails} />
+            ))
+          )}
+        </div>
+  
         {!loading && filteredProjects.length === 0 && (
           <div className="text-center text-gray-500">
             No se encontraron proyectos que coincidan con los criterios de búsqueda.
           </div>
         )}
-
+  
         {showBackToTop && (
           <Button
             className="fixed p-3 rounded-full bottom-8 right-8"
             onClick={handleBackToTop}
             aria-label="Volver arriba"
           >
-            <ChevronUp className=" w-6" />
+            <ChevronUp className="w-6" />
           </Button>
         )}
       </div>

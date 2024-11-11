@@ -4,7 +4,7 @@ import React, { useState, useEffect, lazy, Suspense } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { ScrollArea } from "@/components/ui/scroll-area"
+import PageContainer from '@/components/layout/page-container'
 import { toast } from '@/components/ui/use-toast'
 import { useTheme } from "next-themes"
 import { ProjectSkeleton } from '@/components/skeletons/ProjectSkeleton'
@@ -164,56 +164,54 @@ export default function ProjectDetailsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <ScrollArea className="h-screen">
-        <div className="max-w-7xl mx-auto p-6 space-y-6">
-          <div className="space-y-2">
-            <h1 className="text-4xl font-bold">{project.name}</h1>
-            <p className="text-xl text-muted-foreground">{project.description}</p>
+    <PageContainer>
+      <div className="space-y-6 min-h-full">
+        <div className="space-y-2">
+          <h1 className="text-4xl font-bold">{project.name}</h1>
+          <p className="text-xl text-muted-foreground">{project.description}</p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            <Suspense fallback={<ProjectSkeleton />}>
+              <ProjectDetails project={project} />
+            </Suspense>
+
+            <Suspense fallback={<ProjectSkeleton />}>
+              <ProjectObjectives objectives={project.objectives} />
+            </Suspense>
+
+            <Suspense fallback={<ProjectSkeleton />}>
+              <ProjectRequirements requirements={project.necessary_requirements} />
+            </Suspense>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 space-y-6">
-              <Suspense fallback={<ProjectSkeleton />}>
-                <ProjectDetails project={project} />
-              </Suspense>
+          <div className="space-y-6">
+            <Suspense fallback={<ProjectSkeleton />}>
+              <ProjectProgress progress={project.progress} />
+            </Suspense>
 
-              <Suspense fallback={<ProjectSkeleton />}>
-                <ProjectObjectives objectives={project.objectives} />
-              </Suspense>
+            <Suspense fallback={<ProjectSkeleton />}>
+              <ProjectLeader
+                photo={project.photo}
+                creator={project.creator_name} 
+                university={project.name_uniuser} 
+                responsible={project.responsible} 
+              />
+            </Suspense>
 
-              <Suspense fallback={<ProjectSkeleton />}>
-                <ProjectRequirements requirements={project.necessary_requirements} />
-              </Suspense>
-            </div>
-
-            <div className="space-y-6">
-              <Suspense fallback={<ProjectSkeleton />}>
-                <ProjectProgress progress={project.progress} />
-              </Suspense>
-
-              <Suspense fallback={<ProjectSkeleton />}>
-                <ProjectLeader
-                  photo={project.photo}
-                  creator={project.creator_name} 
-                  university={project.name_uniuser} 
-                  responsible={project.responsible} 
-                />
-              </Suspense>
-
-              <Button 
-                onClick={() => setIsDialogOpen(true)} 
-                disabled={!project.accepting_applications || applying || project.has_applied}
-                className="w-full py-6 text-lg"
-              >
-                {applying ? 'Enviando aplicación...' : 
-                 project.has_applied ? 'Ya has aplicado' :
-                 project.accepting_applications ? 'Aplicar al Proyecto' : 'No se aceptan aplicaciones'}
-              </Button>
-            </div>
+            <Button 
+              onClick={() => setIsDialogOpen(true)} 
+              disabled={!project.accepting_applications || applying || project.has_applied}
+              className="w-full py-6 text-lg"
+            >
+              {applying ? 'Enviando aplicación...' : 
+               project.has_applied ? 'Ya has aplicado' :
+               project.accepting_applications ? 'Aplicar al Proyecto' : 'No se aceptan aplicaciones'}
+            </Button>
           </div>
         </div>
-      </ScrollArea>
+      </div>
 
       <ApplicationDialog 
         isOpen={isDialogOpen}
@@ -221,6 +219,6 @@ export default function ProjectDetailsPage() {
         onSubmit={handleApply}
         projectName={project.name}
       />
-    </div>
+    </PageContainer>
   )
 }
