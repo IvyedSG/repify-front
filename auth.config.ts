@@ -35,6 +35,8 @@ const authConfig: NextAuthOptions = {
               career: data.career,
               accessToken: data.access,
               refreshToken: data.refresh,
+              photo: data.photo,
+              name: data.name
             }
           }
         } catch (error) {
@@ -57,6 +59,8 @@ const authConfig: NextAuthOptions = {
           career: user.career,
           accessToken: user.accessToken,
           refreshToken: user.refreshToken,
+          photo: user.photo,
+          name: user.name,
           accessTokenExpires: Date.now() + 30 * 60 * 1000, 
           refreshTokenExpires: Date.now() + 24 * 60 * 60 * 1000, 
         }
@@ -81,6 +85,8 @@ const authConfig: NextAuthOptions = {
         career: token.career,
         accessToken: token.accessToken,
         refreshToken: token.refreshToken,
+        photo: token.photo,
+        name: token.name
       }
       session.error = token.error
 
