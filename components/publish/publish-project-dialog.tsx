@@ -93,7 +93,7 @@ export function PublishProjectDialog({ setIsDialogOpen }: PublishProjectDialogPr
     console.log('Data being sent:', projectData)
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/projects/create_proyect/`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/projects/create_project/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
