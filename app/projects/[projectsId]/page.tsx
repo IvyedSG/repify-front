@@ -166,7 +166,7 @@ export default function ProjectDetailsPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <ScrollArea className="h-screen">
-        <div className="max-w-7xl mx-auto p-6 space-y-6 pb-12">
+        <div className="max-w-7xl mx-auto p-6 space-y-6">
           <div className="space-y-2">
             <h1 className="text-4xl font-bold">{project.name}</h1>
             <p className="text-xl text-muted-foreground">{project.description}</p>

@@ -69,7 +69,7 @@ export function NotificationButton() {
     setShowAllNotifications(true)
     if (session?.user?.accessToken) {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/notifications/isread_notificaciones/`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/notifications/isread_notifications/`, {
           method: 'PUT',
           headers: {
             'Authorization': `Bearer ${session.user.accessToken}`,
