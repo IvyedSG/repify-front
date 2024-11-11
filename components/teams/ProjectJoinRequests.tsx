@@ -28,6 +28,7 @@ interface JoinRequest {
   name_project: string
   created_at: string
   message: string
+  photo?: string;
 }
 
 interface ProjectJoinRequestsProps {
@@ -182,7 +183,7 @@ export default function ProjectJoinRequests({ projectId }: ProjectJoinRequestsPr
             <div key={request.id_solicitud} className="flex items-center justify-between border-b border-gray-200 py-4 last:border-b-0">
               <div className="flex items-center space-x-4">
                 <Avatar>
-                  <AvatarImage src={`https://api.dicebear.com/6.x/initials/svg?seed=${request.name_user}`} />
+                  <AvatarImage src={request.photo || "/placeholder-user.png"} />
                   <AvatarFallback>{request.name_user.split(' ').map(n => n[0]).join('').toUpperCase()}</AvatarFallback>
                 </Avatar>
                 <div>

@@ -59,6 +59,7 @@ type Project = {
   name_uniuser: string;
   collaboration_count: number;
   collaborators: Collaborator[];
+  responsible_photo?: string;
 }
 
 const fetcher = async (url: string, token: string) => {

@@ -18,7 +18,7 @@ interface UserProfile {
   cycle: string
   biography: string
   interests: string[]
-  photo: string
+  photo?: string
   achievements: string
   created_at: string
   email: string

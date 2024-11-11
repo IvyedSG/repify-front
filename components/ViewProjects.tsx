@@ -44,6 +44,7 @@ export interface Project {
   colorScheme?: ColorScheme;
   responsible: number;
   type_aplyuni: string;
+  photo?: string;
 }
 
 const projectTypes = [

@@ -10,6 +10,8 @@ declare module 'next-auth' {
       career?: string
       accessToken: string
       refreshToken?: string
+      photo?: string
+      name: string
     } & DefaultSession['user']
     error?: string
   }
@@ -21,6 +23,8 @@ declare module 'next-auth' {
     career?: string
     accessToken: string
     refreshToken?: string
+    photo?: string
+    name: string
   }
 }
 
@@ -35,5 +39,7 @@ declare module 'next-auth/jwt' {
     accessTokenExpires: number
     refreshTokenExpires: number
     error?: string
+    photo?: string
+    name: string
   }
 }

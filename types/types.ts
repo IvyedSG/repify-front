@@ -1,6 +1,7 @@
 export interface Collaborator {
   id: number;
   name: string;
+  photo?: string;
 }
 
 export interface Project {
@@ -21,7 +22,8 @@ export interface Project {
   accepting_applications: boolean;
   type_aplyuni: string;
   collaboration_count: number;
-  collaborators: Collaborator[]; // Update this to use the Collaborator interface
+  collaborators: Collaborator[]; 
+  responsible_photo?: string;
 }
 
   export const projectTypes = [

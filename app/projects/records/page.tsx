@@ -279,7 +279,7 @@ export default function LogrosPage() {
         </div>
         <div className="flex flex-col items-center gap-2 text-center sm:flex-row sm:gap-4 sm:text-left">
           <Avatar className="w-12 h-12 mx-auto sm:w-16 sm:h-16 md:w-14 md:h-14 lg:w-20 lg:h-20 sm:mx-0">
-            <AvatarImage src="/placeholder-user.png" alt={userData ? `${userData.first_name} ${userData.last_name}` : 'User'} />
+            <AvatarImage src={session?.user.photo || "/placeholder-user.png"} alt={userData ? `${userData.first_name} ${userData.last_name}` : 'User'} />
             <AvatarFallback>{userData ? `${userData.first_name[0]}${userData.last_name[0]}` : 'U'}</AvatarFallback>
           </Avatar>
           <div className="text-center sm:text-left">

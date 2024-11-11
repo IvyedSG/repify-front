@@ -27,6 +27,7 @@ export interface Project {
   };
   responsible: number;
   type_aplyuni: string;
+  photo?: string;
 }
 
 interface ProjectCardProps {
@@ -129,7 +130,7 @@ const ProjectCard = memo(({ project, onViewDetails }: ProjectCardProps) => {
 
         <div className="flex items-center space-x-3 bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
           <Avatar className="h-12 w-12">
-            <AvatarImage src={`https://api.dicebear.com/6.x/initials/svg?seed=${project.creator_name}`} />
+          <AvatarImage src={project.photo || "/placeholder-user.png"} alt={`${project.creator_name} `} />
             <AvatarFallback>{getInitials(project.creator_name)}</AvatarFallback>
           </Avatar>
           <div>

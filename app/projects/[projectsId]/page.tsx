@@ -8,7 +8,6 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { toast } from '@/components/ui/use-toast'
 import { useTheme } from "next-themes"
 import { ProjectSkeleton } from '@/components/skeletons/ProjectSkeleton'
-import { Share2 } from 'lucide-react'
 import { ApplicationDialog } from '@/components/projectid/application-dialog'
 
 const ProjectDetails = lazy(() => import('@/components/projectid/ProjectDetails'))
@@ -37,6 +36,7 @@ interface Project {
   creator_name: string;
   collaboration_count: number;
   has_applied: boolean;
+  photo?: string;
 }
 
 export default function ProjectDetailsPage() {
@@ -193,7 +193,8 @@ export default function ProjectDetailsPage() {
               </Suspense>
 
               <Suspense fallback={<ProjectSkeleton />}>
-                <ProjectLeader 
+                <ProjectLeader
+                  photo={project.photo}
                   creator={project.creator_name} 
                   university={project.name_uniuser} 
                   responsible={project.responsible} 

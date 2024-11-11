@@ -22,6 +22,7 @@ import Link from 'next/link'
 interface Collaborator {
   id: number;
   name: string;
+  photo?: string;
 }
 
 interface Project {
@@ -29,6 +30,7 @@ interface Project {
   name_responsible: string;
   collaboration_count: number;
   collaborators: Collaborator[];
+  responsible_photo?: string;
 }
 
 interface TeamSectionProps {
@@ -103,7 +105,7 @@ export default function TeamSection({ project, onCollaboratorRemoved }: TeamSect
         </label>
         <div className="flex items-center mt-2">
           <Avatar className="h-10 w-10">
-            <AvatarImage src="/placeholder-user.png" alt={project.name_responsible || 'Project Leader'} />
+            <AvatarImage src={project.responsible_photo || "/placeholder-user.png"} alt={project.name_responsible || 'Project Leader'} />
             <AvatarFallback>{(project.name_responsible || 'PL').charAt(0)}</AvatarFallback>
           </Avatar>
           <span className="ml-2 text-gray-800 dark:text-gray-200">
@@ -122,7 +124,7 @@ export default function TeamSection({ project, onCollaboratorRemoved }: TeamSect
               <div key={collaborator.id} className="flex items-center justify-between">
                 <div className="flex items-center">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src="/placeholder-user.png" alt={collaborator.name || 'Collaborator'} />
+                    <AvatarImage src={collaborator.photo || "/placeholder-user.png"} alt={collaborator.name || 'Collaborator'} />
                     <AvatarFallback>{(collaborator.name || 'C').charAt(0)}</AvatarFallback>
                   </Avatar>
                   <span className="ml-2 text-gray-800 dark:text-gray-200">

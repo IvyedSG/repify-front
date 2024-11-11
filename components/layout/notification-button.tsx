@@ -35,7 +35,7 @@ export function NotificationButton() {
 
   const { data: notifications, error, mutate } = useSWR<Notification[]>(
     session?.user?.accessToken
-      ? [`${process.env.NEXT_PUBLIC_API_URL}/usuario/notifications/GetNotifications/`, session.user.accessToken]
+      ? [`${process.env.NEXT_PUBLIC_API_URL}/usuario/notifications/Getnotifications/`, session.user.accessToken]
       : null,
     ([url, token]) => {
       if (typeof token === 'string') {
