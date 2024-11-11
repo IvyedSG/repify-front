@@ -83,14 +83,14 @@ export default function ProjectsPage() {
 
   const { data: myProjects, error: myProjectsError } = useSWR<Project[]>(
     session?.user?.accessToken 
-      ? [`${process.env.NEXT_PUBLIC_API_URL}/usuario/projects/my-projects/`, session.user.accessToken]
+      ? [`${process.env.NEXT_PUBLIC_API_URL}/usuario/projects/get_user_created_projects/`, session.user.accessToken]
       : null,
     ([url, token]) => fetcher(url, token as string) 
   );
   
   const { data: collaboratedProjects, error: collaboratedProjectsError } = useSWR<Project[]>(
     session?.user?.accessToken 
-      ? [`${process.env.NEXT_PUBLIC_API_URL}/usuario/projects/my-collaborated-projects/`, session.user.accessToken]
+      ? [`${process.env.NEXT_PUBLIC_API_URL}/usuario/collaborators/view_project_usercollab/`, session.user.accessToken]
       : null,
     ([url, token]) => fetcher(url, token as string) 
   );

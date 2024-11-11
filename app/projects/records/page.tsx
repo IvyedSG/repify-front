@@ -214,7 +214,7 @@ export default function LogrosPage() {
 
           const [achievementsResponse, metricsResponse] = await Promise.all([
             fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/achievement/list_user_achievements/`, { headers }),
-            fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/achievement/metrics/`, { headers }),
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/metrics/metrics/`, { headers }),
           ]);
 
           if (!achievementsResponse.ok || !metricsResponse.ok) {

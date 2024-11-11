@@ -26,6 +26,11 @@ interface UserProfile {
   interests: string[]
   photo: string
   achievements: string
+  created_at: string
+  email: string
+  first_name: string
+  last_name: string
+  date_joined: string
 }
 
 const fetchProfile = async (url: string, token: string) => {
@@ -81,7 +86,7 @@ export default function UserProfilePage() {
 
   useEffect(() => {
     if (session?.error === "RefreshAccessTokenError") {
-      signOut(); // Force sign out to fix the session
+      signOut(); 
     }
   }, [session]);
 
@@ -195,24 +200,22 @@ export default function UserProfilePage() {
   
         <Card>
           <CardHeader>
-            <div className="flex flex-col items-center gap-4 sm:flex-row">
-              <Avatar className="w-24 h-24">
-                <AvatarImage src={profile.photo || "/placeholder-user.png"} alt="Foto de perfil" />
-                <AvatarFallback>
-                  {profile.university ? profile.university.charAt(0).toUpperCase() : 'U'}
-                </AvatarFallback>
-              </Avatar>
-              <div className="space-y-1 text-center sm:text-left">
-                <h3 className="text-2xl font-semibold">{profile.university}</h3>
-                <p className="text-sm text-muted-foreground">{profile.career} - {profile.cycle} Ciclo</p>
-                <div className="flex flex-wrap justify-center gap-2 sm:justify-start">
-                  {profile.interests.map((interest, index) => (
-                    <Badge key={index} variant="secondary">{interest}</Badge>
-                  ))}
+              <div className="flex flex-col sm:flex-row items-center gap-4">
+                <Avatar className="h-24 w-24">
+                  <AvatarImage src={profile.photo || "/placeholder-user.png"} alt={`${profile.first_name} ${profile.last_name}`} />
+                  <AvatarFallback>{profile.first_name?.[0] || ''}{profile.last_name?.[0] || ''}</AvatarFallback>
+                </Avatar>
+                <div className="space-y-1 text-center sm:text-left">
+                  <h3 className="text-2xl font-semibold">{profile.first_name} {profile.last_name}</h3>
+                  <p className="text-sm text-muted-foreground">{profile.career} - {profile.cycle} Ciclo</p>
+                  <div className="flex flex-wrap justify-center sm:justify-start gap-2">
+                    {profile.interests.map((interest, index) => (
+                      <Badge key={index} variant="secondary">{interest}</Badge>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-          </CardHeader>
+            </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">

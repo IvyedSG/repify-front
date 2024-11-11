@@ -221,8 +221,8 @@ export default function LogrosPage() {
             : `${process.env.NEXT_PUBLIC_API_URL}/usuario/achievement/list_user_achievements/`
 
           const metricsUrl = recordsId
-            ? `${process.env.NEXT_PUBLIC_API_URL}/usuario/achievement/metrics_id/`
-            : `${process.env.NEXT_PUBLIC_API_URL}/usuario/achievement/metrics/`
+            ? `${process.env.NEXT_PUBLIC_API_URL}/usuario/metrics/metrics_id/`
+            : `${process.env.NEXT_PUBLIC_API_URL}/usuario/metrics/metrics/`
 
           const [achievementsResponse, metricsResponse] = await Promise.all([
             fetch(achievementsUrl, {

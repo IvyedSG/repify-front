@@ -85,7 +85,7 @@ export default function ProjectConfigPage() {
         };
   
   
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/projects/update-project/`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/projects/update_project/`, {
           method: 'PUT',
           headers: {
             'Authorization': `Bearer ${session.user.accessToken}`,

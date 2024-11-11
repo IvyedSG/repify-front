@@ -105,7 +105,7 @@ export default function ProjectDetailsPage() {
 
     setApplying(true)
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/projects/ApplyProject/`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/applications/ApplyProject/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
