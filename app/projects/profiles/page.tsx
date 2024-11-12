@@ -311,7 +311,7 @@ export default function UserProfilePage() {
             <div className="flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
               <div className="flex items-center gap-2">
                 <User className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">Perfil de usuario</span>
+                <span className="text-sm text-muted-foreground">Miembro desde {new Date(profile.date_joined).toLocaleDateString()}</span>
               </div>
               <div className="flex items-center gap-2">
                 <GraduationCap className="w-4 h-4 text-muted-foreground" />
