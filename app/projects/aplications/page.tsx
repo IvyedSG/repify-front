@@ -24,23 +24,7 @@ import {
 import useSWR, { mutate } from 'swr'
 import styled from '@emotion/styled'
 
-const StyledDiv = styled.div`
-  @media (min-width: 720px) and (max-width: 1099px) {
-    .grid {
-      grid-template-columns: 1fr;
-    }
-  }
-  @media (min-width: 1150px) and (max-width: 1400px) {
-    .grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-  @media (min-width: 1401px) {
-    .grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-`
+
 type Application = {
   id_solicitud: number
   id_user: number
@@ -68,6 +52,24 @@ const fetcher = async (url: string, token: string) => {
   }
   return res.json()
 }
+
+const StyledDiv = styled.div`
+  @media (min-width: 720px) and (max-width: 1099px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (min-width: 1150px) and (max-width: 1400px) {
+    .grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1401px) {
+    .grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+`
 
 export default function ApplicationsPage() {
   const { data: session } = useSession()
@@ -222,7 +224,7 @@ export default function ApplicationsPage() {
                     Este es el mensaje que enviaste al aplicar al proyecto.
                   </DialogDescription>
                 </DialogHeader>
-                <div className="mt-4 p-4 bg-muted rounded-md">
+                <div className="p-4 mt-4 rounded-md bg-muted">
                   <p>{application.message}</p>
                 </div>
               </DialogContent>
@@ -252,53 +254,56 @@ export default function ApplicationsPage() {
     ))
   }, [loading, error, filterApplications, getStatusColor, ApplicationSkeleton, applications, setApplicationToDelete, setDeleteDialogOpen])
 
+  
   return (
-    <PageContainer>
-      <StyledDiv className="space-y-6 max-w-[1400px] mx-auto px-4 mb-10">
-        <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Mis Solicitudes</h1>
-          <div className="flex flex-col items-start space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-2">
-            <Input 
-              className="w-full sm:w-[300px] bg-input text-input-foreground" 
-              placeholder="Buscar solicitudes..." 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+      <PageContainer>
+        <StyledDiv className="space-y-6 max-w-[1400px] mx-auto px-4 mb-10">
+          <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">Mis Solicitudes</h1>
+            <div className="w-full sm:w-auto">
+              <Input 
+                className="w-full sm:w-[300px] bg-input text-input-foreground" 
+                placeholder="Buscar solicitudes..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
           </div>
-        </div>
-  
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList className="inline-flex justify-start bg-muted">
-            <TabsTrigger value="all" className="flex-1 sm:flex-none data-[state=active]:bg-background">Todos</TabsTrigger>
-            <TabsTrigger value="pendiente" className="flex-1 sm:flex-none data-[state=active]:bg-background">Pendiente</TabsTrigger>
-            <TabsTrigger value="aceptada" className="flex-1 sm:flex-none data-[state=active]:bg-background">Aceptada</TabsTrigger>
-            <TabsTrigger value="rechazado" className="flex-1 sm:flex-none data-[state=active]:bg-background">Rechazado</TabsTrigger>
-          </TabsList>
-  
-          {(['all', 'pendiente', 'aceptada', 'rechazado'] as const).map((tab) => (
-            <TabsContent key={tab} value={tab}>
-              <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3">
-                {renderApplications(tab)}
-              </div>
-            </TabsContent>
-          ))}
-        </Tabs>
+    
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+            <div className="flex justify-center sm:justify-start">
+              <TabsList className="inline-flex bg-muted">
+                <TabsTrigger value="all" className="flex-1 sm:flex-none data-[state=active]:bg-background">Todos</TabsTrigger>
+                <TabsTrigger value="pendiente" className="flex-1 sm:flex-none data-[state=active]:bg-background">Pendiente</TabsTrigger>
+                <TabsTrigger value="aceptada" className="flex-1 sm:flex-none data-[state=active]:bg-background">Aceptada</TabsTrigger>
+                <TabsTrigger value="rechazado" className="flex-1 sm:flex-none data-[state=active]:bg-background">Rechazado</TabsTrigger>
+              </TabsList>
+            </div>
+    
+            {(['all', 'pendiente', 'aceptada', 'rechazado'] as const).map((tab) => (
+              <TabsContent key={tab} value={tab}>
+                <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3">
+                  {renderApplications(tab)}
+                </div>
+              </TabsContent>
+            ))}
+          </Tabs>
         </StyledDiv>
-  
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Confirmar eliminación</DialogTitle>
-            <DialogDescription>
-              ¿Estás seguro de que quieres eliminar esta solicitud? Es posible que si eliminas muchas solicitudes se te impida postular por algunas horas.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>Cancelar</Button>
-            <Button variant="destructive" onClick={handleDeleteApplication}>Eliminar</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </PageContainer>
-  )  
+    
+        <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Confirmar eliminación</DialogTitle>
+              <DialogDescription>
+                ¿Estás seguro de que quieres eliminar esta solicitud? Es posible que si eliminas muchas solicitudes se te impida postular por algunas horas.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>Cancelar</Button>
+              <Button variant="destructive" onClick={handleDeleteApplication}>Eliminar</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </PageContainer>
+    )
 }

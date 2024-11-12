@@ -144,8 +144,8 @@ export default function ProjectJoinRequests({ projectId }: ProjectJoinRequestsPr
         </CardHeader>
         <CardContent>
           {[...Array(3)].map((_, index) => (
-            <div key={index} className="flex items-center space-x-4 mb-4">
-              <Skeleton className="h-12 w-12 rounded-full" />
+            <div key={index} className="flex items-center mb-4 space-x-4">
+              <Skeleton className="w-12 h-12 rounded-full" />
               <div className="space-y-2">
                 <Skeleton className="h-4 w-[200px]" />
                 <Skeleton className="h-4 w-[150px]" />
@@ -180,7 +180,7 @@ export default function ProjectJoinRequests({ projectId }: ProjectJoinRequestsPr
           <p className="text-center text-gray-500">No hay solicitudes pendientes.</p>
         ) : (
           joinRequests.map((request) => (
-            <div key={request.id_solicitud} className="flex items-center justify-between border-b border-gray-200 py-4 last:border-b-0">
+            <div key={request.id_solicitud} className="flex flex-col items-center justify-between py-4 border-b border-gray-200 last:border-b-0 sm:flex-row">
               <div className="flex items-center space-x-4">
                 <Avatar>
                   <AvatarImage src={request.photo || "/placeholder-user.png"} />
@@ -191,7 +191,7 @@ export default function ProjectJoinRequests({ projectId }: ProjectJoinRequestsPr
                   <p className="text-sm text-gray-500">Solicitado el: {new Date(request.created_at).toLocaleDateString()}</p>
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center mt-4 space-x-2 sm:space-x-4 sm:mt-0">
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button variant="outline" size="sm">
@@ -206,7 +206,7 @@ export default function ProjectJoinRequests({ projectId }: ProjectJoinRequestsPr
                         Mensaje enviado con la solicitud de unión al proyecto.
                       </DialogDescription>
                     </DialogHeader>
-                    <div className="mt-4 p-4 bg-muted rounded-md">
+                    <div className="p-4 mt-4 rounded-md bg-muted">
                       <p>{request.message}</p>
                     </div>
                   </DialogContent>
@@ -216,7 +216,7 @@ export default function ProjectJoinRequests({ projectId }: ProjectJoinRequestsPr
                     <Button
                       size="sm"
                       variant="outline"
-                      className="bg-green-100 text-green-600 hover:bg-green-200"
+                      className="text-green-600 bg-green-100 hover:bg-green-200"
                       onClick={() => handleRequestAction(request.id_solicitud, 'approve')}
                       disabled={processingRequests.has(request.id_solicitud)}
                     >
@@ -226,7 +226,7 @@ export default function ProjectJoinRequests({ projectId }: ProjectJoinRequestsPr
                     <Button
                       size="sm"
                       variant="outline"
-                      className="bg-red-100 text-red-600 hover:bg-red-200"
+                      className="text-red-600 bg-red-100 hover:bg-red-200"
                       onClick={() => handleRequestAction(request.id_solicitud, 'reject')}
                       disabled={processingRequests.has(request.id_solicitud)}
                     >
@@ -253,4 +253,5 @@ export default function ProjectJoinRequests({ projectId }: ProjectJoinRequestsPr
       </CardContent>
     </Card>
   )
+  
 }

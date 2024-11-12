@@ -149,7 +149,7 @@ export default function ProjectConfigPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="w-32 h-32 border-t-2 border-b-2 border-blue-500 rounded-full animate-spin"></div>
       </div>
     )
   }
@@ -157,7 +157,7 @@ export default function ProjectConfigPage() {
   if (error || !project) {
     return (
       <div className="flex flex-col items-center justify-center h-screen">
-        <AlertCircle className="h-16 w-16 text-red-500 mb-4" />
+        <AlertCircle className="w-16 h-16 mb-4 text-red-500" />
         <p className="text-xl font-semibold text-red-600">{error || 'Project not found'}</p>
       </div>
     )
@@ -166,13 +166,13 @@ export default function ProjectConfigPage() {
   return (
     <TooltipProvider>
       <div className="min-h-screen p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="flex items-center justify-between mb-8">
             <h1 className="text-4xl font-bold text-gray-800 dark:text-white">{project.name}</h1>
             <div className="flex items-center space-x-4">
               {isEditing ? (
                 <>
-                  <Button onClick={handleSave} className="bg-green-500 hover:bg-green-600 text-white">
+                  <Button onClick={handleSave} className="text-white bg-green-500 hover:bg-green-600">
                     <Save className="w-4 h-4 mr-2" />
                     Guardar Cambios
                   </Button>
@@ -182,7 +182,7 @@ export default function ProjectConfigPage() {
                   </Button>
                 </>
               ) : (
-                <Button onClick={() => setIsEditing(true)} className="bg-blue-500 hover:bg-blue-600 text-white">
+                <Button onClick={() => setIsEditing(true)} className="text-white bg-blue-500 hover:bg-blue-600">
                   <Pencil className="w-4 h-4 mr-2" />
                   Editar Proyecto
                 </Button>
@@ -215,7 +215,7 @@ export default function ProjectConfigPage() {
           <div className="grid grid-cols-12 gap-8">
             <ProjectConfigSidebar activeSection={activeSection} setActiveSection={setActiveSection} />
 
-            <Card className="col-span-9 shadow-lg rounded-lg overflow-hidden">
+            <Card className="col-span-9 overflow-hidden rounded-lg shadow-lg">
               <CardContent className="p-6">
                 <motion.div
                   key={activeSection}

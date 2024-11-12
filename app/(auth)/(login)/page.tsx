@@ -21,12 +21,12 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="w-full max-w-md mx-auto space-y-8 md:max-w-lg lg:max-w-xl">
+    <div className="w-full max-w-md mx-auto space-y-8 sm:max-w-sm md:max-w-md lg:max-w-lg">
       <div className="space-y-4 text-center">
-        <h1 className="text-4xl font-semibold tracking-tight">
+        <h1 className="text-3xl font-semibold tracking-tight sm:text-2xl md:text-4xl">
           Ingresa
         </h1>
-        <p className="text-base text-muted-foreground">
+        <p className="text-sm sm:text-xs md:text-base text-muted-foreground">
           ¡Prepárate para una experiencia única!
         </p>
       </div>
@@ -41,7 +41,7 @@ export default function LoginPage() {
           ¿Olvidaste tu contraseña?
         </Link>
       </div>
-      <p className="text-base text-center text-muted-foreground">
+      <p className="text-sm text-center sm:text-xs md:text-base text-muted-foreground">
         ¿No tienes una cuenta?{' '}
         <Link
           href="/register"
@@ -51,5 +51,6 @@ export default function LoginPage() {
         </Link>
       </p>
     </div>
-  )
+  );
+  
 }

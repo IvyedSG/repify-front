@@ -77,15 +77,21 @@ export default function UserAuthForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-4 max-w-[320px] mx-auto sm:max-w-none">
         <FormField
           control={form.control}
           name="email"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Correo electrónico</FormLabel>
-              <FormControl>
-                <Input type="email" placeholder="junior@help.me" disabled={loading} {...field} />
+              <FormControl className="max-w-[320px] mx-auto sm:max-w-none">
+                <Input 
+                  type="email" 
+                  placeholder="junior@help.me" 
+                  disabled={loading} 
+                  {...field} 
+                  className="w-full mx-auto sm:w-4/5 md:w-full"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -97,8 +103,8 @@ export default function UserAuthForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Contraseña</FormLabel>
-              <FormControl>
-                <div className="relative">
+              <FormControl className="max-w-[320px] mx-auto sm:max-w-none">
+                <div className="relative w-full mx-auto sm:w-4/5 md:w-full">
                   <Input
                     type={showPassword ? 'text' : 'password'}
                     placeholder="***********"
@@ -108,7 +114,7 @@ export default function UserAuthForm() {
                   <button
                     type="button"
                     onClick={togglePasswordVisibility}
-                    className="absolute inset-y-0 right-0 px-3 flex items-center"
+                    className="absolute inset-y-0 right-0 flex items-center px-3"
                     tabIndex={-1}
                   >
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -119,7 +125,7 @@ export default function UserAuthForm() {
             </FormItem>
           )}
         />
-        <Button disabled={loading} className="w-full" type="submit">
+        <Button disabled={loading} className="w-full max-w-[320px] mx-auto block sm:max-w-none" type="submit">
           {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
         </Button>
       </form>

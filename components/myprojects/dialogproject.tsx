@@ -72,86 +72,92 @@ export default function DetailedProjectDialog({ project, isOpen, onOpenChange }:
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] max-w-[95vw] h-[90vh] max-h-[90vh] sm:max-w-[90vw] sm:h-[80vh] p-4 sm:p-6">
-        <DialogHeader className="mb-4">
-          <DialogTitle className="text-xl font-bold sm:text-3xl">{project.name}</DialogTitle>
+      <DialogContent className="max-h-[90vh] w-[95vw] max-w-[95vw] overflow-hidden p-0 sm:max-h-[85vh] sm:max-w-[85vw] md:max-w-[75vw]">
+        <DialogHeader className="px-4 py-3 sm:p-6">
+          <DialogTitle className="text-xl font-bold sm:text-2xl">{project.name}</DialogTitle>
           <DialogDescription className="text-sm sm:text-base">{project.description}</DialogDescription>
         </DialogHeader>
-        <ScrollArea className="h-[calc(100%-6rem)] pr-4">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6">
-            <div className="space-y-4 sm:col-span-2 sm:space-y-6">
-              <div className="flex flex-col justify-between p-3 rounded-lg sm:flex-row sm:items-center sm:p-4">
-                <div className="flex items-center mb-2 space-x-2 sm:mb-0">
+        <ScrollArea className="h-[calc(90vh-8rem)] px-4 sm:h-[calc(85vh-9rem)] sm:px-6">
+          <div className="grid grid-cols-1 gap-4 pb-6 sm:grid-cols-3 sm:gap-6">
+            <div className="space-y-4 sm:col-span-2">
+              <div className="flex flex-col justify-between p-3 rounded-lg bg-muted/50 sm:flex-row sm:items-center sm:p-4">
+                <div className="flex items-center space-x-2">
                   {getStatusIcon(project.status)}
-                  <span className="text-base font-medium sm:text-lg">{project.status}</span>
+                  <span className="text-sm font-medium sm:text-base">{project.status}</span>
                 </div>
-                <Badge className={`${getPriorityColor(project.priority)} text-xs sm:text-sm px-2 py-1 sm:px-3 sm:py-1`}>
+                <Badge
+                  className={`${getPriorityColor(project.priority)} mt-2 w-fit text-xs sm:mt-0 sm:text-sm`}
+                >
                   {project.priority}
                 </Badge>
               </div>
 
-              <div className="grid grid-cols-1 gap-3 p-3 text-xs rounded-lg sm:grid-cols-2 sm:gap-4 sm:p-4 sm:text-sm">
+              <div className="grid grid-cols-1 gap-3 p-3 text-xs rounded-lg bg-muted/50 sm:grid-cols-2 sm:gap-4 sm:p-4 sm:text-sm">
                 <div className="flex items-center">
-                  <Calendar className="w-4 h-4 mr-2 sm:w-5 sm:h-5" />
-                  <span>Inicio: {project.start_date}</span>
+                  <Calendar className="w-4 h-4 mr-2 shrink-0 sm:h-5 sm:w-5" />
+                  <span className="truncate">Inicio: {project.start_date}</span>
                 </div>
                 <div className="flex items-center">
-                  <Calendar className="w-4 h-4 mr-2 sm:w-5 sm:h-5" />
-                  <span>Fin: {project.end_date}</span>
+                  <Calendar className="w-4 h-4 mr-2 shrink-0 sm:h-5 sm:w-5" />
+                  <span className="truncate">Fin: {project.end_date}</span>
                 </div>
                 <div className="flex items-center">
-                  <Users className="w-4 h-4 mr-2 sm:w-5 sm:h-5" />
-                  <span>{project.name_uniuser}</span>
+                  <Users className="w-4 h-4 mr-2 shrink-0 sm:h-5 sm:w-5" />
+                  <span className="truncate">{project.name_uniuser}</span>
                 </div>
                 <div className="flex items-center">
-                  <Flag className="w-4 h-4 mr-2 sm:w-5 sm:h-5" />
-                  <span>{getUniversityDisplay(project.type_aplyuni)}</span>
+                  <Flag className="w-4 h-4 mr-2 shrink-0 sm:h-5 sm:w-5" />
+                  <span className="truncate">{getUniversityDisplay(project.type_aplyuni)}</span>
                 </div>
               </div>
 
               <Separator />
 
-              <div className="p-3 rounded-lg sm:p-4">
-                <h3 className="flex items-center mb-2 text-base font-semibold sm:text-lg">
-                  <FileText className="w-4 h-4 mr-2 sm:w-5 sm:h-5" />
+              <div className="p-3 rounded-lg bg-muted/50 sm:p-4">
+                <h3 className="flex items-center text-base font-semibold sm:text-lg">
+                  <FileText className="w-4 h-4 mr-2 shrink-0 sm:h-5 sm:w-5" />
                   Descripción Detallada
                 </h3>
-                <p className="text-xs sm:text-sm">{project.detailed_description}</p>
+                <p className="mt-2 text-xs sm:text-sm">{project.detailed_description}</p>
               </div>
 
-              <div className="p-3 rounded-lg sm:p-4">
-                <h3 className="flex items-center mb-2 text-base font-semibold sm:text-lg">
-                  <Target className="w-4 h-4 mr-2 sm:w-5 sm:h-5" />
+              <div className="p-3 rounded-lg bg-muted/50 sm:p-4">
+                <h3 className="flex items-center text-base font-semibold sm:text-lg">
+                  <Target className="w-4 h-4 mr-2 shrink-0 sm:h-5 sm:w-5" />
                   Objetivos
                 </h3>
-                <ul className="text-xs list-disc list-inside sm:text-sm">
-                  {project.objectives.map((objective, index) => (
-                    <li key={index}>{objective}</li>
+                <ul className="mt-2 text-xs list-disc list-inside sm:text-sm">
+                  {project.objectives.map((objective: string, index: number) => (
+                    <li key={index} className="truncate">
+                      {objective}
+                    </li>
                   ))}
                 </ul>
               </div>
 
-              <div className="p-3 rounded-lg sm:p-4">
-                <h3 className="flex items-center mb-2 text-base font-semibold sm:text-lg">
-                  <List className="w-4 h-4 mr-2 sm:w-5 sm:h-5" />
+              <div className="p-3 rounded-lg bg-muted/50 sm:p-4">
+                <h3 className="flex items-center text-base font-semibold sm:text-lg">
+                  <List className="w-4 h-4 mr-2 shrink-0 sm:h-5 sm:w-5" />
                   Requisitos del Proyecto
                 </h3>
-                <ul className="text-xs list-disc list-inside sm:text-sm">
-                  {project.necessary_requirements.map((requirement, index) => (
-                    <li key={index}>{requirement}</li>
+                <ul className="mt-2 text-xs list-disc list-inside sm:text-sm">
+                  {project.necessary_requirements.map((requirement: string, index: number) => (
+                    <li key={index} className="truncate">
+                      {requirement}
+                    </li>
                   ))}
                 </ul>
               </div>
             </div>
 
-            <div className="space-y-4 sm:space-y-6">
-              <div className="p-3 rounded-lg sm:p-4">
-                <h3 className="flex items-center mb-2 text-base font-semibold sm:text-lg">
-                  <FileText className="w-4 h-4 mr-2 sm:w-5 sm:h-5" />
+            <div className="space-y-4">
+              <div className="p-3 rounded-lg bg-muted/50 sm:p-4">
+                <h3 className="flex items-center text-base font-semibold sm:text-lg">
+                  <FileText className="w-4 h-4 mr-2 shrink-0 sm:h-5 sm:w-5" />
                   Tipo de Proyecto
                 </h3>
-                <div className="flex flex-wrap gap-2">
-                  {project.project_type.map((type, index) => (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {project.project_type.map((type: string, index: number) => (
                     <Badge key={index} variant="outline" className="text-xs sm:text-sm">
                       {type}
                     </Badge>
@@ -159,26 +165,26 @@ export default function DetailedProjectDialog({ project, isOpen, onOpenChange }:
                 </div>
               </div>
 
-              <div className="p-3 rounded-lg sm:p-4">
-                <h3 className="flex items-center mb-2 text-base font-semibold sm:text-lg">
-                  <BarChart className="w-4 h-4 mr-2 sm:w-5 sm:h-5" />
+              <div className="p-3 rounded-lg bg-muted/50 sm:p-4">
+                <h3 className="flex items-center text-base font-semibold sm:text-lg">
+                  <BarChart className="w-4 h-4 mr-2 shrink-0 sm:h-5 sm:w-5" />
                   Progreso del Proyecto
                 </h3>
-                <div className="flex items-center">
+                <div className="flex items-center mt-2">
                   <Progress value={project.progress} className="flex-grow h-2" />
                   <span className="ml-2 text-xs font-medium sm:text-sm">{project.progress}%</span>
                 </div>
               </div>
 
-              <div className="p-3 rounded-lg sm:p-4">
-                <h3 className="flex items-center mb-2 text-base font-semibold sm:text-lg">
-                  <Users className="w-4 h-4 mr-2 sm:w-5 sm:h-5" />
+              <div className="p-3 rounded-lg bg-muted/50 sm:p-4">
+                <h3 className="flex items-center text-base font-semibold sm:text-lg">
+                  <Users className="w-4 h-4 mr-2 shrink-0 sm:h-5 sm:w-5" />
                   Miembros ({project.collaboration_count})
                 </h3>
                 {project.collaborators.length > 0 ? (
-                  <ul className="text-xs list-disc list-inside sm:text-sm">
-                    {project.collaborators.map((collaborator) => (
-                      <li key={collaborator.id}>
+                  <ul className="mt-2 text-xs list-disc list-inside sm:text-sm">
+                    {project.collaborators.map((collaborator: any) => (
+                      <li key={collaborator.id} className="truncate">
                         <Link href={`/projects/profiles/${collaborator.id}`} className="hover:underline">
                           {collaborator.name}
                         </Link>
@@ -186,21 +192,19 @@ export default function DetailedProjectDialog({ project, isOpen, onOpenChange }:
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-xs sm:text-sm">No hay colaboradores aún.</p>
+                  <p className="mt-2 text-xs sm:text-sm">No hay colaboradores aún.</p>
                 )}
               </div>
 
-              <div className="flex flex-col justify-between p-3 rounded-lg sm:flex-row sm:items-center sm:p-4">
-                <span className="flex items-center mb-2 text-xs font-medium sm:text-sm sm:mb-0">
-                  <UserPlus className="w-4 h-4 mr-2 sm:w-5 sm:h-5" />
+              <div className="flex flex-col justify-between p-3 rounded-lg bg-muted/50 sm:flex-row sm:items-center sm:p-4">
+                <span className="flex items-center text-xs font-medium sm:text-sm">
+                  <UserPlus className="w-4 h-4 mr-2 shrink-0 sm:h-5 sm:w-5" />
                   {project.accepting_applications ? "Aceptando solicitudes" : "No aceptando solicitudes"}
                 </span>
-                <Badge 
-                  variant={project.accepting_applications ? "default" : "secondary"} 
-                  className={`text-xs sm:text-sm ${
-                    project.accepting_applications 
-                      ? "bg-green-500 text-white"
-                      : "bg-gray-500 text-white"
+                <Badge
+                  variant={project.accepting_applications ? "default" : "secondary"}
+                  className={`mt-2 w-fit text-xs sm:mt-0 sm:text-sm ${
+                    project.accepting_applications ? "bg-green-500" : "bg-gray-500"
                   }`}
                 >
                   {project.accepting_applications ? "Abierto" : "Cerrado"}
@@ -211,5 +215,6 @@ export default function DetailedProjectDialog({ project, isOpen, onOpenChange }:
         </ScrollArea>
       </DialogContent>
     </Dialog>
-  );
+  )
+
 }

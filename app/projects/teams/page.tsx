@@ -304,47 +304,64 @@ export default function ProjectsPage() {
 
   return (
     <PageContainer>
-      <div className="space-y-6">
-        <div className="flex flex-col space-y-4">
+      <div className="space-y-8">
+        <div className="flex flex-col space-y-6">
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Mis Proyectos</h1>
+          
           <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:space-x-4 sm:space-y-0">
             <Input 
               className="flex-grow"
               placeholder="Buscar proyectos..." 
               value={searchTerm}
-              onChange={(e) =>   setSearchTerm(e.target.value)}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-              <Button className="w-full px-6 py-6 sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
+                <Button className="w-full px-6 py-3 sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
                   <Plus className="w-4 h-4 mr-2" />
-                  Publicar Proyecto
+                  Publicar
                 </Button>
               </DialogTrigger>
               <PublishProjectDialog setIsDialogOpen={setIsDialogOpen} />
             </Dialog>
           </div>
         </div>
-
-        <Tabs defaultValue="all" className="space-y-6">
-          <TabsList className="flex w-full overflow-x-auto flex-nowrap">
-            <TabsTrigger value="all" className="flex-1 text-xs sm:text-sm whitespace-nowrap">Todos los Proyectos</TabsTrigger>
-            <TabsTrigger value="leader" className="flex-1 text-xs sm:text-sm whitespace-nowrap">Proyectos que Lidero</TabsTrigger>
-            <TabsTrigger value="member" className="flex-1 text-xs sm:text-sm whitespace-nowrap">Proyectos en los que Participo</TabsTrigger>
+  
+        <Tabs defaultValue="all">
+          <TabsList className="inline-flex items-center justify-center w-full p-1 rounded-lg h-9 bg-muted text-muted-foreground">
+            <TabsTrigger 
+              value="all" 
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm h-8 flex-1"
+            >
+              Todos
+            </TabsTrigger>
+            <TabsTrigger 
+              value="leader" 
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm h-8 flex-1"
+            >
+              Como lider
+            </TabsTrigger>
+            <TabsTrigger 
+              value="member" 
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm h-8 flex-1"
+            >
+              Como miembro
+            </TabsTrigger>
           </TabsList>
-
+  
           {(['all', 'leader', 'member'] as const).map((tab) => (
-            <TabsContent key={tab} value={tab}>
+            <TabsContent key={tab} value={tab} className="mt-6 space-y-6">
               {renderContent(tab)}
             </TabsContent>
           ))}
         </Tabs>
       </div>
+  
       <DetailedProjectDialog 
         project={selectedProject} 
         isOpen={isDetailedDialogOpen} 
         onOpenChange={setIsDetailedDialogOpen}
       />
     </PageContainer>
-  )
+  );
 }
