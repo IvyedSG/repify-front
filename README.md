@@ -1,6 +1,5 @@
 # Repify
 
-![Logo de Repify](https://hebbkx1anhila5yf.public.blob.vercel-storage.com/repify-logo-HMGzrFQZXBxRRZnkqDxZNRDQBXBHRx.png)
 
 Repify es una plataforma innovadora diseñada para conectar a estudiantes universitarios con emocionantes oportunidades de proyectos, fomentando la colaboración y el desarrollo de habilidades.
 
