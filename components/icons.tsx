@@ -33,12 +33,18 @@ import {
   Users,
   Medal,
   Contact,
-  LogOut
+  LogOut,
+  BookOpen,
+  PiggyBank,
+  Calendar
 } from 'lucide-react';
 
 export type Icon = LucideIcon;
 
 export const Icons = {
+  tutorias: BookOpen,
+  becas: PiggyBank,
+  eventos: Calendar,
   dashboard: LayoutDashboardIcon,
   logo: Command,
   login: LogIn,

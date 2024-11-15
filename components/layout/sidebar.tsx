@@ -1,12 +1,12 @@
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
 import { DashboardNav } from '@/components/dashboard-nav';
 import { navItems } from '@/constants/data';
 import { cn } from '@/lib/utils';
 import { ChevronLeft } from 'lucide-react';
 import { useSidebar } from '@/hooks/useSidebar';
 import Link from 'next/link';
-import Image from 'next/image'; 
+import Image from 'next/image';
 
 type SidebarProps = {
   className?: string;
@@ -19,6 +19,18 @@ export default function Sidebar({ className }: SidebarProps) {
     toggle();
   };
 
+  // Group nav items logically
+  const navSections = [
+    {
+      title: 'Proyectos',
+      items: navItems.slice(0, 5), // Project-related items
+    },
+    {
+      title: 'Perfil y Servicios',
+      items: navItems.slice(5), // Profile and additional services
+    },
+  ];
+
   return (
     <aside
       className={cn(
@@ -28,12 +40,8 @@ export default function Sidebar({ className }: SidebarProps) {
       )}
     >
       <div className="hidden p-5 pt-10 lg:block">
-        <Link
-          href={'/'}
-          target="_blank"
-        >
-        
-        <Image
+        <Link href={'/'} target="_blank">
+          <Image
             src="/logo.webp"
             alt="Logo de Repify"
             width={40}
@@ -50,12 +58,18 @@ export default function Sidebar({ className }: SidebarProps) {
         )}
         onClick={handleToggle}
       />
-      <div className="space-y-4 py-4">
-        <div className="px-3 py-2">
-          <div className="mt-3 space-y-1">
-            <DashboardNav items={navItems} />
+      <div className="space-y-6 py-4">
+        {navSections.map((section, index) => (
+          <div key={index} className="space-y-4">
+            <h3 className="px-4 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+              {section.title}
+            </h3>
+            <div className="px-3 py-2">
+              <DashboardNav items={section.items} />
+            </div>
+            {index < navSections.length - 1 && <hr className="mx-4 border-muted" />}
           </div>
-        </div>
+        ))}
       </div>
     </aside>
   );

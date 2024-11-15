@@ -37,5 +37,11 @@ export const navItems: NavItem[] = [
     href: '/projects/profiles',
     icon: 'perfil',
     label: 'Mi Perfil'
-  }
+  },
+  {
+    title: 'Servicios Adicionales',
+    href: '/projects/services',
+    icon: 'tutorias',
+    label: 'Servicios Adicionales'
+  },
 ];
