@@ -85,7 +85,7 @@ export default function UserProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
   const { data: session, status } = useSession()
 
-  console.log('Session data:', session);
+
 
   useEffect(() => {
     if (session?.error === "RefreshAccessTokenError") {
@@ -146,7 +146,7 @@ export default function UserProfilePage() {
       achievements: profile.achievements
     }
 
-    console.log('Profile data being sent:', profileData);
+
 
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/perfil/update-profile/`, {

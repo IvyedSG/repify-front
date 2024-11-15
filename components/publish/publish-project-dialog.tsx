@@ -90,7 +90,6 @@ export function PublishProjectDialog({ setIsDialogOpen }: PublishProjectDialogPr
       type_aplyuni: newProject.type_aplyuni === 'LIBRE' ? 'LIBRE' : convertToUniversitySiglas(session?.user.university || '')
     }
   
-    console.log('Data being sent:', projectData)
 
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/projects/create_project/`, {
