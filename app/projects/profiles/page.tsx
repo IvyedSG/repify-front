@@ -99,7 +99,7 @@ export default function UserProfilePage() {
 
   const { data: profile, error, mutate } = useSWR<UserProfile, Error>(
     session?.user?.accessToken
-      ? [`${process.env.NEXT_PUBLIC_API_URL}/usuario/perfil/profile/`, session.user.accessToken] as [string, string]
+      ? [`${process.env.NEXT_SECRET_API_URL}/usuario/perfil/profile/`, session.user.accessToken] as [string, string]
       : null,
     ([url, token]: [string, string]) => fetchProfile(url, token),
     { revalidateOnFocus: false, revalidateOnReconnect: false }
@@ -149,7 +149,7 @@ export default function UserProfilePage() {
 
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/perfil/update-profile/`, {
+      const response = await fetch(`${process.env.NEXT_SECRET_API_URL}/usuario/perfil/update-profile/`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

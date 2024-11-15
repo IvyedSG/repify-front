@@ -42,7 +42,7 @@ export function PublishProjectDialog({ setIsDialogOpen }: PublishProjectDialogPr
 
   const validateAchievements = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/achievement/validate_achievements/`, {
+      const response = await fetch(`${process.env.NEXT_SECRET_API_URL}/usuario/achievement/validate_achievements/`, {
         method: 'POST',
         headers: {
           'Accept': '*/*',
@@ -92,7 +92,7 @@ export function PublishProjectDialog({ setIsDialogOpen }: PublishProjectDialogPr
   
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/projects/create_project/`, {
+      const response = await fetch(`${process.env.NEXT_SECRET_API_URL}/usuario/projects/create_project/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

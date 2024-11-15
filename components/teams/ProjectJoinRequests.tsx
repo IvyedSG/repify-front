@@ -47,7 +47,7 @@ export default function ProjectJoinRequests({ projectId }: ProjectJoinRequestsPr
       if (!session?.user?.accessToken) return
 
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/applications/applications_project/`, {
+        const response = await fetch(`${process.env.NEXT_SECRET_API_URL}/usuario/applications/applications_project/`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -90,8 +90,8 @@ export default function ProjectJoinRequests({ projectId }: ProjectJoinRequestsPr
     setProcessingRequests(prev => new Set(prev).add(requestId))
 
     const endpoint = action === 'approve' 
-      ? `${process.env.NEXT_PUBLIC_API_URL}/usuario/applications/AcceptProject/`
-      : `${process.env.NEXT_PUBLIC_API_URL}/usuario/applications/Denyproject/`
+      ? `${process.env.NEXT_SECRET_API_URL}/usuario/applications/AcceptProject/`
+      : `${process.env.NEXT_SECRET_API_URL}/usuario/applications/Denyproject/`
 
     try {
       const response = await fetch(endpoint, {

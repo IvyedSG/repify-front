@@ -218,12 +218,12 @@ export default function LogrosPage() {
           }
 
           const achievementsUrl = recordsId
-            ? `${process.env.NEXT_PUBLIC_API_URL}/usuario/achievement/list_user_achievements_id/`
-            : `${process.env.NEXT_PUBLIC_API_URL}/usuario/achievement/list_user_achievements/`
+            ? `${process.env.NEXT_SECRET_API_URL}/usuario/achievement/list_user_achievements_id/`
+            : `${process.env.NEXT_SECRET_API_URL}/usuario/achievement/list_user_achievements/`
 
           const metricsUrl = recordsId
-            ? `${process.env.NEXT_PUBLIC_API_URL}/usuario/metrics/metrics_id/`
-            : `${process.env.NEXT_PUBLIC_API_URL}/usuario/metrics/metrics/`
+            ? `${process.env.NEXT_SECRET_API_URL}/usuario/metrics/metrics_id/`
+            : `${process.env.NEXT_SECRET_API_URL}/usuario/metrics/metrics/`
 
           const [achievementsResponse, metricsResponse] = await Promise.all([
             fetch(achievementsUrl, {
@@ -270,7 +270,7 @@ export default function LogrosPage() {
     if (!accessToken) return
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/achievement/validate_achievements/`, {
+      const response = await fetch(`${process.env.NEXT_SECRET_API_URL}/usuario/achievement/validate_achievements/`, {
         method: 'POST',
         headers: {
           'Accept': '*/*',

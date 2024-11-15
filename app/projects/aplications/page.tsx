@@ -80,7 +80,7 @@ export default function ApplicationsPage() {
   const [activeTab, setActiveTab] = useState('all')
 
   const { data: applications, error } = useSWR<Application[]>(
-    session?.user?.accessToken ? [`${process.env.NEXT_PUBLIC_API_URL}/usuario/applications/applications_user/`, session.user.accessToken as string] : null,
+    session?.user?.accessToken ? [`${process.env.NEXT_SECRET_API_URL}/usuario/applications/applications_user/`, session.user.accessToken as string] : null,
     ([url, token]: [string, string]) => fetcher(url, token),
     {
       revalidateOnFocus: false,
@@ -144,7 +144,7 @@ export default function ApplicationsPage() {
     }
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/applications/delete_solicitud/`, {
+      const response = await fetch(`${process.env.NEXT_SECRET_API_URL}/usuario/applications/delete_solicitud/`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -158,7 +158,7 @@ export default function ApplicationsPage() {
       }
 
       mutate(
-        [`${process.env.NEXT_PUBLIC_API_URL}/usuario/applications/applications_user/`, session.user.accessToken],
+        [`${process.env.NEXT_SECRET_API_URL}/usuario/applications/applications_user/`, session.user.accessToken],
         applications?.filter(app => app.id_solicitud !== applicationToDelete),
         false
       )

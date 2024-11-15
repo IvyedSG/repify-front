@@ -18,7 +18,7 @@ export default function ResetPasswordPage() {
     e.preventDefault()
     setIsLoading(true)
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/login/request-password-reset/`, {
+      const response = await fetch(`${process.env.NEXT_SECRET_API_URL}/usuario/login/request-password-reset/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -42,7 +42,7 @@ export default function ResetPasswordPage() {
     e.preventDefault()
     setIsLoading(true)
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/login/reset_password/`, {
+      const response = await fetch(`${process.env.NEXT_SECRET_API_URL}/usuario/login/reset_password/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
