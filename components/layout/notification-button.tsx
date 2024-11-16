@@ -35,7 +35,7 @@ export function NotificationButton() {
 
   const { data: notifications, error, mutate } = useSWR<Notification[]>(
     session?.user?.accessToken
-      ? [`${process.env.NEXT_SECRET_API_URL}/usuario/notifications/Getnotifications/`, session.user.accessToken]
+      ? [`${process.env.NEXT_PUBLIC_API_URL}/usuario/notifications/Getnotifications/`, session.user.accessToken]
       : null,
     ([url, token]) => {
       if (typeof token === 'string') {
@@ -69,7 +69,7 @@ export function NotificationButton() {
     setShowAllNotifications(true)
     if (session?.user?.accessToken) {
       try {
-        const response = await fetch(`${process.env.NEXT_SECRET_API_URL}/usuario/notifications/isread_notifications/`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/notifications/isread_notifications/`, {
           method: 'PUT',
           headers: {
             'Authorization': `Bearer ${session.user.accessToken}`,

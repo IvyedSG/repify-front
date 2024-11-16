@@ -70,7 +70,7 @@ export default function UserRegisterForm() {
             : [],
       }
 
-      const response = await fetch(`${process.env.NEXT_SECRET_API_URL}/usuario/login/Register/`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/login/Register/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

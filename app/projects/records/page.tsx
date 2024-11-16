@@ -213,8 +213,8 @@ export default function LogrosPage() {
           };
 
           const [achievementsResponse, metricsResponse] = await Promise.all([
-            fetch(`${process.env.NEXT_SECRET_API_URL}/usuario/achievement/list_user_achievements/`, { headers }),
-            fetch(`${process.env.NEXT_SECRET_API_URL}/usuario/metrics/metrics/`, { headers }),
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/achievement/list_user_achievements/`, { headers }),
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/metrics/metrics/`, { headers }),
           ]);
 
           if (!achievementsResponse.ok || !metricsResponse.ok) {
@@ -247,7 +247,7 @@ export default function LogrosPage() {
 
   const validateAchievements = async (accessToken: string) => {
     try {
-      const response = await fetch(`${process.env.NEXT_SECRET_API_URL}/usuario/achievement/validate_achievements/`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/achievement/validate_achievements/`, {
         method: 'POST',
         headers: {
           'Accept': '*/*',

@@ -97,7 +97,7 @@ export default function ViewProjects() {
 
   const { data: initialProjects, error: initialError } = useSWR<Project[]>(
     status === 'authenticated'
-      ? [`${process.env.NEXT_SECRET_API_URL}/usuario/projects/view_recent_projects/`, session?.user?.accessToken]
+      ? [`${process.env.NEXT_PUBLIC_API_URL}/usuario/projects/view_recent_projects/`, session?.user?.accessToken]
       : null,
     ([url, token]) => fetcher(url, token as string),
     {
@@ -109,7 +109,7 @@ export default function ViewProjects() {
   // Fetch all projects in the background
   const { data: allProjects, error: allError } = useSWR<Project[]>(
     status === 'authenticated' && initialProjects
-      ? [`${process.env.NEXT_SECRET_API_URL}/usuario/projects/view_project_all/`, session?.user?.accessToken]
+      ? [`${process.env.NEXT_PUBLIC_API_URL}/usuario/projects/view_project_all/`, session?.user?.accessToken]
       : null,
     ([url, token]) => fetcher(url, token as string),
     {
@@ -122,7 +122,7 @@ export default function ViewProjects() {
     const validateAchievements = async () => {
       if (status === 'authenticated' && allProjects) {
         try {
-          const res = await fetch(`${process.env.NEXT_SECRET_API_URL}/usuario/achievement/validate_achievements/`, {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/achievement/validate_achievements/`, {
             method: 'POST',
             headers: {
               'Accept': '*/*',
