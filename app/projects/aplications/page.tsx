@@ -142,6 +142,7 @@ export default function ApplicationsPage() {
       })
       return
     }
+    
 
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/applications/delete_solicitud/`, {
