@@ -165,32 +165,44 @@ export default function ProjectConfigPage() {
 
   return (
     <TooltipProvider>
-      <div className="min-h-screen p-8">
+      <div className="min-h-screen p-4 md:p-6 lg:p-8">
         <div className="mx-auto max-w-7xl">
-          <div className="flex items-center justify-between mb-8">
-            <h1 className="text-4xl font-bold text-gray-800 dark:text-white">{project.name}</h1>
-            <div className="flex items-center space-x-4">
+          <div className="flex flex-col items-start justify-between mb-4 lg:flex-row lg:items-center lg:mb-8">
+            <h1 className="mb-4 text-2xl font-bold text-gray-800 md:text-3xl lg:text-4xl dark:text-white lg:mb-0">
+              {project.name}
+            </h1>
+            <div className="flex items-center space-x-2 md:space-x-4">
               {isEditing ? (
                 <>
-                  <Button onClick={handleSave} className="text-white bg-green-500 hover:bg-green-600">
-                    <Save className="w-4 h-4 mr-2" />
+                  <Button 
+                    onClick={handleSave} 
+                    className="text-sm text-white bg-green-500 hover:bg-green-600 md:text-base"
+                  >
+                    <Save className="w-4 h-4 mr-1 md:mr-2" />
                     Guardar Cambios
                   </Button>
-                  <Button onClick={() => setIsEditing(false)} variant="outline">
-                    <X className="w-4 h-4 mr-2" />
+                  <Button 
+                    onClick={() => setIsEditing(false)} 
+                    variant="outline" 
+                    className="text-sm md:text-base"
+                  >
+                    <X className="w-4 h-4 mr-1 md:mr-2" />
                     Cancelar
                   </Button>
                 </>
               ) : (
-                <Button onClick={() => setIsEditing(true)} className="text-white bg-blue-500 hover:bg-blue-600">
-                  <Pencil className="w-4 h-4 mr-2" />
+                <Button 
+                  onClick={() => setIsEditing(true)} 
+                  className="text-sm text-white bg-blue-500 hover:bg-blue-600 md:text-base"
+                >
+                  <Pencil className="w-4 h-4 mr-1 md:mr-2" />
                   Editar Proyecto
                 </Button>
               )}
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="destructive">
-                    <Trash2 className="w-4 h-4 mr-2" />
+                  <Button variant="destructive" className="text-sm md:text-base">
+                    <Trash2 className="w-4 h-4 mr-1 md:mr-2" />
                     Eliminar Proyecto
                   </Button>
                 </AlertDialogTrigger>
@@ -203,20 +215,22 @@ export default function ProjectConfigPage() {
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete}>
-                      Eliminar
-                    </AlertDialogAction>
+                    <AlertDialogAction onClick={handleDelete}>Eliminar</AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
             </div>
           </div>
-
-          <div className="grid grid-cols-12 gap-8">
-            <ProjectConfigSidebar activeSection={activeSection} setActiveSection={setActiveSection} />
-
-            <Card className="col-span-9 overflow-hidden rounded-lg shadow-lg">
-              <CardContent className="p-6">
+  
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-8">
+            <ProjectConfigSidebar 
+              className="mb-4 lg:col-span-3 lg:mb-0" 
+              activeSection={activeSection} 
+              setActiveSection={setActiveSection} 
+            />
+  
+            <Card className="col-span-1 overflow-hidden rounded-lg shadow-lg lg:col-span-9">
+              <CardContent className="p-4 md:p-6 lg:p-8">
                 <motion.div
                   key={activeSection}
                   initial={{ opacity: 0, y: 20 }}
@@ -252,5 +266,5 @@ export default function ProjectConfigPage() {
         </div>
       </div>
     </TooltipProvider>
-  )
+  );   
 }
