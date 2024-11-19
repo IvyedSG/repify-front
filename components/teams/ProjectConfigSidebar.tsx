@@ -5,11 +5,16 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { Settings, FileText, Users, BarChart, List, UserPlus, UserCheck } from 'lucide-react'
 
 interface ProjectConfigSidebarProps {
+  className?: string; 
   activeSection: string;
   setActiveSection: (section: string) => void;
 }
 
-export default function ProjectConfigSidebar({ activeSection, setActiveSection }: ProjectConfigSidebarProps) {
+export default function ProjectConfigSidebar({ 
+  className, 
+  activeSection, 
+  setActiveSection 
+}: ProjectConfigSidebarProps) {
   const sectionIcons = {
     general: <Settings className="w-6 h-6" />,
     detalles: <FileText className="w-6 h-6" />,
@@ -21,7 +26,7 @@ export default function ProjectConfigSidebar({ activeSection, setActiveSection }
   }
 
   return (
-    <Card className="col-span-3 shadow-lg rounded-lg overflow-hidden">
+    <Card className={`col-span-3 shadow-lg rounded-lg overflow-hidden ${className}`}>
       <CardContent className="p-6">
         <nav className="space-y-2">
           {Object.entries(sectionIcons).map(([key, icon]) => (
