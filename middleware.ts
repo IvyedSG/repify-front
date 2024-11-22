@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import type { NextRequest } from 'next/server';
-import { signOut } from 'next-auth/react';
 
 const protectedRoutes = ['/projects'];
 
@@ -15,14 +14,9 @@ export async function middleware(req: NextRequest) {
   try {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-    if (!token) {
+    if (!token || token.error === 'RefreshTokenExpired') {
       return redirectToLogin(req);
     }
-
-    if (token.error === 'RefreshTokenExpired') {
-      return redirectToLogin(req);
-    }
-
 
     const response = await fetch(req.url, {
       headers: {
@@ -31,13 +25,11 @@ export async function middleware(req: NextRequest) {
     });
 
     if (response.status === 401) {
-      // Cierra la sesión automáticamente
-      await signOut({ callbackUrl: '/' });
       return redirectToLogin(req);
     }
   } catch (error) {
     console.error('Error en la autenticación:', error);
-    return redirectToLogin(req); 
+    return redirectToLogin(req);
   }
 
   return NextResponse.next();

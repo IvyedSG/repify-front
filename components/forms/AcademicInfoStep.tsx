@@ -23,7 +23,6 @@ const universities = [
   "Universidad Científica del Sur",
   "Universidad Privada Arzobispo Loayza",
   "Universidad Autónoma del Perú",
-  "Universidad Cesar Vallejo"
 ]
 
 const careers = [
