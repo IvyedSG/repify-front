@@ -1,51 +1,38 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
+  reactStrictMode: true, // Habilita el modo estricto de React
   compress: true,
   images: {
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'utfs.io',
-        port: '',
-        pathname: '/**',
+        port: '', // Puedes dejar esto vacío si no hay un puerto específico.
+        pathname: '/**', // Esto permite todas las rutas dentro del dominio.
       },
     ],
   },
-  experimental: {
-    runtime: 'experimental-edge',
-    appDir: false, 
-  },
+  // Permite la configuración de los encabezados
   async headers() {
     return [
       {
-        source: '/(.*)',
+        source: '/(.*)', // Aplicar a todas las rutas
         headers: [
           {
             key: 'X-Frame-Options',
-            value: 'DENY',
+            value: 'DENY', // Previene ataques de clickjacking
           },
           {
             key: 'X-Content-Type-Options',
-            value: 'nosniff',
+            value: 'nosniff', // Previene el tipo de contenido MIME sniffing
           },
           {
             key: 'Strict-Transport-Security',
-            value: 'max-age=63072000; includeSubDomains; preload',
+            value: 'max-age=63072000; includeSubDomains; preload', // Habilita HSTS
           },
         ],
       },
     ];
-  },
-  webpack: (config, { isServer }) => {
-    if (!isServer) {
-      config.resolve.fallback = {
-        fs: false,
-        path: false,
-        os: false, 
-      };
-    }
-    return config;
   },
 };
 
