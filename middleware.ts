@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import type { NextRequest } from 'next/server';
+import { signOut } from 'next-auth/react';
 
 const protectedRoutes = ['/projects'];
 
@@ -14,7 +15,6 @@ export async function middleware(req: NextRequest) {
   try {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-
     if (!token) {
       return redirectToLogin(req);
     }
@@ -23,6 +23,18 @@ export async function middleware(req: NextRequest) {
       return redirectToLogin(req);
     }
 
+
+    const response = await fetch(req.url, {
+      headers: {
+        Authorization: `Bearer ${token.accessToken}`,
+      },
+    });
+
+    if (response.status === 401) {
+      // Cierra la sesión automáticamente
+      await signOut({ callbackUrl: '/' });
+      return redirectToLogin(req);
+    }
   } catch (error) {
     console.error('Error en la autenticación:', error);
     return redirectToLogin(req); 
@@ -30,7 +42,6 @@ export async function middleware(req: NextRequest) {
 
   return NextResponse.next();
 }
-
 
 function redirectToLogin(req: NextRequest) {
   return NextResponse.redirect(new URL('/', req.url));
