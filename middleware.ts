@@ -14,8 +14,7 @@ export async function middleware(req: NextRequest) {
   try {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-
-    if (!token) {
+    if (!token || token.error) {
       return redirectToLogin(req);
     }
 
@@ -30,7 +29,6 @@ export async function middleware(req: NextRequest) {
 
   return NextResponse.next();
 }
-
 
 function redirectToLogin(req: NextRequest) {
   return NextResponse.redirect(new URL('/', req.url));

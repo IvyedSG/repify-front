@@ -1,8 +1,8 @@
-import CredentialsProvider from 'next-auth/providers/credentials'
-import { signOut } from 'next-auth/react'
-import type { NextAuthOptions } from 'next-auth' 
+import CredentialsProvider from 'next-auth/providers/credentials';
+import { signOut } from 'next-auth/react';
+import type { NextAuthOptions } from 'next-auth';
 
-const authConfig: NextAuthOptions = { 
+const authConfig: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -12,7 +12,7 @@ const authConfig: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          return null
+          return null;
         }
 
         try {
@@ -23,9 +23,9 @@ const authConfig: NextAuthOptions = {
               email: credentials.email,
               password: credentials.password,
             }),
-          })
+          });
 
-          const data = await res.json()
+          const data = await res.json();
 
           if (res.ok && data) {
             return {
@@ -36,14 +36,14 @@ const authConfig: NextAuthOptions = {
               accessToken: data.access,
               refreshToken: data.refresh,
               photo: data.photo,
-              name: data.name
-            }
+              name: data.name,
+            };
           }
         } catch (error) {
-          console.error('Error during login:', error)
+          console.error('Error during login:', error);
         }
 
-        return null
+        return null;
       },
     }),
   ],
@@ -63,18 +63,18 @@ const authConfig: NextAuthOptions = {
           name: user.name,
           accessTokenExpires: Date.now() + 30 * 60 * 1000, 
           refreshTokenExpires: Date.now() + 24 * 60 * 60 * 1000, 
-        }
+        };
       }
 
       if (Date.now() < token.accessTokenExpires) {
-        return token
+        return token;
       }
 
       if (Date.now() > token.refreshTokenExpires) {
-        return { ...token, error: 'RefreshTokenExpired' }
+        return { ...token, error: 'RefreshTokenExpired' };
       }
 
-      return refreshAccessToken(token)
+      return refreshAccessToken(token);
     },
     async session({ session, token }) {
       session.user = {
@@ -86,26 +86,25 @@ const authConfig: NextAuthOptions = {
         accessToken: token.accessToken,
         refreshToken: token.refreshToken,
         photo: token.photo,
-        name: token.name
-      }
-      session.error = token.error
+        name: token.name,
+      };
+      session.error = token.error;
 
       if (token.error) {
         if (typeof window !== 'undefined') {
-          window.location.reload()
+          signOut({ callbackUrl: '/' }); 
         }
       }
 
-      return session
+      return session;
     },
   },
-  
   events: {
     async signOut({ token }) {
-      signOut({ callbackUrl: '/' })
+      signOut({ callbackUrl: '/' }); 
     },
   },
-}
+};
 
 async function refreshAccessToken(token: any) {
   try {
@@ -113,22 +112,22 @@ async function refreshAccessToken(token: any) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refresh: token.refreshToken }),
-    })
+    });
 
-    const refreshedTokens = await response.json()
+    const refreshedTokens = await response.json();
 
-    if (!response.ok) throw refreshedTokens
+    if (!response.ok) throw refreshedTokens;
 
     return {
       ...token,
       accessToken: refreshedTokens.access,
       accessTokenExpires: Date.now() + 30 * 60 * 1000, 
       refreshToken: refreshedTokens.refresh ?? token.refreshToken,
-    }
+    };
   } catch (error) {
-    console.error('Error refreshing access token', error)
-    return { ...token, error: 'RefreshAccessTokenError' }
+    console.error('Error refreshing access token:', error);
+    return { ...token, error: 'RefreshAccessTokenError' }; 
   }
 }
 
-export default authConfig
+export default authConfig;
