@@ -49,6 +49,16 @@ export default function ProjectDetailsPage() {
   const [applying, setApplying] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
+  const isUserFromSameUniversity = session?.user.university === project?.name_uniuser
+
+  const getButtonText = () => {
+    if (applying) return 'Enviando aplicación...'
+    if (project?.has_applied) return 'Ya has aplicado'
+    if (!project?.accepting_applications) return 'No se aceptan aplicaciones'
+    if (!isUserFromSameUniversity) return `Solo ${project?.name_uniuser}`
+    return 'Aplicar al Proyecto'
+  }
+
   useEffect(() => {
     const fetchProjectDetails = async () => {
       const projectId = window.location.pathname.split('/').pop()
@@ -201,14 +211,12 @@ export default function ProjectDetailsPage() {
             </Suspense>
 
             <Button 
-              onClick={() => setIsDialogOpen(true)} 
-              disabled={!project.accepting_applications || applying || project.has_applied}
-              className="w-full py-6 text-lg"
-            >
-              {applying ? 'Enviando aplicación...' : 
-               project.has_applied ? 'Ya has aplicado' :
-               project.accepting_applications ? 'Aplicar al Proyecto' : 'No se aceptan aplicaciones'}
-            </Button>
+          onClick={() => setIsDialogOpen(true)} 
+          disabled={!project?.accepting_applications || applying || project?.has_applied || !isUserFromSameUniversity}
+          className="w-full py-6 text-lg"
+        >
+          {getButtonText()}
+        </Button>
           </div>
         </div>
       </div>
