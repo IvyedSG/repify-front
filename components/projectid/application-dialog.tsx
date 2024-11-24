@@ -38,12 +38,10 @@ export function ApplicationDialog({ isOpen, onClose, onSubmit, projectName }: Ap
           <div className="bg-blue-50 dark:bg-gray-700 p-4 rounded-lg mb-4">
             <h4 className="font-semibold text-blue-700 dark:text-blue-300 flex items-center mb-2">
               <Info className="w-5 h-5 mr-2" />
-              Indicaciones importantes
+              Sugerencia para aplicar
             </h4>
             <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-2">
               <li>• Puedes dejar tu número de contacto para una comunicación rápida.</li>
-              <li>• Puedes incluir un breve mensaje de presentación.</li>
-              <li>• Puedes agregar enlaces a trabajos o proyectos anteriores.</li>
             </ul>
           </div>
           <div className="space-y-4">
