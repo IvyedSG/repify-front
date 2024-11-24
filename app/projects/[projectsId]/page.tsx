@@ -50,13 +50,18 @@ export default function ProjectDetailsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const isUserFromSameUniversity = session?.user.university === project?.name_uniuser
+  const isProjectFreeToApply = project?.type_aplyuni === "LIBRE"
 
   const getButtonText = () => {
     if (applying) return 'Enviando aplicación...'
     if (project?.has_applied) return 'Ya has aplicado'
     if (!project?.accepting_applications) return 'No se aceptan aplicaciones'
-    if (!isUserFromSameUniversity) return `Solo ${project?.name_uniuser}`
+    if (!isProjectFreeToApply && !isUserFromSameUniversity) return `Solo ${project?.name_uniuser}`
     return 'Aplicar al Proyecto'
+  }
+
+  const canApply = () => {
+    return project?.accepting_applications && !project?.has_applied && (isProjectFreeToApply || isUserFromSameUniversity)
   }
 
   useEffect(() => {
@@ -134,7 +139,6 @@ export default function ProjectDetailsPage() {
         })
         setProject({ ...project, has_applied: true })
         
-       
         await validateAchievements()
       } else {
         const errorData = await response.json()
@@ -211,12 +215,12 @@ export default function ProjectDetailsPage() {
             </Suspense>
 
             <Button 
-          onClick={() => setIsDialogOpen(true)} 
-          disabled={!project?.accepting_applications || applying || project?.has_applied || !isUserFromSameUniversity}
-          className="w-full py-6 text-lg"
-        >
-          {getButtonText()}
-        </Button>
+              onClick={() => setIsDialogOpen(true)} 
+              disabled={!canApply() || applying}
+              className="w-full py-6 text-lg"
+            >
+              {getButtonText()}
+            </Button>
           </div>
         </div>
       </div>
@@ -230,3 +234,4 @@ export default function ProjectDetailsPage() {
     </PageContainer>
   )
 }
+
