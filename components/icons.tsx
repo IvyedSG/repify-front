@@ -36,12 +36,14 @@ import {
   LogOut,
   BookOpen,
   PiggyBank,
-  Calendar
+  Calendar,
+  Share2
 } from 'lucide-react';
 
 export type Icon = LucideIcon;
 
 export const Icons = {
+  conexion: Share2,
   tutorias: BookOpen,
   becas: PiggyBank,
   eventos: Calendar,

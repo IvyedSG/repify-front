@@ -33,7 +33,6 @@ export function DashboardNav({
     return null;
   }
 
-
   return (
     <nav className="grid items-start gap-2">
       <TooltipProvider>
@@ -46,27 +45,23 @@ export function DashboardNav({
                   <Link
                     href={item.disabled ? '/' : item.href}
                     className={cn(
-                      'flex items-center gap-2 overflow-hidden rounded-md py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground',
-                      path === item.href ? 'bg-accent' : 'transparent',
-                      item.disabled && 'cursor-not-allowed opacity-80'
+                      'group flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground',
+                      path === item.href ? 'bg-accent text-accent-foreground' : 'transparent',
+                      item.disabled && 'cursor-not-allowed opacity-80',
+                      isMinimized ? 'justify-center' : 'justify-start'
                     )}
                     onClick={() => {
                       if (setOpen) setOpen(false);
                     }}
                   >
-                    <Icon className={`ml-3 size-5 flex-none`} />
-
-                    {isMobileNav || (!isMinimized && !isMobileNav) ? (
-                      <span className="mr-2 truncate">{item.title}</span>
-                    ) : (
-                      ''
-                    )}
+                    <Icon className={cn('size-5 flex-shrink-0', isMinimized ? 'mr-0' : 'mr-2')} />
+                    {!isMinimized && <span className="truncate">{item.title}</span>}
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent
                   align="center"
                   side="right"
-                  sideOffset={8}
+                  sideOffset={4}
                   className={!isMinimized ? 'hidden' : 'inline-block'}
                 >
                   {item.title}
@@ -79,3 +74,4 @@ export function DashboardNav({
     </nav>
   );
 }
+
