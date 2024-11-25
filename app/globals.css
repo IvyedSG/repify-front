@@ -152,3 +152,25 @@
   box-shadow: 0 0 25px theme('colors.primary.DEFAULT' / 50%),
               inset 0 0 25px theme('colors.primary.DEFAULT' / 50%);
 }
+
+/* Shepherd.js styles */
+.shepherd-button {
+  @apply bg-primary text-primary-foreground hover:bg-primary/90;
+}
+
+.shepherd-cancel-icon {
+  @apply text-foreground;
+}
+
+.shepherd-title {
+  @apply text-foreground;
+}
+
+.shepherd-text {
+  @apply text-foreground;
+}
+
+.shepherd-footer {
+  @apply border-t border-border;
+}
+

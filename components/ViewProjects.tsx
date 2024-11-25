@@ -11,6 +11,7 @@ import { SkeletonProjectCard } from '@/components/skeletons/SkeletonProjectCard'
 import { Button } from '@/components/ui/button'
 import { ChevronUp } from 'lucide-react'
 import { useInView } from 'react-intersection-observer'
+import DashboardTutorial from '@/components/tutorial/DashboardTutorial'
 import useSWR from 'swr'
 
 interface ColorScheme {
@@ -178,56 +179,53 @@ export default function ViewProjects() {
   if (initialError || allError) return <div>Failed to load projects</div>
 
   return (
-    <PageContainer>
-      <div className="space-y-8">
-        <div className="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4">
-          <Input 
-            className="flex-grow" 
-            placeholder="Buscar proyectos..." 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <Select value={filterType} onValueChange={setFilterType}>
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Filtrar por tipo de proyecto" />
-            </SelectTrigger>
-            <SelectContent className="max-h-[200px] overflow-y-auto">
-              <SelectItem value="all">Todos los tipos</SelectItem>
-              {projectTypes.map((type) => (
-                <SelectItem key={type} value={type}>{type}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+    <DashboardTutorial>
+      <PageContainer>
+        <div className="space-y-8">
+          <h1 className="dashboard-title text-2xl md:text-3xl font-bold">Proyectos</h1>
+          <div className="search-filter flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4">
+            <Input 
+              className="flex-grow" 
+              placeholder="Buscar proyectos..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <Select value={filterType} onValueChange={setFilterType}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Filtrar por tipo de proyecto" />
+              </SelectTrigger>
+              <SelectContent className="max-h-[200px] overflow-y-auto">
+                <SelectItem value="all">Todos los tipos</SelectItem>
+                {projectTypes.map((type) => (
+                  <SelectItem key={type} value={type}>{type}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
   
-        <div ref={ref} className="grid gap-6 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3">
-          {loading ? (
-            Array.from({ length: 3 }).map((_, index) => (
-              <SkeletonProjectCard key={`skeleton-${index}`} />
-            ))
-          ) : (
-            filteredProjects.map((project: Project) => (
+          <div className="project-list grid gap-6 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3">
+            {filteredProjects.map((project: Project) => (
               <ProjectCard key={project.id} project={project} onViewDetails={handleViewDetails} />
-            ))
+            ))}
+          </div>
+  
+          {filteredProjects.length === 0 && (
+            <div className="text-center text-gray-500">
+              No se encontraron proyectos que coincidan con los criterios de búsqueda.
+            </div>
+          )}
+  
+          {showBackToTop && (
+            <Button
+              className="fixed p-3 rounded-full bottom-8 right-8"
+              onClick={handleBackToTop}
+              aria-label="Volver arriba"
+            >
+              <ChevronUp className="w-6" />
+            </Button>
           )}
         </div>
-  
-        {!loading && filteredProjects.length === 0 && (
-          <div className="text-center text-gray-500">
-            No se encontraron proyectos que coincidan con los criterios de búsqueda.
-          </div>
-        )}
-  
-        {showBackToTop && (
-          <Button
-            className="fixed p-3 rounded-full bottom-8 right-8"
-            onClick={handleBackToTop}
-            aria-label="Volver arriba"
-          >
-            <ChevronUp className="w-6" />
-          </Button>
-        )}
-      </div>
-    </PageContainer>
+      </PageContainer>
+    </DashboardTutorial>
   )
 }
