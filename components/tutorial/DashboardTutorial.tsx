@@ -1,11 +1,10 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import Shepherd from 'shepherd.js'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronRight, ChevronLeft, X, RefreshCw } from 'lucide-react'
+import { ChevronRight, ChevronLeft, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Progress } from '@/components/ui/progress'
 import 'shepherd.js/dist/css/shepherd.css'
 
 interface DashboardTutorialProps {
@@ -13,12 +12,17 @@ interface DashboardTutorialProps {
 }
 
 const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ children }) => {
-  const [tour, setTour] = useState<any>(null)
   const [currentStep, setCurrentStep] = useState(0)
   const [totalSteps, setTotalSteps] = useState(0)
   const [showRestartButton, setShowRestartButton] = useState(false)
+  const tourRef = useRef<any>(null)
 
   const createTour = () => {
+    if (tourRef.current) {
+      tourRef.current.complete()
+      tourRef.current = null
+    }
+
     const newTour = new Shepherd.Tour({
       useModalOverlay: true,
       defaultStepOptions: {
@@ -53,7 +57,7 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ children }) => {
         id: 'project-card',
         title: 'Tarjeta de Proyecto',
         text: 'Haz clic en "Ver detalles" para más información sobre el proyecto y poder aplicar a el',
-        attachTo: { element: '.project-card', on: 'bottom' },
+        attachTo: { element: '.project-card button:last-child', on: 'bottom' },
       }
     ]
 
@@ -67,12 +71,12 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ children }) => {
           {
             text: 'Anterior',
             classes: 'shepherd-button-secondary',
-            action: newTour.back,
+            action: () => newTour.back(),
             disabled: index === 0
           },
           {
             text: index === steps.length - 1 ? 'Finalizar' : 'Siguiente',
-            action: index === steps.length - 1 ? newTour.complete : newTour.next
+            action: () => index === steps.length - 1 ? newTour.complete() : newTour.next()
           }
         ],
         when: {
@@ -86,52 +90,71 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ children }) => {
   }
 
   useEffect(() => {
-    const hasSeenTutorial = localStorage.getItem('hasSeenTutorial')
-    
-    if (!hasSeenTutorial) {
-      const newTour = createTour()
-      setTour(newTour)
-      newTour.start()
-    } else {
-      setShowRestartButton(true)
+    const checkAndStartTutorial = () => {
+      const hasSeenTutorial = localStorage.getItem('hasSeenTutorial')
+      const hasSeenTutorialThisSession = sessionStorage.getItem('hasSeenTutorialThisSession')
+      
+      if (!hasSeenTutorial && !hasSeenTutorialThisSession && !tourRef.current) {
+        const newTour = createTour()
+        tourRef.current = newTour
+        
+        newTour.on('complete', () => {
+          try {
+            localStorage.setItem('hasSeenTutorial', 'true')
+          } catch (e) {
+            console.warn('Unable to use localStorage. Falling back to sessionStorage.')
+          }
+          sessionStorage.setItem('hasSeenTutorialThisSession', 'true')
+          setShowRestartButton(true)
+          tourRef.current = null
+        })
+
+        newTour.on('cancel', () => {
+          sessionStorage.setItem('hasSeenTutorialThisSession', 'true')
+          tourRef.current = null
+        })
+
+        newTour.start()
+      } else {
+        setShowRestartButton(true)
+      }
+    }
+
+    // Delay the check to ensure DOM elements are ready
+    const timer = setTimeout(checkAndStartTutorial, 1000)
+
+    return () => {
+      clearTimeout(timer)
+      if (tourRef.current) {
+        tourRef.current.complete()
+        tourRef.current = null
+      }
     }
   }, [])
 
   const restartTutorial = () => {
     const newTour = createTour()
-    setTour(newTour)
+    tourRef.current = newTour
+    
+    newTour.on('complete', () => {
+      try {
+        localStorage.setItem('hasSeenTutorial', 'true')
+      } catch (e) {
+        console.warn('Unable to use localStorage. Falling back to sessionStorage.')
+      }
+      sessionStorage.setItem('hasSeenTutorialThisSession', 'true')
+      setShowRestartButton(true)
+      tourRef.current = null
+    })
+
+    newTour.on('cancel', () => {
+      sessionStorage.setItem('hasSeenTutorialThisSession', 'true')
+      tourRef.current = null
+    })
+
     newTour.start()
     setShowRestartButton(false)
   }
-
-  const customButtons = (tour: any) => (
-    <div className="flex justify-between items-center mt-4">
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => tour.back()}
-        disabled={currentStep === 1}
-      >
-        <ChevronLeft className="mr-2 h-4 w-4" /> Anterior
-      </Button>
-      <Button
-        variant="default"
-        size="sm"
-        onClick={() => currentStep === totalSteps ? tour.complete() : tour.next()}
-      >
-        {currentStep === totalSteps ? 'Finalizar' : 'Siguiente'} <ChevronRight className="ml-2 h-4 w-4" />
-      </Button>
-    </div>
-  )
-
-  useEffect(() => {
-    if (tour) {
-      tour.on('complete', () => {
-        localStorage.setItem('hasSeenTutorial', 'true')
-        setShowRestartButton(true)
-      })
-    }
-  }, [tour])
 
   return (
     <>
@@ -150,7 +173,7 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ children }) => {
           </motion.div>
         )}
       </AnimatePresence>
-      {tour && (
+      {tourRef.current && (
         <style jsx global>{`
           .shepherd-content {
             padding: 0;
