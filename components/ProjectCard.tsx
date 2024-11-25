@@ -80,7 +80,7 @@ const ProjectCard = memo(({ project, onViewDetails }: ProjectCardProps) => {
   }
 
   return (
-    <Card className="overflow-hidden flex flex-col h-full transition-all duration-300 hover:shadow-lg dark:bg-gray-800 bg-white border-t-4" style={{ borderTopColor: getUniversityColor(project.type_aplyuni).main }}>
+    <Card className="project-card overflow-hidden flex flex-col h-full transition-all duration-300 hover:shadow-lg dark:bg-gray-800 bg-white border-t-4" style={{ borderTopColor: getUniversityColor(project.type_aplyuni).main }}>
       <CardContent className="flex-grow p-6 space-y-4">
         <div className="flex flex-col space-y-2">
           <div className="flex justify-between items-start">
@@ -114,7 +114,8 @@ const ProjectCard = memo(({ project, onViewDetails }: ProjectCardProps) => {
             >
               <GraduationCap className="w-4 h-4 mr-2 flex-shrink-0" />
               <span className="font-medium">
-                {project.type_aplyuni === 'LIBRE' ? 'LIBRE' : `Solo ${project.type_aplyuni}`}
+                {project.type_aplyuni ===
+'LIBRE' ? 'LIBRE' : `Solo ${project.type_aplyuni}`}
               </span>
             </div>
           </div>
@@ -130,11 +131,11 @@ const ProjectCard = memo(({ project, onViewDetails }: ProjectCardProps) => {
 
         <div className="flex items-center space-x-3 bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
           <Avatar className="h-12 w-12">
-          <AvatarImage src={project.photo || "/placeholder-user.png"} alt={`${project.creator_name} `} />
+            <AvatarImage src={project.photo || "/placeholder-user.png"} alt={`${project.creator_name} `} />
             <AvatarFallback>{getInitials(project.creator_name)}</AvatarFallback>
           </Avatar>
           <div>
-            <Link href={`/projects/profiles/${project.responsible}`} className="text-sm font-medium dark:text-white text-gray-900 hover:underline">
+            <Link href={`/projects/profiles/${project.responsible}`} className="project-leader-link text-sm font-medium dark:text-white text-gray-900 hover:underline">
               {project.creator_name || 'Sin líder asignado'}
             </Link>
             <p className="text-xs dark:text-gray-400 text-gray-500">Líder del Proyecto</p>
@@ -152,18 +153,22 @@ const ProjectCard = memo(({ project, onViewDetails }: ProjectCardProps) => {
         </div>
 
         <div className="flex items-center text-sm dark:text-gray-400 text-gray-500">
-        <CalendarIcon className="mr-2 h-4 w-4 flex-shrink-0" />
-        <span>
-          Del {formatDate(project.start_date)} al {formatDate(project.end_date)}
-        </span>
-      </div>
+          <CalendarIcon className="mr-2 h-4 w-4 flex-shrink-0" />
+          <span>
+            Del {formatDate(project.start_date)} al {formatDate(project.end_date)}
+          </span>
+        </div>
       </CardContent>
       
       <CardFooter className="p-6 flex justify-between items-center border-t dark:border-gray-700 border-gray-200">
         <div className="px-3 py-1 rounded-full text-sm font-medium dark:bg-blue-900 dark:text-blue-100 bg-blue-100 text-blue-800">
           {project.status}
         </div>
-        <Button onClick={() => onViewDetails(project)} variant="default" className="bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-700 dark:hover:bg-blue-600">
+        <Button 
+          onClick={() => onViewDetails(project)} 
+          variant="default" 
+          className="view-details-button bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-700 dark:hover:bg-blue-600"
+        >
           Ver Detalles
         </Button>
       </CardFooter>
@@ -174,3 +179,4 @@ const ProjectCard = memo(({ project, onViewDetails }: ProjectCardProps) => {
 ProjectCard.displayName = 'ProjectCard'
 
 export { ProjectCard }
+

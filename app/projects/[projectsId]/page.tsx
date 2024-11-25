@@ -17,26 +17,26 @@ const ProjectProgress = lazy(() => import('@/components/projectid/ProjectProgres
 const ProjectLeader = lazy(() => import('@/components/projectid/ProjectLeader'))
 
 interface Project {
-  id: number;
-  name: string;
-  description: string;
-  start_date: string;
-  end_date: string;
-  status: string;
-  project_type: string[];
-  priority: string;
-  responsible: number;
-  name_uniuser: string;
-  detailed_description: string;
-  objectives: string[];
-  progress: number;
-  necessary_requirements: string[];
-  accepting_applications: boolean;
-  type_aplyuni: string;
-  creator_name: string;
-  collaboration_count: number;
-  has_applied: boolean;
-  photo?: string;
+  id: number
+  name: string
+  description: string
+  start_date: string
+  end_date: string
+  status: string
+  project_type: string[]
+  priority: string
+  responsible: number
+  name_uniuser: string
+  detailed_description: string
+  objectives: string[]
+  progress: number
+  necessary_requirements: string[]
+  accepting_applications: boolean
+  type_aplyuni: string
+  creator_name: string
+  collaboration_count: number
+  has_applied: boolean
+  photo?: string
 }
 
 export default function ProjectDetailsPage() {
@@ -80,23 +80,23 @@ export default function ProjectDetailsPage() {
         })
 
         if (response.ok) {
-          const data = await response.json();
-          setProject(data);
+          const data = await response.json()
+          setProject(data)
         } else {
-          router.push('/not-found');
+          throw new Error('Failed to fetch project details')
         }
       } catch (error) {
-        console.error('Error fetching project details:', error);
-        router.push('/not-found');
+        console.error('Error fetching project details:', error)
+        setError('Failed to load project details. Please try again later.')
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
     if (session) {
-      fetchProjectDetails();
+      fetchProjectDetails()
     }
-  }, [session, router]);
+  }, [session, router])
 
   const validateAchievements = async () => {
     try {

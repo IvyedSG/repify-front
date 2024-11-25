@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import Shepherd from 'shepherd.js'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronRight, ChevronLeft, RefreshCw } from 'lucide-react'
+import { RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import 'shepherd.js/dist/css/shepherd.css'
 
@@ -16,6 +16,7 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ children }) => {
   const [totalSteps, setTotalSteps] = useState(0)
   const [showRestartButton, setShowRestartButton] = useState(false)
   const tourRef = useRef<any>(null)
+  const [hasSeenTutorial, setHasSeenTutorial] = useState(false)
 
   const createTour = () => {
     if (tourRef.current) {
@@ -30,7 +31,11 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ children }) => {
           enabled: false
         },
         classes: 'shadow-lg rounded-lg bg-background border border-border p-0',
-        scrollTo: true
+        scrollTo: true,
+        modalOverlayOpeningPadding: 4,
+        popperOptions: {
+          modifiers: [{ name: 'offset', options: { offset: [0, 12] } }]
+        }
       }
     })
 
@@ -42,22 +47,34 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ children }) => {
         attachTo: { element: '.dashboard-title', on: 'bottom' },
       },
       {
-        id: 'project-list',
-        title: 'Lista de Proyectos',
-        text: 'Explora todos los proyectos actuales y de tu interés en esta sección',
-        attachTo: { element: '.project-list', on: 'bottom' },
-      },
-      {
         id: 'search-filter',
         title: 'Búsqueda y Filtros',
         text: 'Utiliza estas herramientas para encontrar rápidamente los proyectos atractivos para ti',
         attachTo: { element: '.search-filter', on: 'bottom' },
       },
       {
+        id: 'project-list',
+        title: 'Lista de Proyectos',
+        text: 'Explora todos los proyectos actuales y de tu interés en esta sección',
+        attachTo: { element: '.project-list', on: 'top' },
+      },
+      {
         id: 'project-card',
         title: 'Tarjeta de Proyecto',
-        text: 'Haz clic en "Ver detalles" para más información sobre el proyecto y poder aplicar a el',
-        attachTo: { element: '.project-card button:last-child', on: 'bottom' },
+        text: 'Cada tarjeta muestra información clave sobre un proyecto',
+        attachTo: { element: '.project-card', on: 'bottom' },
+      },
+      {
+        id: 'project-leader',
+        title: 'Líder del Proyecto',
+        text: 'Haz clic en el nombre del líder para ver su perfil',
+        attachTo: { element: '.project-leader-link', on: 'bottom' },
+      },
+      {
+        id: 'project-details',
+        title: 'Detalles del Proyecto',
+        text: 'Haz clic en "Ver detalles" para más información sobre el proyecto y poder aplicar a él',
+        attachTo: { element: '.view-details-button', on: 'bottom' },
       }
     ]
 
@@ -91,40 +108,66 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ children }) => {
 
   useEffect(() => {
     const checkAndStartTutorial = () => {
-      const hasSeenTutorial = localStorage.getItem('hasSeenTutorial')
-      const hasSeenTutorialThisSession = sessionStorage.getItem('hasSeenTutorialThisSession')
+      let seenTutorial = false
       
-      if (!hasSeenTutorial && !hasSeenTutorialThisSession && !tourRef.current) {
-        const newTour = createTour()
-        tourRef.current = newTour
-        
-        newTour.on('complete', () => {
-          try {
-            localStorage.setItem('hasSeenTutorial', 'true')
-          } catch (e) {
-            console.warn('Unable to use localStorage. Falling back to sessionStorage.')
+      try {
+        seenTutorial = localStorage.getItem('hasSeenTutorial') === 'true'
+      } catch (e) {
+        console.warn('Unable to access localStorage. Falling back to default value.')
+      }
+
+      setHasSeenTutorial(seenTutorial)
+      
+      if (!seenTutorial && !tourRef.current) {
+        const checkElements = () => {
+          const elements = [
+            '.dashboard-title',
+            '.search-filter',
+            '.project-list',
+            '.project-card',
+            '.project-leader-link',
+            '.view-details-button'
+          ]
+
+          const allElementsExist = elements.every(selector => 
+            document.querySelector(selector)
+          )
+
+          if (allElementsExist) {
+            const newTour = createTour()
+            tourRef.current = newTour
+            
+            newTour.on('complete', () => {
+              try {
+                localStorage.setItem('hasSeenTutorial', 'true')
+              } catch (e) {
+                console.warn('Unable to set localStorage. Tutorial may restart on page refresh.')
+              }
+              setHasSeenTutorial(true)
+              setShowRestartButton(true)
+              tourRef.current = null
+            })
+
+            newTour.on('cancel', () => {
+              setHasSeenTutorial(true)
+              tourRef.current = null
+            })
+
+            newTour.start()
+          } else {
+            setTimeout(checkElements, 500)
           }
-          sessionStorage.setItem('hasSeenTutorialThisSession', 'true')
-          setShowRestartButton(true)
-          tourRef.current = null
-        })
+        }
 
-        newTour.on('cancel', () => {
-          sessionStorage.setItem('hasSeenTutorialThisSession', 'true')
-          tourRef.current = null
-        })
-
-        newTour.start()
+        setTimeout(checkElements, 1000)
       } else {
         setShowRestartButton(true)
       }
     }
 
-    // Delay the check to ensure DOM elements are ready
-    const timer = setTimeout(checkAndStartTutorial, 1000)
+    checkAndStartTutorial()
 
     return () => {
-      clearTimeout(timer)
       if (tourRef.current) {
         tourRef.current.complete()
         tourRef.current = null
@@ -140,15 +183,15 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ children }) => {
       try {
         localStorage.setItem('hasSeenTutorial', 'true')
       } catch (e) {
-        console.warn('Unable to use localStorage. Falling back to sessionStorage.')
+        console.warn('Unable to set localStorage. Tutorial may restart on page refresh.')
       }
-      sessionStorage.setItem('hasSeenTutorialThisSession', 'true')
+      setHasSeenTutorial(true)
       setShowRestartButton(true)
       tourRef.current = null
     })
 
     newTour.on('cancel', () => {
-      sessionStorage.setItem('hasSeenTutorialThisSession', 'true')
+      setHasSeenTutorial(true)
       tourRef.current = null
     })
 
@@ -160,7 +203,7 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ children }) => {
     <>
       {children}
       <AnimatePresence>
-        {showRestartButton && (
+        {showRestartButton && hasSeenTutorial && (
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
