@@ -13,6 +13,21 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
   const fpsRef = useRef<number[]>([])
 
   useEffect(() => {
+    const wakeUpServer = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/health/health_check/`, {
+          method: 'GET',
+        });
+        if (!response.ok) {
+          console.error('Failed to wake up server:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error waking up server:', error);
+      }
+    };
+
+    wakeUpServer();
+
     const measurePerformance = () => {
       let lastTimestamp = performance.now()
 
@@ -74,3 +89,4 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
     </div>
   )
 }
+
