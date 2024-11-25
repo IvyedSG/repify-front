@@ -189,7 +189,7 @@ function RadarNode({ user, angle, onClick }: { user: User; angle: number; onClic
       onClick={onClick}
     >
       <div className="relative group">
-        <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border-4 border-primary shadow-glow transition-all duration-300 group-hover:shadow-glow-hover">
+        <div className="relative w-20 h-20 rounded-full overflow-hidden border-4 border-primary shadow-glow transition-all duration-300 group-hover:shadow-glow-hover">
           <Image
             src="/placeholder-user.png"
             alt={user.name}
@@ -199,7 +199,7 @@ function RadarNode({ user, angle, onClick }: { user: User; angle: number; onClic
           />
           <div className="absolute inset-0 bg-primary/10 group-hover:bg-primary/20 transition-colors" />
         </div>
-        <div className="absolute -top-2 -right-2 bg-primary text-primary-foreground rounded-full w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-xs md:text-sm font-bold shadow-md">
+        <div className="absolute -top-2 -right-2 bg-primary text-primary-foreground rounded-full w-10 h-10 flex items-center justify-center text-sm font-bold shadow-md">
           {user.matchPercentage}%
         </div>
       </div>
@@ -210,7 +210,7 @@ function RadarNode({ user, angle, onClick }: { user: User; angle: number; onClic
 function RadarCircle({ radius }: { radius: number }) {
   return (
     <div
-      className="absolute border border-primary/20 rounded-full"
+      className="absolute border border-primary/20 dark:border-primary/40 rounded-full transition-colors dark:shadow-[0_0_10px_rgba(147,51,234,0.2)]"
       style={{
         width: `${radius * 2}%`,
         height: `${radius * 2}%`,

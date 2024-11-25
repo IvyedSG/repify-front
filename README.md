@@ -50,4 +50,4 @@ Repify es una plataforma innovadora diseñada para conectar a estudiantes univer
 
 
 
-Hecho con ❤️ por el Equipo Repify
+Hecho por el Equipo Repify
