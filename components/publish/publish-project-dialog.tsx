@@ -130,9 +130,16 @@ export function PublishProjectDialog({ setIsDialogOpen }: PublishProjectDialogPr
       }
     } catch (error) {
       console.error('Error creating project:', error)
+
+      // Determinar el mensaje de error
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Hubo un problema inesperado al crear el proyecto.';
+
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Hubo un problema al crear el proyecto. Por favor, intenta de nuevo.",
+        description: errorMessage,
         variant: "destructive",
       })
 
@@ -143,7 +150,7 @@ export function PublishProjectDialog({ setIsDialogOpen }: PublishProjectDialogPr
           university: session?.user.university,
           career: session?.user.career,
           project_name: newProject.name,
-          error_message: error.message,
+          error_message: errorMessage,
         })
       }
     } finally {

@@ -10,7 +10,6 @@ import { toast, Toaster } from 'react-hot-toast'
 import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react'
-
 import { AccountInfoStep } from './AccountInfoStep'
 import { PersonalInfoStep } from './PersonalInfoStep'
 import { AcademicInfoStep } from './AcademicInfoStep'
