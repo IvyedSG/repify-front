@@ -1,131 +1,44 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
+import Link from 'next/link'
+import { useSession } from 'next-auth/react'
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Card, CardContent } from "@/components/ui/card"
-import { RefreshCw, ExternalLink, School, BookOpen } from 'lucide-react'
+import { School, BookOpen, ExternalLink } from 'lucide-react'
 import PageContainer from '@/components/layout/page-container'
 import { cn } from "@/lib/utils"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface User {
-  id: number
-  name: string
-  career: string
-  university: string
-  cycle: number
+  user_id: number
+  user_name: string
+  photo: string
+  similarity: number
   interests: string[]
-  matchPercentage: number
-  distance: number
+  career: string
+  cycle: string
+  university: string
 }
 
-const sampleUsers: User[] = [
-  {
-    id: 1,
-    name: "Ana García",
-    career: "Informática",
-    university: "UPC",
-    cycle: 5,
-    interests: ["Inteligencia Artificial", "Desarrollo Web", "Videojuegos"],
-    matchPercentage: 95,
-    distance: 0.4
-  },
-  {
-    id: 2,
-    name: "Carlos Rodríguez",
-    career: "Medicina",
-    university: "UNMSM",
-    cycle: 7,
-    interests: ["Neurología", "Investigación Médica", "Salud Pública"],
-    matchPercentage: 85,
-    distance: 0.6
-  },
-  {
-    id: 3,
-    name: "Lucía Mendoza",
-    career: "Derecho",
-    university: "PUCP",
-    cycle: 6,
-    interests: ["Derecho Internacional", "Derechos Humanos", "Política"],
-    matchPercentage: 78,
-    distance: 0.8
-  },
-  {
-    id: 4,
-    name: "Diego Torres",
-    career: "Arquitectura",
-    university: "UNI",
-    cycle: 8,
-    interests: ["Diseño Sostenible", "Urbanismo", "Tecnología BIM"],
-    matchPercentage: 92,
-    distance: 0.5
-  },
-  {
-    id: 5,
-    name: "María Paz",
-    career: "Psicología",
-    university: "PUCP",
-    cycle: 4,
-    interests: ["Psicología Clínica", "Neurociencia", "Terapia"],
-    matchPercentage: 88,
-    distance: 0.7
-  },
-  {
-    id: 6,
-    name: "Juan Silva",
-    career: "Economía",
-    university: "UP",
-    cycle: 7,
-    interests: ["Finanzas", "Análisis de Datos", "Mercados"],
-    matchPercentage: 82,
-    distance: 0.6
-  },
-  {
-    id: 7,
-    name: "Valeria Ruiz",
-    career: "Biología",
-    university: "UNMSM",
-    cycle: 5,
-    interests: ["Genética", "Biotecnología", "Investigación"],
-    matchPercentage: 90,
-    distance: 0.4
-  },
-  {
-    id: 8,
-    name: "Roberto Chang",
-    career: "Ingeniería Civil",
-    university: "UNI",
-    cycle: 9,
-    interests: ["Estructuras", "Gestión de Proyectos", "Construcción"],
-    matchPercentage: 86,
-    distance: 0.7
-  },
-  {
-    id: 9,
-    name: "Carmen Díaz",
-    career: "Comunicaciones",
-    university: "ULima",
-    cycle: 6,
-    interests: ["Marketing Digital", "Redes Sociales", "Audiovisual"],
-    matchPercentage: 84,
-    distance: 0.5
-  },
-  {
-    id: 10,
-    name: "Felipe Ortiz",
-    career: "Diseño Gráfico",
-    university: "PUCP",
-    cycle: 7,
-    interests: ["UI/UX", "Branding", "Motion Graphics"],
-    matchPercentage: 89,
-    distance: 0.6
-  }
-]
+function UserImage({ src, alt, className }: { src: string, alt: string, className?: string }) {
+  const [imgSrc, setImgSrc] = useState(src)
 
-const romanNumerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X']
+  return (
+    <Image
+      src={imgSrc}
+      alt={alt}
+      layout="fill"
+      objectFit="cover"
+      className={cn("bg-background", className)}
+      onError={() => setImgSrc("/placeholder-user.png")}
+    />
+  )
+}
 
 function MobileUserCard({ user, onClick }: { user: User; onClick: () => void }) {
   return (
@@ -136,23 +49,17 @@ function MobileUserCard({ user, onClick }: { user: User; onClick: () => void }) 
       <CardContent className="p-4">
         <div className="flex items-center space-x-4">
           <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-primary">
-            <Image
-              src="/placeholder-user.png"
-              alt={user.name}
-              layout="fill"
-              objectFit="cover"
-              className="bg-background"
-            />
+            <UserImage src={user.photo || "/placeholder-user.png"} alt={user.user_name} />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-semibold truncate">{user.name}</h3>
+              <h3 className="text-base font-semibold truncate">{user.user_name}</h3>
               <span className={cn(
                 "text-sm font-bold",
-                user.matchPercentage >= 90 ? "text-green-500" :
-                user.matchPercentage >= 70 ? "text-yellow-500" :
+                user.similarity >= 0.9 ? "text-green-500" :
+                user.similarity >= 0.7 ? "text-yellow-500" :
                 "text-red-500"
-              )}>{user.matchPercentage}%</span>
+              )}>{Math.round(user.similarity * 100)}%</span>
             </div>
             <div className="flex items-center space-x-2 text-sm text-muted-foreground">
               <School className="w-3 h-3" />
@@ -160,7 +67,7 @@ function MobileUserCard({ user, onClick }: { user: User; onClick: () => void }) 
             </div>
             <div className="flex items-center space-x-2 text-sm text-muted-foreground">
               <BookOpen className="w-3 h-3" />
-              <span>Ciclo {romanNumerals[user.cycle - 1]}</span>
+              <span>Ciclo {user.cycle}</span>
             </div>
           </div>
         </div>
@@ -170,8 +77,8 @@ function MobileUserCard({ user, onClick }: { user: User; onClick: () => void }) 
 }
 
 function RadarNode({ user, angle, onClick }: { user: User; angle: number; onClick: () => void }) {
-  const x = Math.cos(angle) * (user.distance * 40)
-  const y = Math.sin(angle) * (user.distance * 40)
+  const x = Math.cos(angle) * (40 - user.similarity * 40)
+  const y = Math.sin(angle) * (40 - user.similarity * 40)
 
   return (
     <motion.div
@@ -190,17 +97,11 @@ function RadarNode({ user, angle, onClick }: { user: User; angle: number; onClic
     >
       <div className="relative group">
         <div className="relative w-20 h-20 rounded-full overflow-hidden border-4 border-primary shadow-glow transition-all duration-300 group-hover:shadow-glow-hover">
-          <Image
-            src="/placeholder-user.png"
-            alt={user.name}
-            layout="fill"
-            objectFit="cover"
-            className="bg-background"
-          />
+          <UserImage src={user.photo || "/placeholder-user.png"} alt={user.user_name} />
           <div className="absolute inset-0 bg-primary/10 group-hover:bg-primary/20 transition-colors" />
         </div>
         <div className="absolute -top-2 -right-2 bg-primary text-primary-foreground rounded-full w-10 h-10 flex items-center justify-center text-sm font-bold shadow-md">
-          {user.matchPercentage}%
+          {Math.round(user.similarity * 100)}%
         </div>
       </div>
     </motion.div>
@@ -229,16 +130,10 @@ function UserProfile({ user, open, onClose }: { user: User | null; open: boolean
       <DialogContent className="sm:max-w-[400px] p-6 overflow-hidden">
         <div className="flex items-center space-x-4 mb-4">
           <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-primary">
-            <Image
-              src="/placeholder-user.png"
-              alt={user.name}
-              layout="fill"
-              objectFit="cover"
-              className="bg-background"
-            />
+            <UserImage src={user.photo || "/placeholder-user.png"} alt={user.user_name} />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-foreground">{user.name}</h2>
+            <h2 className="text-xl font-bold text-foreground">{user.user_name}</h2>
             <p className="text-sm text-muted-foreground">{user.career}</p>
           </div>
         </div>
@@ -250,7 +145,7 @@ function UserProfile({ user, open, onClose }: { user: User | null; open: boolean
           </div>
           <div className="flex items-center space-x-2 text-sm">
             <BookOpen className="w-4 h-4 text-primary" />
-            <span>Ciclo {romanNumerals[user.cycle - 1]}</span>
+            <span>Ciclo {user.cycle}</span>
           </div>
         </div>
 
@@ -268,14 +163,16 @@ function UserProfile({ user, open, onClose }: { user: User | null; open: boolean
         <div className="mt-6 flex items-center justify-between">
           <div className={cn(
             "text-2xl font-bold",
-            user.matchPercentage >= 90 ? "text-green-500" :
-            user.matchPercentage >= 70 ? "text-yellow-500" :
+            user.similarity >= 0.9 ? "text-green-500" :
+            user.similarity >= 0.7 ? "text-yellow-500" :
             "text-red-500"
           )}>
-            {user.matchPercentage}% <span className="text-sm font-normal text-muted-foreground">Match</span>
+            {Math.round(user.similarity * 100)}% <span className="text-sm font-normal text-muted-foreground">Match</span>
           </div>
-          <Button size="sm" className="rounded-full">
-            Ver perfil <ExternalLink className="w-3 h-3 ml-2" />
+          <Button size="sm" className="rounded-full" asChild>
+            <Link href={`/projects/profiles/${user.user_id}`}>
+              Ver perfil <ExternalLink className="w-3 h-3 ml-2" />
+            </Link>
           </Button>
         </div>
       </DialogContent>
@@ -283,70 +180,117 @@ function UserProfile({ user, open, onClose }: { user: User | null; open: boolean
   )
 }
 
-export default function MatchmakingPage() {
-  const [selectedUser, setSelectedUser] = useState<User | null>(null)
-  const [displayedUsers, setDisplayedUsers] = useState(sampleUsers)
+function SkeletonLoader() {
+  return (
+    <div className="space-y-4">
+      {[...Array(5)].map((_, i) => (
+        <Card key={i}>
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-4">
+              <Skeleton className="w-16 h-16 rounded-full" />
+              <div className="space-y-2 flex-1">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-3 w-1/2" />
+                <Skeleton className="h-3 w-1/2" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  )
+}
 
-  const refreshUsers = () => {
-    const shuffled = [...sampleUsers].sort(() => Math.random() - 0.5)
-    setDisplayedUsers(shuffled)
-  }
+export default function MatchmakingPage() {
+  const { data: session } = useSession()
+  const [selectedUser, setSelectedUser] = useState<User | null>(null)
+  const [users, setUsers] = useState<User[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      if (!session?.user.accessToken) return
+
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/similitudes/similitudes_user/similitud_user/`, {
+          headers: {
+            'Authorization': `Bearer ${session.user.accessToken}`
+          }
+        })
+        if (!response.ok) {
+          throw new Error('Failed to fetch users')
+        }
+        const data = await response.json()
+        setUsers(data.data)
+      } catch (err) {
+        setError('Failed to load users. Please try again.')
+        console.error('Error fetching users:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchUsers()
+  }, [session])
 
   return (
     <PageContainer>
       <div className="flex flex-col space-y-6 w-full max-w-[1200px] mx-auto px-4">
-        <div className="flex justify-between items-center w-full">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-primary-foreground bg-clip-text text-transparent">
-              Radar de Talento
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Encuentra conexiones académicas cercanas
-            </p>
-          </div>
-          <Button onClick={refreshUsers} variant="outline" size="sm" className="rounded-full">
-            <RefreshCw className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline">Actualizar</span>
-          </Button>
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-primary-foreground bg-clip-text text-transparent">
+            Radar de Talento
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Encuentra conexiones académicas cercanas
+          </p>
         </div>
 
-        {/* Mobile View */}
-        <div className="md:hidden space-y-4">
-          {displayedUsers.map((user) => (
-            <MobileUserCard
-              key={user.id}
-              user={user}
-              onClick={() => setSelectedUser(user)}
-            />
-          ))}
-        </div>
-
-        {/* Desktop View */}
-        <div className="hidden md:block">
-          <motion.div 
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="aspect-square max-w-[min(800px,80vh)] mx-auto bg-background rounded-full border border-primary/20 overflow-hidden shadow-2xl relative"
-          >
-            {[20, 40, 60, 80].map((radius) => (
-              <RadarCircle key={radius} radius={radius} />
-            ))}
-            <div className="absolute inset-0">
-              {displayedUsers.slice(0, 7).map((user, index) => (
-                <RadarNode
-                  key={user.id}
+        {loading ? (
+          <SkeletonLoader />
+        ) : error ? (
+          <p className="text-red-500">{error}</p>
+        ) : (
+          <>
+            {/* Mobile View */}
+            <div className="md:hidden space-y-4">
+              {users.map((user) => (
+                <MobileUserCard
+                  key={user.user_id}
                   user={user}
-                  angle={(2 * Math.PI * index) / Math.min(displayedUsers.length, 7)}
                   onClick={() => setSelectedUser(user)}
                 />
               ))}
             </div>
-            <div className="absolute inset-0 pointer-events-none">
-              <div className="radar-wave" />
+
+            {/* Desktop View */}
+            <div className="hidden md:block">
+              <motion.div 
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="aspect-square max-w-[min(800px,80vh)] mx-auto bg-background rounded-full border border-primary/20 overflow-hidden shadow-2xl relative"
+              >
+                {[20, 40, 60, 80].map((radius) => (
+                  <RadarCircle key={radius} radius={radius} />
+                ))}
+                <div className="absolute inset-0">
+                  {users.map((user, index) => (
+                    <RadarNode
+                      key={user.user_id}
+                      user={user}
+                      angle={(2 * Math.PI * index) / users.length}
+                      onClick={() => setSelectedUser(user)}
+                    />
+                  ))}
+                </div>
+                <div className="absolute inset-0 pointer-events-none">
+                  <div className="radar-wave" />
+                </div>
+              </motion.div>
             </div>
-          </motion.div>
-        </div>
+          </>
+        )}
 
         <UserProfile 
           user={selectedUser} 
@@ -357,4 +301,3 @@ export default function MatchmakingPage() {
     </PageContainer>
   )
 }
-
