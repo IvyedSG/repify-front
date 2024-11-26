@@ -80,16 +80,15 @@ export default function UserRegisterForm() {
   
       if (response.ok) {
         // Disparar el evento de registro exitoso a GTM
-        if (window.dataLayer) {
-          window.dataLayer.push({
-            event: 'register_success',
-            user: {
-              email: data.email,
-              university: data.university,
-              career: data.career,
-            },
+        if (typeof window !== 'undefined' && window.gtag) {
+          window.gtag('event', 'register', {
+            method: 'manual',
+            user_email: data.email,
+            university: data.university,
+            career: data.career,
           });
         }
+        
   
         toast.success('¡Bienvenido a bordo! Preparando tu espacio...');
         setTimeout(() => router.push('/'), 2000);

@@ -113,21 +113,15 @@ export function PublishProjectDialog({ setIsDialogOpen }: PublishProjectDialogPr
         // Validate achievements after successful project creation
         await validateAchievements()
 
-        // Enviar evento a Google Tag Manager (GTM) en caso de éxito
-        if (typeof window !== 'undefined' && window.dataLayer) {
-          window.dataLayer.push({
-            event: 'project_created',
-            user: {
-              email: session?.user.email,
-              university: session?.user.university,
-              career: session?.user.career,
-            },
-            project: {
-              name: newProject.name,
-              description: newProject.description,
-              status: newProject.status,
-              type: newProject.project_type,
-            }
+        // Enviar evento a Google Analytics en caso de éxito
+        if (typeof window !== 'undefined' && window.gtag) {
+          window.gtag('event', 'project_created', {
+            user_email: session?.user.email,
+            university: session?.user.university,
+            career: session?.user.career,
+            project_name: newProject.name,
+            project_status: newProject.status,
+            project_type: newProject.project_type,
           })
         }
       } else {
@@ -142,19 +136,14 @@ export function PublishProjectDialog({ setIsDialogOpen }: PublishProjectDialogPr
         variant: "destructive",
       })
 
-      // Enviar evento a GTM en caso de error
-      if (typeof window !== 'undefined' && window.dataLayer) {
-        window.dataLayer.push({
-          event: 'project_creation_failed',
-          user: {
-            email: session?.user.email,
-            university: session?.user.university,
-            career: session?.user.career,
-          },
-          project: {
-            name: newProject.name,
-            description: newProject.description,
-          }
+      // Enviar evento a Google Analytics en caso de error
+      if (typeof window !== 'undefined' && window.gtag) {
+        window.gtag('event', 'project_creation_failed', {
+          user_email: session?.user.email,
+          university: session?.user.university,
+          career: session?.user.career,
+          project_name: newProject.name,
+          error_message: error.message,
         })
       }
     } finally {

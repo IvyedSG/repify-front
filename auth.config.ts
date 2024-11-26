@@ -51,16 +51,13 @@ const authConfig: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user, account }) {
       if (user && account) {
-        // Disparar el evento de inicio de sesión exitoso a GTM
-        if (typeof window !== 'undefined' && window.dataLayer) {
-          window.dataLayer.push({
-            event: 'login_success',
-            user: {
-              id: user.id,
-              email: user.email,
-              university: user.university,
-              career: user.career,
-            },
+        // Enviar evento a Google Analytics en caso de inicio de sesión exitoso
+        if (typeof window !== 'undefined' && window.gtag) {
+          window.gtag('event', 'login', {
+            method: 'credentials',
+            user_email: user.email,
+            university: user.university,
+            career: user.career,
           });
         }
   
@@ -102,16 +99,17 @@ const authConfig: NextAuthOptions = {
         name: token.name,
       };
       session.error = token.error;
-
+  
       if (token.error) {
         if (typeof window !== 'undefined') {
           signOut({ callbackUrl: '/' }); 
         }
       }
-
+  
       return session;
     },
   },
+  
   events: {
     async signOut({ token }) {
       signOut({ callbackUrl: '/' }); 
