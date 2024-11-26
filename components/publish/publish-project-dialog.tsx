@@ -59,7 +59,7 @@ export function PublishProjectDialog({ setIsDialogOpen }: PublishProjectDialogPr
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
+    
     // Validate required fields
     const requiredFields = ['name', 'description', 'end_date', 'status', 'project_type', 'priority', 'detailed_description']
     const missingFields = requiredFields.filter(field => !newProject[field as keyof typeof newProject])
@@ -89,6 +89,7 @@ export function PublishProjectDialog({ setIsDialogOpen }: PublishProjectDialogPr
       accepting_applications: newProject.accepting_applications,
       type_aplyuni: newProject.type_aplyuni === 'LIBRE' ? 'LIBRE' : convertToUniversitySiglas(session?.user.university || '')
     }
+  
 
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/projects/create_project/`, {
@@ -112,47 +113,17 @@ export function PublishProjectDialog({ setIsDialogOpen }: PublishProjectDialogPr
 
         // Validate achievements after successful project creation
         await validateAchievements()
-
-        // Enviar evento a Google Analytics en caso de éxito
-        if (typeof window !== 'undefined' && window.gtag) {
-          window.gtag('event', 'project_created', {
-            user_email: session?.user.email,
-            university: session?.user.university,
-            career: session?.user.career,
-            project_name: newProject.name,
-            project_status: newProject.status,
-            project_type: newProject.project_type,
-          })
-        }
       } else {
         const errorData = await response.json()
         throw new Error(errorData.detail || 'Failed to create project')
       }
     } catch (error) {
       console.error('Error creating project:', error)
-
-      // Determinar el mensaje de error
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : 'Hubo un problema inesperado al crear el proyecto.';
-
       toast({
         title: "Error",
-        description: errorMessage,
+        description: error instanceof Error ? error.message : "Hubo un problema al crear el proyecto. Por favor, intenta de nuevo.",
         variant: "destructive",
       })
-
-      // Enviar evento a Google Analytics en caso de error
-      if (typeof window !== 'undefined' && window.gtag) {
-        window.gtag('event', 'project_creation_failed', {
-          user_email: session?.user.email,
-          university: session?.user.university,
-          career: session?.user.career,
-          project_name: newProject.name,
-          error_message: errorMessage,
-        })
-      }
     } finally {
       setIsLoading(false)
     }

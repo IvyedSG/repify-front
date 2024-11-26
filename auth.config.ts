@@ -51,16 +51,6 @@ const authConfig: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user, account }) {
       if (user && account) {
-        // Enviar evento a Google Analytics en caso de inicio de sesión exitoso
-        if (typeof window !== 'undefined' && window.gtag) {
-          window.gtag('event', 'login', {
-            method: 'credentials',
-            user_email: user.email,
-            university: user.university,
-            career: user.career,
-          });
-        }
-  
         return {
           ...token,
           id: user.id,
@@ -72,18 +62,18 @@ const authConfig: NextAuthOptions = {
           photo: user.photo,
           name: user.name,
           accessTokenExpires: Date.now() + 30 * 60 * 1000, 
-          refreshTokenExpires: Date.now() + 24 * 60 * 60 * 1000,
+          refreshTokenExpires: Date.now() + 24 * 60 * 60 * 1000, 
         };
       }
-  
+
       if (Date.now() < token.accessTokenExpires) {
         return token;
       }
-  
+
       if (Date.now() > token.refreshTokenExpires) {
         return { ...token, error: 'RefreshTokenExpired' };
       }
-  
+
       return refreshAccessToken(token);
     },
     async session({ session, token }) {
@@ -99,17 +89,16 @@ const authConfig: NextAuthOptions = {
         name: token.name,
       };
       session.error = token.error;
-  
+
       if (token.error) {
         if (typeof window !== 'undefined') {
           signOut({ callbackUrl: '/' }); 
         }
       }
-  
+
       return session;
     },
   },
-  
   events: {
     async signOut({ token }) {
       signOut({ callbackUrl: '/' }); 

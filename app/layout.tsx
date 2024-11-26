@@ -1,5 +1,3 @@
-// app/layout.tsx
-import Script from 'next/script';
 import { getServerSession } from 'next-auth/next';
 import type { Session } from 'next-auth';
 import authConfig from '@/auth.config';
@@ -30,23 +28,6 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <head>
-        {/* Google Analytics Script */}
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-K0B31XLYSE"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-K0B31XLYSE', {
-              page_path: window.location.pathname,
-            });
-          `}
-        </Script>
-      </head>
       <body
         className={`${inter.className} overflow-hidden`}
         suppressHydrationWarning={true}
