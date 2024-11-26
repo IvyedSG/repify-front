@@ -51,6 +51,19 @@ const authConfig: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user, account }) {
       if (user && account) {
+        // Disparar el evento de inicio de sesión exitoso a GTM
+        if (typeof window !== 'undefined' && window.dataLayer) {
+          window.dataLayer.push({
+            event: 'login_success',
+            user: {
+              id: user.id,
+              email: user.email,
+              university: user.university,
+              career: user.career,
+            },
+          });
+        }
+  
         return {
           ...token,
           id: user.id,
@@ -62,18 +75,18 @@ const authConfig: NextAuthOptions = {
           photo: user.photo,
           name: user.name,
           accessTokenExpires: Date.now() + 30 * 60 * 1000, 
-          refreshTokenExpires: Date.now() + 24 * 60 * 60 * 1000, 
+          refreshTokenExpires: Date.now() + 24 * 60 * 60 * 1000,
         };
       }
-
+  
       if (Date.now() < token.accessTokenExpires) {
         return token;
       }
-
+  
       if (Date.now() > token.refreshTokenExpires) {
         return { ...token, error: 'RefreshTokenExpired' };
       }
-
+  
       return refreshAccessToken(token);
     },
     async session({ session, token }) {

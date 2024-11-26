@@ -59,7 +59,7 @@ export default function UserRegisterForm() {
   })
 
   const onSubmit = useCallback(async (data: UserFormValue) => {
-    setLoading(true)
+    setLoading(true);
     try {
       const { confirmPassword, ...formattedData } = {
         ...data,
@@ -68,30 +68,43 @@ export default function UserRegisterForm() {
           : data.interests 
             ? (data.interests as string).split(',').map((i: string) => i.trim()) 
             : [],
-      }
-
+      };
+  
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/login/Register/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formattedData),
-      })
-
+      });
+  
       if (response.ok) {
-        toast.success('¡Bienvenido a bordo! Preparando tu espacio...')
-        setTimeout(() => router.push('/'), 2000)
+        // Disparar el evento de registro exitoso a GTM
+        if (window.dataLayer) {
+          window.dataLayer.push({
+            event: 'register_success',
+            user: {
+              email: data.email,
+              university: data.university,
+              career: data.career,
+            },
+          });
+        }
+  
+        toast.success('¡Bienvenido a bordo! Preparando tu espacio...');
+        setTimeout(() => router.push('/'), 2000);
       } else {
-        const errorData = await response.json()
-        toast.error(`Ups, algo salió mal: ${errorData.detail || 'Intenta nuevamente'}`)
+        const errorData = await response.json();
+        toast.error(`Ups, algo salió mal: ${errorData.detail || 'Intenta nuevamente'}`);
       }
     } catch (error) {
-      console.error('Error durante el registro:', error)
-      toast.error('Error inesperado. ¿Podrías intentarlo de nuevo?')
+      console.error('Error durante el registro:', error);
+      toast.error('Error inesperado. ¿Podrías intentarlo de nuevo?');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [router])
+  }, [router]);
+  
 
   const nextStep = useCallback(async () => {
     const fields: (keyof UserFormValue)[] = step === 1 ? ['email', 'password', 'confirmPassword'] :

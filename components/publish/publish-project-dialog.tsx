@@ -59,7 +59,7 @@ export function PublishProjectDialog({ setIsDialogOpen }: PublishProjectDialogPr
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     // Validate required fields
     const requiredFields = ['name', 'description', 'end_date', 'status', 'project_type', 'priority', 'detailed_description']
     const missingFields = requiredFields.filter(field => !newProject[field as keyof typeof newProject])
@@ -89,7 +89,6 @@ export function PublishProjectDialog({ setIsDialogOpen }: PublishProjectDialogPr
       accepting_applications: newProject.accepting_applications,
       type_aplyuni: newProject.type_aplyuni === 'LIBRE' ? 'LIBRE' : convertToUniversitySiglas(session?.user.university || '')
     }
-  
 
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuario/projects/create_project/`, {
@@ -113,6 +112,24 @@ export function PublishProjectDialog({ setIsDialogOpen }: PublishProjectDialogPr
 
         // Validate achievements after successful project creation
         await validateAchievements()
+
+        // Enviar evento a Google Tag Manager (GTM) en caso de éxito
+        if (typeof window !== 'undefined' && window.dataLayer) {
+          window.dataLayer.push({
+            event: 'project_created',
+            user: {
+              email: session?.user.email,
+              university: session?.user.university,
+              career: session?.user.career,
+            },
+            project: {
+              name: newProject.name,
+              description: newProject.description,
+              status: newProject.status,
+              type: newProject.project_type,
+            }
+          })
+        }
       } else {
         const errorData = await response.json()
         throw new Error(errorData.detail || 'Failed to create project')
@@ -124,6 +141,22 @@ export function PublishProjectDialog({ setIsDialogOpen }: PublishProjectDialogPr
         description: error instanceof Error ? error.message : "Hubo un problema al crear el proyecto. Por favor, intenta de nuevo.",
         variant: "destructive",
       })
+
+      // Enviar evento a GTM en caso de error
+      if (typeof window !== 'undefined' && window.dataLayer) {
+        window.dataLayer.push({
+          event: 'project_creation_failed',
+          user: {
+            email: session?.user.email,
+            university: session?.user.university,
+            career: session?.user.career,
+          },
+          project: {
+            name: newProject.name,
+            description: newProject.description,
+          }
+        })
+      }
     } finally {
       setIsLoading(false)
     }
