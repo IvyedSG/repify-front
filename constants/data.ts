@@ -27,12 +27,6 @@ export const navItems: NavItem[] = [
     label: 'Mis Records'
   },
   {
-    title: 'Conexiones',
-    href: '/projects/connection',
-    icon: 'conexion',
-    label: 'Conexiones'
-  },
-  {
     title: 'Formularios',
     href: '/projects/forms',
     icon: 'page',
