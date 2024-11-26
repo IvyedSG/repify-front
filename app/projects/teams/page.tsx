@@ -181,7 +181,7 @@ export default function ProjectsPage() {
               <span className="ml-2 text-sm font-medium">{project.progress}%</span>
             </div>
           </div>
-          <div className="flex items-center justify-between pt-4">
+          <div className="flex flex-col space-y-2 pt-4">
             <Button variant="outline" onClick={() => {
               setSelectedProject(project)
               setIsDetailedDialogOpen(true)
@@ -189,28 +189,22 @@ export default function ProjectsPage() {
               Ver Detalles
             </Button>
             {isLeader && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <Settings className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Gestión del Proyecto</DropdownMenuLabel>
-                  <DropdownMenuItem asChild>
-                    <Link href={`/projects/teams/${project.id}`}>
-                      <Settings className="w-4 h-4 mr-2" />
-                      <span>Configuración del Proyecto</span>
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <Button 
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                asChild
+              >
+                <Link href={`/projects/teams/${project.id}`}>
+                  <Settings className="w-4 h-4 mr-2" />
+                  Configuración
+                </Link>
+              </Button>
             )}
           </div>
         </div>
       </CardContent>
     </Card>
-  ), [getStatusIcon, getPriorityColor])
+  ), [getStatusIcon, getPriorityColor, setSelectedProject, setIsDetailedDialogOpen])
+
 
   const renderEmptyState = useCallback((message: string) => (
     <div className="flex flex-col items-center justify-center h-64">
