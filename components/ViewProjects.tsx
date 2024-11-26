@@ -182,7 +182,7 @@ export default function ViewProjects() {
     <DashboardTutorial>
       <PageContainer>
         <div className="space-y-8">
-          <h1 className="dashboard-title text-2xl md:text-3xl font-bold">Proyectos</h1>
+          <h1 className="dashboard-title text-2xl md:text-3xl font-bold">Explorar Proyectos</h1>
           <div className="search-filter flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4">
             <Input 
               className="flex-grow" 

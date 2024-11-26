@@ -242,7 +242,7 @@ export default function MatchmakingPage() {
             Radar de Talento
           </h1>
           <p className="text-sm text-muted-foreground">
-            Encuentra conexiones académicas cercanas
+            Encuentra conexiones académicas con tus mismos intereses, podrían formar un gran equipo!
           </p>
         </div>
 
